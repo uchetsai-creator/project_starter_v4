@@ -1,4 +1,4 @@
-# Project Starter
+[# Project Starter
 
 > **Repo structure note:** This repo should be cloned so that `AGENTS.md` sits at the
 > root — i.e. `project_starter/AGENTS.md`, not `project_starter/project_starter/AGENTS.md`.
@@ -310,3 +310,4 @@ are auto-scanned and do not need to be added manually.
   system integration.
 - **Incremental updates only**: `codebase-map.md` and `modules/module-data-flow.md` are updated one task
   at a time — the agent never re-scans the whole repository to regenerate them.
+](https://github.com/uchetsai-creator/project_starter_v4.git)
