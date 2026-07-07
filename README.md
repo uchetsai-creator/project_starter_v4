@@ -1,4 +1,4 @@
-[# Project Starter
+# Project Starter
 
 > **Repo structure note:** This repo should be cloned so that `AGENTS.md` sits at the
 > root — i.e. `project_starter/AGENTS.md`, not `project_starter/project_starter/AGENTS.md`.
@@ -69,7 +69,6 @@ project_starter/                     ← this repo (template only)
         ├── schema_to_html.py        ← Prisma/SQL schema → ERD (interactive HTML + static SVG)
         ├── build_pdf.py             ← auto-renders all ```plantuml blocks via PlantUML + generates PDF
         ├── scan_codebase.py         ← scans src/ and reports which modules are undocumented
-        ├── translate_docs.py        ← translate docs/ to Traditional Chinese → docs-zh/
         ├── build_pdf.py             ← merges all of docs/ into one PDF, with diagrams embedded
         └── pdf_allowlist.py         ← single source of truth for which files appear in the PDF
 ```
@@ -267,11 +266,9 @@ pip install markdown weasyprint cairosvg --break-system-packages
 python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf
 
 # Chinese PDF (manual, only when needed)
-python3 docs/script/translate_docs.py docs --out docs-zh
 python3 docs/script/build_pdf.py docs-zh --lang zh -o docs/project-documentation-zh.pdf
 ```
 
-`translate_docs.py` translates every allowlisted markdown file to Traditional Chinese using
 Google Translate (free, no API key needed), preserving code blocks, inline code, HTML comments,
 and table structure. It mirrors the translated files into `docs-zh/`, which `build_pdf.py` then
 reads exactly like `docs/`.
@@ -280,7 +277,7 @@ reads exactly like `docs/`.
 > may need manual review after translation.
 
 To add a new document to the PDF, add it to **`docs/script/pdf_allowlist.py`** only —
-`build_pdf.py` and `translate_docs.py` both import from it automatically. Note that
+`build_pdf.py` imports from it automatically. Note that
 `business/*-process.md`, `business/*-object.md`, and `modules/*/*-module-data-flow.md`
 are auto-scanned and do not need to be added manually.
 
@@ -302,7 +299,7 @@ are auto-scanned and do not need to be added manually.
   Design / Build / Test / Deployment — matching standard system analysis document conventions.
   The chapter each file belongs to is configured in `pdf_allowlist.py`.
 - **Single PDF allowlist**: `pdf_allowlist.py` is the only file to edit when adding documents
-  to the PDF. Both `build_pdf.py` and `translate_docs.py` import from it.
+  to the PDF. `build_pdf.py` imports from it.
 - **Task granularity**: each task should be roughly half a day to one day of work, and
   independently completable as a single Current Task — planning rules are defined directly in `AGENTS.md`.
 - **Package First**: prefer an existing package, then an existing utility, then framework
@@ -310,4 +307,3 @@ are auto-scanned and do not need to be added manually.
   system integration.
 - **Incremental updates only**: `codebase-map.md` and `modules/module-data-flow.md` are updated one task
   at a time — the agent never re-scans the whole repository to regenerate them.
-](https://github.com/uchetsai-creator/project_starter_v4.git)
