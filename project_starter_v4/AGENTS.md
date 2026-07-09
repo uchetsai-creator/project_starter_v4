@@ -293,6 +293,12 @@ Verification must confirm the feature works — not just that no errors occurred
 - ❌ "No errors in log" is not sufficient
 - ✅ "Endpoint returns expected data", "UI shows correct state", "output matches expected value"
 
+For validation / guard logic (data checks, permission guards, input validation, business rules):
+verify that invalid input is correctly rejected — not only that valid input passes.
+A check that always returns success regardless of input is not a real check.
+- ❌ "13/13 expectations passed on clean data" alone is not sufficient
+- ✅ "Fed invalid data → check correctly returned failure on BR-003"
+
 7. Write one row to `docs/task-log.md` — only after steps 1–6 are done:
 
 `| [date] | [task] | [files changed] | [command run] | ✅/❌ [result] | plan ✅ | changelog ✅ | current-state ✅ | docs ✅ |`
