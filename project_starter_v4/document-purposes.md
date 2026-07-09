@@ -332,6 +332,7 @@ Format: `| date | task | files changed | command run | ✅/❌ result |`
 
 Update when:
 * Any task is completed — AI writes one row with real verification output
+  Result must confirm the feature works, not just "no errors" — e.g. "endpoint returns expected data", "UI shows correct state"
 
 ---
 
