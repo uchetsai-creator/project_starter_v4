@@ -285,6 +285,7 @@ Before marking a task done, complete ALL steps below in order. Do not skip any.
 | New feature / endpoint | Call the endpoint, confirm expected response |
 | Database migration / schema | Run migration, confirm schema matches expected state |
 | Config / environment | Start affected service, confirm healthy |
+| Network / infrastructure config | Verify connectivity between affected services (e.g. `docker exec serviceA ping serviceB`, `curl` from one container to another) |
 | Script / utility | Run the script, confirm expected output |
 | Documentation only | `python3 docs/script/build_pdf.py docs --lang en -o /tmp/test.pdf` |
 | Diagram (plantuml block) | Rebuild PDF, confirm diagram renders correctly |
