@@ -270,26 +270,32 @@ For the full explanation of why each document updates on these triggers, see doc
 
 ## Task Completion
 
-Before marking a task done, run the verification commands for what was changed.
-Do not report completion without having executed them.
+Before marking a task done, complete ALL steps below in order. Do not skip any.
 
-Verification must confirm the feature works as intended, not just that no errors occurred.
-Where applicable, verify the actual output or result — not only the absence of errors.
-Examples:
-- ❌ "No errors in log" is not sufficient
-- ✅ "Endpoint returns expected data", "UI shows correct state", "output matches expected value"
+**Mandatory post-task steps:**
+1. Mark all completed steps `[x]` in `docs/project-plan.md`
+2. Move task summary to `docs/changelog.md`
+3. Update `docs/current-state.md` to reflect next task
+4. Run Document Update Checklist — check every item yes/no
+5. Run Module Completion Check (if any module files were touched)
+6. Run verification command for what was changed — confirm feature works, not just no errors:
 
 | Changed artifact | Required verification |
 |---|---|
-| New feature / endpoint | Start the server, call the endpoint, confirm expected response |
+| New feature / endpoint | Call the endpoint, confirm expected response |
 | Database migration / schema | Run migration, confirm schema matches expected state |
 | Config / environment | Start affected service, confirm healthy |
-| Script / utility | Run the script, confirm no errors and expected output |
-| Documentation only | Confirm the PDF builds without error: `python3 docs/script/build_pdf.py docs --lang en -o /tmp/test.pdf` |
-| Diagram (plantuml block) | Rebuild PDF, confirm diagram renders correctly in output |
+| Script / utility | Run the script, confirm expected output |
+| Documentation only | `python3 docs/script/build_pdf.py docs --lang en -o /tmp/test.pdf` |
+| Diagram (plantuml block) | Rebuild PDF, confirm diagram renders correctly |
 
-Return:
-- Write one row to `docs/task-log.md`:
-  `| [date] | [task] | [files changed] | [command run] | ✅/❌ [one-line result] |`
+Verification must confirm the feature works — not just that no errors occurred.
+- ❌ "No errors in log" is not sufficient
+- ✅ "Endpoint returns expected data", "UI shows correct state", "output matches expected value"
 
-Do not mark a task done without writing this row.
+7. Write one row to `docs/task-log.md` — only after steps 1–6 are done:
+
+`| [date] | [task] | [files changed] | [command run] | ✅/❌ [result] | plan ✅ | changelog ✅ | current-state ✅ | docs ✅ |`
+
+Do not write the row until every column can be filled with ✅.
+The act of filling this row is the proof that all steps were completed.
