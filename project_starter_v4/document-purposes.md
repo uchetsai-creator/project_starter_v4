@@ -337,6 +337,10 @@ Result must confirm the feature works — not just "no errors":
 - ✅ "endpoint returns expected data", "UI shows correct state", "output matches expected value"
 - ❌ "no errors in log" alone is not sufficient
 
+For validation / guard logic: also verify that invalid input is rejected.
+- ✅ "Fed invalid data → guard correctly blocked it"
+- ❌ "All checks passed on clean data" alone is not sufficient
+
 Update when:
 * Any task is completed — AI writes one row after completing ALL mandatory post-task steps
 
