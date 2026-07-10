@@ -130,6 +130,10 @@ Avoid:
 ' Frontend Architecture — UML Component Diagram
 ' Pages should NOT depend on other pages (that's the router's job).
 ' Only draw real compile-time import dependencies.
+' WARNING: component names must not contain parentheses () — use aliases instead.
+'   ❌ component "myFunc() handler"
+'   ✅ component "myFunc handler" as MyFunc
+
 
 skinparam componentStyle uml2
 
