@@ -133,18 +133,19 @@ Do not generate the PDF with empty flow index tables.
 ---
 
 If continuing an existing project:
-Read:
-1. AGENTS.md
-2. docs/current-state.md
-3. Required Context only
 
-Required Context should contain only the documents required to complete the Current Task.
-Required Context Do not include:
-- docs/project-plan.md
-- docs/project-requirements.md
-- docs/changelog.md
+**Startup sequence — read in this order, stop as soon as you have enough context:**
 
-unless the task explicitly requires them.
+1. `docs/current-state.md` — this is the only mandatory read at startup.
+   It tells you the current task AND lists exactly which other documents to read.
+2. Required Context only — read the documents listed in `docs/current-state.md → Required Context`.
+   Nothing else.
+
+Do NOT read docs/project-plan.md, docs/project-requirements.md, or docs/changelog.md
+at startup unless docs/current-state.md explicitly lists them in Required Context.
+
+If docs/current-state.md is missing, empty, or ambiguous — read AGENTS.md to orient yourself,
+then determine the next step from project-plan.md. Do not read AGENTS.md otherwise.
 
 Do not scan repository.
 
@@ -181,34 +182,54 @@ Custom code only for:
 
 ## Current State
 
-docs/current-state.md is the active task.
+docs/current-state.md is the active task. It is self-contained — reading it should give you
+everything needed to start work and to close out the task when done.
 
-Before starting work:
-* Read docs/current-state.md.
-* If Current Task exists:
-  * Read Required Context.
-  * Start implementation.
-* Otherwise:
-  * Read docs/project-plan.md.
-  * Select the next incomplete task.
-  * Update docs/current-state.md.
-  * Start implementation.
+### Starting work
 
-After task completion:
+1. Read `docs/current-state.md`.
+2. If **Current Task** is filled in:
+   - Read the files listed under **Required Context**.
+   - Start implementation.
+3. If **Current Task** is empty or says "See project-plan.md":
+   - Read `docs/project-plan.md` (this is the only time you need to).
+   - Copy the next incomplete task's name, goal, required context, and the task after that into current-state.md.
+   - Start implementation.
 
-1. Move Current Task to docs/changelog.md.
-2. Mark the task completed in docs/project-plan.md.
-3. Update docs/modules/module-data-flow.md with actual function names and file paths from the implementation.
-4. Update docs/codebase-map.md with the files touched in this task, classified by layer (DB/BE/FE/MOD/JOB) and type (Package/Custom).
-5. Run the Document Update Checklist below. For each item, check yes/no — do not skip the check.
-6. Run the Module Completion Check below. Do not skip this check, even if the answer is usually "no."
-7. Select the next incomplete task from docs/project-plan.md.
-8. Update docs/current-state.md.
-9. Update Required Context.
+### Closing out a task
+
+When all Steps are done and Verify passes:
+
+1. Update **Current Task** → copy from **Next Task** (already in this file — no need to re-read project-plan.md).
+2. Update **Next Task** → copy the task after that from project-plan.md (one read, done).
+3. Update **Required Context** for the new current task.
+4. Update **Doc Checklist** → filter the new task's relevant items from the full checklist in AGENTS.md (do this once when setting up the new task, not at every task end).
+
+The Doc Checklist in current-state.md is the only checklist you run at task completion.
+Do not open AGENTS.md or the full Document Update Checklist at task completion.
+
+After task completion — minimal writes only:
+
+1. Update `docs/current-state.md`:
+   - Mark completed steps `[x]`.
+   - Set next task (copy from project-plan.md if needed — do not re-read the whole file, just look up the next task name).
+   - Update Required Context for the next task.
+2. Add one entry to `docs/sprint-change-log.md`:
+   - Implementation summary, technical impact flags (Architecture/DB/API/Deployment/Module flow), potential documentation updates.
+   - Status: **Pending documentation synchronization**
+3. Write one row to `docs/task-log.md`.
+
+Do NOT update changelog.md, project-plan.md, codebase-map.md, or any spec/architecture/business
+document after a single task. Those updates are deferred to Sprint Documentation Sync.
+Do NOT run the Document Update Checklist after a single task.
 
 ### Module Completion Check
 
 Run this check after every task — most of the time the answer will be "no," but the check itself must not be skipped.
+
+Do NOT create or update `[module]-module-data-flow.md` or `[module]-flow.md` during a task
+unless the module is 100% complete (all tasks for this module are marked done in project-plan.md).
+Creating these files mid-module causes repeated read/write cycles during review. Defer until completion.
 
 * Does completing this task finish all work for its module in docs/project-plan.md?
   * If no: this module is not yet complete. Skip the rest of this section.
@@ -224,7 +245,12 @@ Run this check after every task — most of the time the answer will be "no," bu
     3. If the module flow file contains multiple sequence or class blocks, each block
        generates its own diagram file (named by title slug). All are picked up automatically
        by build_pdf.py — no extra configuration needed.
-    4. Regenerate the English PDF — no need to ask, just run:
+    4. Rebuild the PDF only if ANY of the following conditions are met:
+       - This is a Sprint Documentation Sync (always rebuild at sprint end), OR
+       - 3 or more diagram blocks (plantuml) have changed since the last PDF build.
+       If neither condition is met, skip the PDF rebuild — it will happen at sprint end.
+
+       When rebuilding:
        `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
        Chinese PDF is manual only — run when requested:
        `python3 docs/script/build_pdf.py docs-zh --lang zh -o docs/project-documentation-zh.pdf`
@@ -233,7 +259,20 @@ Run this check after every task — most of the time the answer will be "no," bu
 
 ### Document Update Checklist
 
-Run through every item below after every task. This is mandatory, not optional.
+**Pre-filter before running any checklist item:**
+Only check items whose trigger condition could plausibly be true given what this task actually changed.
+Skip an item immediately if the task did not touch the relevant area — do not read the item's full detail.
+
+Quick filter guide:
+| If the task only touched… | Skip these checklist items entirely |
+|---|---|
+| Python/JS scripts only | architecture.md, backend.md, frontend.md, database.md, data-model.md, business-objects.md |
+| Frontend UI only | data-model.md, api-contract.md (unless new endpoints), backend.md, deployment.md, business-rules.md |
+| DB schema only | frontend.md, codebase-map.md page structure, business-process.md, module-flow.md |
+| Documentation only | All code-related items (data-model, api-contract, permissions, architecture, backend, frontend) |
+| Config / env vars only | All items except deployment.md and quickstart.md |
+
+Apply this filter first. Then run only the remaining items.
 
 - [ ] docs/specs/research.md — did this task involve a new technology decision, or resolve a NEEDS CLARIFICATION? If yes, update. Note: research.md is excluded from the PDF by default (pdf_allowlist.py) — uncomment its entry once it has real content.
 - [ ] docs/specs/data-model.md — did the schema, entities, relationships, or indexes change? If yes, update, then:
@@ -271,17 +310,20 @@ For the full explanation of why each document updates on these triggers, see doc
 
 ## Task Completion
 
-**Workflow: Task completed → Record changes. Sprint completed → Synchronize documentation.**
+**Workflow: Task completed → minimal writes only. Sprint completed → synchronize all documentation.**
 
 Do NOT run the full Document Update Checklist after every task.
-Run it only during Sprint Documentation Sync (see below).
+Do NOT update changelog.md, project-plan.md, codebase-map.md, or any spec/architecture/business document after a single task.
+Run the Document Update Checklist only during Sprint Documentation Sync.
 
-### Mandatory post-task steps (every task)
+### Mandatory post-task steps (every task — 3 writes only)
 
-1. Mark all completed steps `[x]` in `docs/project-plan.md`
-2. Move task summary to `docs/changelog.md`
-3. Update `docs/current-state.md` to reflect next task
-4. Run verification command for what was changed:
+1. **Update `docs/current-state.md`** (1 edit):
+   - Mark completed steps `[x]`.
+   - Set the next task name and goal.
+   - Update Required Context for the next task (list only what the next task actually needs).
+
+2. **Run verification** for what was changed:
 
 | Changed artifact | Required verification |
 |---|---|
@@ -301,13 +343,13 @@ For validation / guard logic: verify that invalid input is correctly rejected.
 - ❌ "All checks passed on clean data" alone is not sufficient
 - ✅ "Fed invalid data → check correctly returned failure"
 
-5. Add one entry to `docs/sprint-change-log.md`:
-   - Implementation summary, technical impact flags (Architecture/DB/API/Deployment/Module flow), potential documentation updates
+3. **Add one entry to `docs/sprint-change-log.md`** (1 edit):
+   - Implementation summary, technical impact flags (Architecture/DB/API/Deployment/Module flow), potential documentation updates.
    - Status: **Pending documentation synchronization**
 
-6. Write one row to `docs/task-log.md`:
+4. **Write one row to `docs/task-log.md`** (1 edit):
 
-`| [date] | [task] | [files changed] | [command run] | ✅/❌ [result] | plan ✅ | changelog ✅ | current-state ✅ |`
+`| [date] | [task] | [files changed] | [command run] | ✅/❌ [result] | current-state ✅ | sprint-log ✅ |`
 
 ---
 
