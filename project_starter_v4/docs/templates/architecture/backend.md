@@ -108,6 +108,9 @@ Avoid:
 ' Use package grouping to show layers.
 ' Controllers/Handlers should NOT depend on each other.
 ' Only draw real import/call dependencies.
+' WARNING: component names must not contain parentheses () — use aliases instead.
+'   ❌ component "load_raw() in DAG"
+'   ✅ component "load_raw (DAG task)" as LoadRaw
 
 skinparam componentStyle uml2
 
