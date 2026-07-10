@@ -308,6 +308,43 @@ For the full explanation of why each document updates on these triggers, see doc
 
 ---
 
+## Command Execution Rules
+
+Every command that could block must have an explicit timeout. No exceptions.
+
+**Rule: wrap any waiting/polling/long-running command with `timeout`.**
+
+```bash
+# ❌ Never do this — will block forever if condition never met
+until docker inspect x --format '{{.State.Health.Status}}' | grep -q healthy; do sleep 10; done
+
+# ✅ Always do this
+timeout 120 bash -c 'until docker inspect x --format "{{.State.Health.Status}}" | grep -q healthy; do sleep 10; done' \
+  && echo "✅ healthy" || echo "❌ timed out — last status: $(docker inspect x --format '{{.State.Health.Status}}')"
+```
+
+Applies to all of the following — not just health checks:
+
+| Operation type | Example | Suggested timeout |
+|---|---|---|
+| Health check / readiness poll | `until curl ... grep healthy` | 120s |
+| Docker compose up | `docker compose up -d` | 120s |
+| Database migration | `prisma migrate deploy` | 60s |
+| Build / compile | `npm run build`, `go build` | 300s |
+| Test suite | `npm test`, `pytest` | 300s |
+| File download / pull | `docker pull`, `git clone` | 180s |
+| Background job / worker start | waiting for first log line | 60s |
+| Any other blocking shell command | anything with `sleep` in a loop | 60s |
+
+If a command times out:
+1. Stop immediately — do not retry automatically.
+2. Report the last known state (logs, status, exit code).
+3. Wait for user instruction before continuing.
+
+Do not use background commands (`&`) to work around a blocking operation — use `timeout` instead.
+
+---
+
 ## Task Completion
 
 **Workflow: Task completed → minimal writes only. Sprint completed → synchronize all documentation.**
