@@ -341,6 +341,12 @@ If a command times out:
 2. Report the last known state (logs, status, exit code).
 3. Wait for user instruction before continuing.
 
+If any single command or sequence of commands has been running for more than 5 minutes
+without a clear success signal:
+1. Stop what you are doing.
+2. Report: what you were trying to do, how long it has been running, and the last known output.
+3. Ask the user how to proceed — do not keep waiting or trying new things silently.
+
 Do not use background commands (`&`) to work around a blocking operation — use `timeout` instead.
 
 ---
