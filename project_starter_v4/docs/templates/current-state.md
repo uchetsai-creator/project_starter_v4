@@ -1,5 +1,14 @@
 # Current State
 
+<!--
+  EXECUTION RULES — read before starting any task:
+  1. Every blocking command must be wrapped with timeout:
+     timeout 120 bash -c '...' && echo "✅ done" || echo "❌ timed out"
+  2. If any operation has been running for more than 5 minutes without a clear
+     success signal — stop, report what you were doing and the last known output,
+     and wait for instruction. Do not keep waiting or trying new things silently.
+-->
+
 ## Current Task
 
 **Task:** [Task name, e.g., BE Order API]
