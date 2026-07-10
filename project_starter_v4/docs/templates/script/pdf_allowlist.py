@@ -33,6 +33,7 @@ PDF_ALLOWLIST = [
     ("plan",           "project-plan.md"),
     ("plan",           "changelog.md"),
     ("plan",           "task-log.md"),
+    ("plan",           "sprint-change-log.md"),
 
     # ── Chapter 3: Design ────────────────────────────────────────────────────
     ("design",         "architecture/architecture.md"),
@@ -42,7 +43,9 @@ PDF_ALLOWLIST = [
     ("design",         "specs/data-model.md"),
     ("design",         "specs/api-contract.md"),
     ("design",         "specs/permissions.md"),
-    ("design",         "specs/research.md"),
+    # specs/research.md is excluded until filled with real content.
+    # Uncomment the line below once it has actual technology decisions (not just placeholders):
+    # ("design",         "specs/research.md"),
     # *-module-data-flow.md auto-scanned (class diagrams)
     # module-flow files auto-scanned (sequence diagrams)
 
