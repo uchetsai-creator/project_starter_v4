@@ -184,7 +184,7 @@ How to confirm the system is running correctly after startup.
 <!--
   Describes the deployment topology — which services run where and how they connect.
   Fill in based on the actual deployment environment (cloud provider, container runtime, etc.)
-  After writing, run: python3 docs/script/component_to_html.py docs/architecture/deployment.md
+  After writing, run: Edit the ```plantuml block in the file, then rebuild PDF
 
   Examples of deployment topologies:
     Single server:   App + DB on the same VM
@@ -197,30 +197,37 @@ How to confirm the system is running correctly after startup.
   and how they communicate (HTTP, TCP, internal network, etc.)
 -->
 
-```component
-title: Deployment Topology
+```plantuml
+@startuml
+' Deployment Topology Diagram
+' Shows which service runs where and how they connect at runtime.
+' Use node for hosts/platforms, component for services.
+' WARNING: component names must not contain parentheses () — use aliases instead.
+'   ❌ component "myFunc() handler"
+'   ✅ component "myFunc handler" as MyFunc
 
-component "[e.g., Frontend — Vercel / Nginx / CDN]" as FE {
-  provides: [e.g., static assets, SPA]
-  requires: [e.g., Backend API]
+
+skinparam componentStyle rectangle
+
+node "[Frontend Host — e.g., Vercel / Nginx / CDN]" as FEHost {
+  component "[Frontend]" as FE
 }
 
-component "[e.g., Backend — Docker container / Railway / EC2]" as BE {
-  provides: [e.g., REST API, WebSocket]
-  requires: [e.g., Database, Cache]
+node "[Backend Host — e.g., Docker / Railway / EC2]" as BEHost {
+  component "[Backend API]" as BE
 }
 
-component "[e.g., Database — RDS / Supabase / self-hosted PostgreSQL]" as DB {
-  provides: [e.g., persistent storage]
-  requires:
+node "[Database Host — e.g., RDS / Supabase]" as DBHost {
+  database "[Database]" as DB
 }
 
-component "[e.g., Cache — Redis Cloud / ElastiCache]" as Cache {
-  provides: [e.g., session store, query cache]
-  requires:
+node "[Cache Host — e.g., Redis Cloud]" as CacheHost {
+  component "[Cache]" as Cache
 }
 
-FE --> BE : [e.g., HTTPS]
-BE --> DB : [e.g., TCP / connection pool]
-BE --> Cache : [e.g., TCP]
+FE    -down-> BE    : HTTPS
+BE    -down-> DB    : TCP
+BE    -right-> Cache : TCP
+@enduml
+@enduml
 ```
