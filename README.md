@@ -33,6 +33,7 @@ project_starter/                     ← this repo (template only)
     ├── current-state.md             ← the active task
     ├── changelog.md                 ← completed task history
     ├── task-log.md                  ← task verification log (AI writes one row per completed task)
+    ├── sprint-change-log.md         ← implementation changes this sprint (doc sync deferred to sprint end)
     ├── codebase-map.md              ← package vs. custom code, by layer; includes project tree
     │
     ├── specs/                        ← quickstart.md, research.md, data-model.md, api-contract.md,
