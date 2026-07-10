@@ -235,13 +235,14 @@ def render_plantuml_block(puml_text, out_svg_path):
         f.write(puml_text)
         tmp_puml = f.name
     try:
+        out_svg_dir = os.path.dirname(os.path.abspath(out_svg_path))
         result = subprocess.run(
-            ['java', '-jar', PLANTUML_JAR, '-tsvg', '-o',
-             os.path.dirname(os.path.abspath(out_svg_path)), tmp_puml],
+            ['java', '-jar', PLANTUML_JAR, '-tsvg', '-o', out_svg_dir, tmp_puml],
             capture_output=True, text=True, timeout=30
         )
-        # PlantUML outputs to same dir as input with .svg extension
-        tmp_svg = os.path.splitext(tmp_puml)[0] + '.svg'
+        # PlantUML outputs SVG to out_svg_dir using the input filename's stem
+        # e.g. /tmp/tmpXXXX.puml → out_svg_dir/tmpXXXX.svg
+        tmp_svg = os.path.join(out_svg_dir, os.path.splitext(os.path.basename(tmp_puml))[0] + '.svg')
         if os.path.exists(tmp_svg):
             import shutil
             shutil.move(tmp_svg, out_svg_path)
@@ -373,7 +374,7 @@ def inject_plantuml_blocks(md_text, rel, docs_dir, html_svg_pairs, png_cache_dir
                         return '![](' + png_rel + ')\n'
         return ''  # fallback: remove the block if no SVG found
 
-    return re.sub('```plantuml(?:.|\n)*?```', replace_block, md_text)
+    return re.sub(r'```plantuml[\s\S]*?```', replace_block, md_text)
 
 
 def inject_diagrams(md_text, rel, docs_dir, html_svg_pairs, png_cache_dir, strings):
