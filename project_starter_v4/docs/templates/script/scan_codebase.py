@@ -320,7 +320,7 @@ def build_coverage_table(folders: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def update_codebase_map(map_path: str, src_dir: str, folders: list[dict]):
+def update_codebase_map(map_path: str, src_dir: str, folders: list[dict], docs_dir: str = "docs"):
     if not os.path.exists(map_path):
         print(f"Error: codebase-map.md not found at {map_path}")
         sys.exit(1)
@@ -328,7 +328,7 @@ def update_codebase_map(map_path: str, src_dir: str, folders: list[dict]):
     with open(map_path, "r", encoding="utf-8") as f:
         content = f.read()
 
-    tree_block = build_tree_block(src_dir, folders, args.docs)
+    tree_block = build_tree_block(src_dir, folders, docs_dir)
     coverage_table = build_coverage_table(folders)
 
     # Replace Project Structure section
@@ -383,7 +383,7 @@ def main():
         print(print_coverage(folders))
 
     if args.update:
-        update_codebase_map(args.update, args.src_dir, folders)
+        update_codebase_map(args.update, args.src_dir, folders, args.docs)
 
 
 if __name__ == "__main__":
