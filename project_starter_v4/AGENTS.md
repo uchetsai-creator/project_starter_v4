@@ -34,7 +34,8 @@ If starting a new project:
 15. Create docs/codebase-map.md from templates/codebase-map.md.
 16. Create docs/project-plan.md from templates/project-plan.md.
 17. Create docs/task-log.md from templates/task-log.md.
-18. Create docs/current-state.md from templates/current-state.md.
+18. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
+19. Create docs/current-state.md from templates/current-state.md.
 
 ---
 
@@ -270,22 +271,24 @@ For the full explanation of why each document updates on these triggers, see doc
 
 ## Task Completion
 
-Before marking a task done, complete ALL steps below in order. Do not skip any.
+**Workflow: Task completed → Record changes. Sprint completed → Synchronize documentation.**
 
-**Mandatory post-task steps:**
+Do NOT run the full Document Update Checklist after every task.
+Run it only during Sprint Documentation Sync (see below).
+
+### Mandatory post-task steps (every task)
+
 1. Mark all completed steps `[x]` in `docs/project-plan.md`
 2. Move task summary to `docs/changelog.md`
 3. Update `docs/current-state.md` to reflect next task
-4. Run Document Update Checklist — check every item yes/no
-5. Run Module Completion Check (if any module files were touched)
-6. Run verification command for what was changed — confirm feature works, not just no errors:
+4. Run verification command for what was changed:
 
 | Changed artifact | Required verification |
 |---|---|
 | New feature / endpoint | Call the endpoint, confirm expected response |
 | Database migration / schema | Run migration, confirm schema matches expected state |
 | Config / environment | Start affected service, confirm healthy |
-| Network / infrastructure config | Verify connectivity between affected services (e.g. `docker exec serviceA ping serviceB`, `curl` from one container to another) |
+| Network / infrastructure config | Verify connectivity between affected services (e.g. `docker exec serviceA ping serviceB`) |
 | Script / utility | Run the script, confirm expected output |
 | Documentation only | `python3 docs/script/build_pdf.py docs --lang en -o /tmp/test.pdf` |
 | Diagram (plantuml block) | Rebuild PDF, confirm diagram renders correctly |
@@ -294,15 +297,30 @@ Verification must confirm the feature works — not just that no errors occurred
 - ❌ "No errors in log" is not sufficient
 - ✅ "Endpoint returns expected data", "UI shows correct state", "output matches expected value"
 
-For validation / guard logic (data checks, permission guards, input validation, business rules):
-verify that invalid input is correctly rejected — not only that valid input passes.
-A check that always returns success regardless of input is not a real check.
-- ❌ "13/13 expectations passed on clean data" alone is not sufficient
-- ✅ "Fed invalid data → check correctly returned failure on BR-003"
+For validation / guard logic: verify that invalid input is correctly rejected.
+- ❌ "All checks passed on clean data" alone is not sufficient
+- ✅ "Fed invalid data → check correctly returned failure"
 
-7. Write one row to `docs/task-log.md` — only after steps 1–6 are done:
+5. Add one entry to `docs/sprint-change-log.md`:
+   - Implementation summary, technical impact flags (Architecture/DB/API/Deployment/Module flow), potential documentation updates
+   - Status: **Pending documentation synchronization**
 
-`| [date] | [task] | [files changed] | [command run] | ✅/❌ [result] | plan ✅ | changelog ✅ | current-state ✅ | docs ✅ |`
+6. Write one row to `docs/task-log.md`:
 
-Do not write the row until every column can be filled with ✅.
-The act of filling this row is the proof that all steps were completed.
+`| [date] | [task] | [files changed] | [command run] | ✅/❌ [result] | plan ✅ | changelog ✅ | current-state ✅ |`
+
+---
+
+## Sprint Documentation Sync
+
+Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulated enough Pending entries).
+
+1. Open `docs/sprint-change-log.md`
+2. For each entry with **Status: Pending documentation synchronization**:
+   - Check the Technical Impact flags
+   - Run the relevant sections of the Document Update Checklist below for each affected document
+   - Update only the affected documents — do not check unaffected ones
+   - Mark the entry **Status: Documentation synchronized — [date]**
+3. Run Module Completion Check for any modules touched during the sprint
+4. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
+5. Confirm PDF renders correctly
