@@ -34,6 +34,11 @@ import sys, os, re, glob
 import markdown
 from weasyprint import HTML, CSS
 import cairosvg
+try:
+    from PIL import Image
+except ImportError:
+    print("Error: Pillow is required. Run: pip install Pillow --break-system-packages")
+    sys.exit(1)
 
 # PDF_ALLOWLIST is maintained in pdf_allowlist.py — edit that file, not this one.
 _script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -44,10 +49,9 @@ from pdf_allowlist import PDF_ALLOWLIST, PDF_SECTION_FILTER
 # Set PLANTUML_JAR to the path of your plantuml.jar file.
 # Download from: https://plantuml.com/download
 # Can also be set via environment variable: PLANTUML_JAR=/path/to/plantuml.jar
-import os as _os
-PLANTUML_JAR = _os.environ.get(
+PLANTUML_JAR = os.environ.get(
     'PLANTUML_JAR',
-    _os.path.join(_os.path.dirname(__file__), 'plantuml.jar')
+    os.path.join(os.path.dirname(__file__), 'plantuml.jar')
 )
 
 # Maps diagram key (HTML filename without extension) → target doc(s) where it should be injected.
@@ -67,7 +71,7 @@ DIAGRAM_TARGETS = {
     "architecture-component":  "architecture/architecture.md",
     "backend-component":       "architecture/backend.md",
     "frontend-component":      "architecture/frontend.md",
-    "deployment-component":    "architecture/deployment.md",
+    # "deployment-component": removed — deployment diagram now uses ```plantuml block
     # Page structure component diagram — injected into codebase-map as project overview
     "codebase-map-component":  "codebase-map.md",
     # activity/sequence/*-class are matched dynamically in inject_diagrams
@@ -191,13 +195,13 @@ def find_allowed_files(docs_dir, strings):
     for path in sorted(glob.glob(os.path.join(docs_dir, "modules", "*", "*-module-data-flow.md"))):
         rel = os.path.relpath(path, docs_dir)
         if rel not in seen:
-            result.insert(-1, (rel, path, flows_label))
+            result.append((rel, path, flows_label))
 
     # Also auto-include *-flow.md files directly under modules/ (e.g. order-flow.md)
     for path in sorted(glob.glob(os.path.join(docs_dir, "modules", "*", "*-flow.md"))):
         rel = os.path.relpath(path, docs_dir)
         if rel not in seen:
-            result.insert(-1, (rel, path, flows_label))
+            result.append((rel, path, flows_label))
 
     # Auto-include *-process.md files under business/ (one file per business process)
     business_label = strings["sections"]["introduction"]
@@ -268,7 +272,7 @@ def extract_plantuml_from_file(md_path, svg_cache_dir):
 
     pairs = {}
     base = os.path.splitext(os.path.basename(md_path))[0]
-    blocks = list(re.finditer(r'```plantuml[\s\S]*?\n(.*?)```', md_text, re.DOTALL))
+    blocks = list(re.finditer(r'```plantuml\n([\s\S]*?)```', md_text))
 
     for idx, m in enumerate(blocks):
         puml_text = m.group(1).strip()
@@ -448,24 +452,28 @@ def inject_diagrams(md_text, rel, docs_dir, html_svg_pairs, png_cache_dir, strin
             svg_to_png(pair["svg"], png_path)
 
         png_rel = os.path.relpath(png_path, docs_dir)
-        html_rel = os.path.relpath(pair["html"], docs_dir)
+        # PlantUML-generated pairs have html=None — skip interactive link
+        html_rel = os.path.relpath(pair["html"], docs_dir) if pair.get("html") else None
 
         # Check if image is tall (height > width) — use full-page display
-        from PIL import Image
         img = Image.open(png_path)
         img_w, img_h = img.size
         is_tall = img_h > img_w * 1.5
 
+        link_html = (
+                f'<p style="margin-top:8px;"><a href="{html_rel}" style="color:#3182CE;">'
+                f'🔗 {strings["diagram_link"]}</a></p>'
+            ) if html_rel else ""
+        link_md = (
+                f"> 🔗 [{strings['diagram_link']}]({html_rel})\n\n"
+            ) if html_rel else "\n\n"
         if is_tall:
             block = (
                 f'\n\n<div style="page-break-before: always; text-align: center; padding: 24px;">'
                 f'<p style="font-weight:bold; color:#2D3748; margin-bottom:8px;">'
                 f'{strings["diagram_label"]}: {key}</p>'
                 f'<img src="{png_rel}" style="max-width:90%; max-height:90vh; object-fit:contain;"/>'
-                f'<p style="margin-top:8px;">'
-                f'<a href="{html_rel}" style="color:#3182CE;">'
-                f'🔗 {strings["diagram_link"]}</a></p>'
-                f'</div>\n\n'
+                f'{link_html}</div>\n\n'
             )
         else:
             block = (
@@ -473,7 +481,7 @@ def inject_diagrams(md_text, rel, docs_dir, html_svg_pairs, png_cache_dir, strin
                 f">\n"
                 f"> ![{key} diagram]({png_rel})\n"
                 f">\n"
-                f"> 🔗 [{strings['diagram_link']}]({html_rel})\n\n"
+                f"{link_md}"
             )
         # If the doc contains a placement marker <!-- diagram: KEY -->, insert there.
         # Otherwise append to end of document.
