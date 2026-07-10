@@ -40,6 +40,43 @@
 
 ---
 
+## Next Task
+
+<!--
+  Fill this in when the current task is created (copied from project-plan.md once).
+  When the current task completes, this becomes the new Current Task — no need to re-read project-plan.md.
+  If unknown, write: "See project-plan.md"
+-->
+
+**Task:** [Next task name]
+**Goal:** [What the next task needs to achieve]
+**Required Context:** [Files the next task will need]
+
+---
+
+## Doc Checklist (this task only)
+
+<!--
+  Filled in when this task is created.
+  Filter the full Document Update Checklist in AGENTS.md down to only the items
+  that could be triggered by this specific task. Cross off items that clearly cannot apply.
+  At task completion, run only these items — do not open AGENTS.md.
+
+  How to filter:
+  - DB schema task      → keep: data-model.md, database.md, business-objects.md
+  - BE endpoint task    → keep: api-contract.md, permissions.md, module-data-flow.md, module-flow.md, logging-spec.md
+  - FE task             → keep: frontend.md, codebase-map.md (page structure)
+  - Config/infra task   → keep: deployment.md, quickstart.md
+  - Business logic task → keep: business-rules.md, business-process.md, business-objects.md
+  - Script/utility task → keep: nothing (doc updates usually not needed)
+-->
+
+- [ ] `docs/[relevant spec]` — [what to check / update]
+- [ ] `docs/[relevant spec]` — [what to check / update]
+<!-- Add or remove lines. At task completion, run only what is listed here. -->
+
+---
+
 ## Notes
 
 * [Implementation decisions, rationale, or issues encountered]
