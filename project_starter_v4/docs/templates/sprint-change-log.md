@@ -7,6 +7,10 @@
 
   At sprint end: run Sprint Documentation Sync (see AGENTS.md) to process all
   Pending entries and update affected documentation files.
+
+  Entries are APPENDED at end in chronological order (oldest first, newest last).
+  After every Edit, run: grep -n "^### \|^## " docs/sprint-change-log.md
+  and confirm the new entry's line number is greater than all previous entries.
 -->
 
 ## Sprint [N]
