@@ -198,30 +198,18 @@ everything needed to start work and to close out the task when done.
 
 ### Closing out a task
 
-When all Steps are done and Verify passes:
+current-state.md is a state machine with two fields:
 
-1. Update **Current Task** → copy from **Next Task** (already in this file — no need to re-read project-plan.md).
-2. Update **Next Task** → copy the task after that from project-plan.md (one read, done).
-3. Update **Required Context** for the new current task.
-4. Update **Doc Checklist** → when setting up the new current task, filter the Document Update Checklist in AGENTS.md down to only items relevant to that task. Write the filtered list into current-state.md → Doc Checklist section. This is done once at task setup, not at task completion.
+- **Current Task** → the task being worked on now
+- **Next Task** → pre-filled when current task was set up; becomes the new Current Task on closeout
 
-The Doc Checklist in current-state.md is the only checklist you run at task completion.
-Do not open AGENTS.md or the full Document Update Checklist at task completion.
+When all Steps are done and Verify passes, promote Next Task to Current Task:
+1. Copy **Next Task** → **Current Task**
+2. Look up the task after that in project-plan.md → write into **Next Task** (one read, then close the file)
+3. Update **Required Context** for the new current task
+4. Update **Doc Checklist** → filter the full Document Update Checklist in AGENTS.md down to only items relevant to the new task. This filtered list is the ONLY checklist run at task completion — it is NOT the full 18-item Document Update Checklist (which runs at Sprint Documentation Sync only).
 
-After task completion — minimal writes only:
-
-1. Update `docs/current-state.md`:
-   - Mark completed steps `[x]`.
-   - Set next task (copy from project-plan.md if needed — do not re-read the whole file, just look up the next task name).
-   - Update Required Context for the next task.
-2. Add one entry to `docs/sprint-change-log.md`:
-   - Implementation summary, technical impact flags (Architecture/DB/API/Deployment/Module flow), potential documentation updates.
-   - Status: **Pending documentation synchronization**
-3. Write one row to `docs/task-log.md`.
-
-Do NOT update changelog.md, project-plan.md, codebase-map.md, or any spec/architecture/business
-document after a single task. Those updates are deferred to Sprint Documentation Sync.
-Do NOT run the Document Update Checklist after a single task.
+Then follow the steps in **## Task Completion** below.
 
 ### Module Completion Check
 
@@ -346,6 +334,7 @@ For validation / guard logic: verify that invalid input is correctly rejected.
 3. **Add one entry to `docs/sprint-change-log.md`** (1 edit):
    - Implementation summary, technical impact flags (Architecture/DB/API/Deployment/Module flow), potential documentation updates.
    - Status: **Pending documentation synchronization**
+   - Insert chronologically — append after the last existing entry, not at the top.
 
 4. **Write one row to `docs/task-log.md`** (1 edit):
 
