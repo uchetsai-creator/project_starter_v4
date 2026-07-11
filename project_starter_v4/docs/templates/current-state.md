@@ -67,18 +67,20 @@
 ## Doc Checklist (this task only)
 
 <!--
-  Filled in when this task is created.
-  Filter the full Document Update Checklist in AGENTS.md down to only the items
-  that could be triggered by this specific task. Cross off items that clearly cannot apply.
-  At task completion, run only these items — do not open AGENTS.md.
+  WHEN TO FILL: when this task is first set up — not at closeout.
+  This is the ONLY time you open AGENTS.md → Document Update Checklist during normal task work.
 
-  How to filter:
+  HOW TO FILL: filter the full Document Update Checklist in AGENTS.md down to only items
+  that could be triggered by this specific task:
   - DB schema task      → keep: data-model.md, database.md, business-objects.md
   - BE endpoint task    → keep: api-contract.md, permissions.md, module-data-flow.md, module-flow.md, logging-spec.md
   - FE task             → keep: frontend.md, codebase-map.md (page structure)
   - Config/infra task   → keep: deployment.md, quickstart.md
   - Business logic task → keep: business-rules.md, business-process.md, business-objects.md
   - Script/utility task → keep: nothing (doc updates usually not needed)
+
+  WHEN TO RUN: at task completion (Task Completion step 1a).
+  Apply each item listed here — do NOT re-open AGENTS.md at closeout.
 -->
 
 - [ ] `docs/[relevant spec]` — [what to check / update]
