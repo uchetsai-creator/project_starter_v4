@@ -314,7 +314,8 @@ Run the Document Update Checklist only during Sprint Documentation Sync.
       - Mark completed steps `[x]`
    c. Now promote Next Task → Current Task:
       - Copy **Next Task** → **Current Task** (name, goal)
-      - Write upcoming task (already in **Next Task**; look up the one after it in project-plan.md) → **Next Task**
+      - Look up the task after upcoming in project-plan.md → write it into **Next Task**
+        (upcoming → Current Task; the task after upcoming → Next Task)
       - Update **Required Context** for the new current task
       - Update **Doc Checklist** → already filtered when this task was set up; replace with filtered list for the new task
       - Set **Status** to `In Progress`
