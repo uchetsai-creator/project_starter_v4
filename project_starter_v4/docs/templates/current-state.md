@@ -16,6 +16,7 @@
 **Goal:** [What this task needs to achieve]
 
 **Status:** In Progress
+<!-- When done: "Complete — Pending Sprint Doc Sync" -->
 
 ---
 
