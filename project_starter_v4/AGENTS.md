@@ -245,54 +245,6 @@ Creating these files mid-module causes repeated read/write cycles during review.
        Note: to add a new doc to the PDF, add it to docs/script/pdf_allowlist.py only —
        do not edit build_pdf.py for this purpose.
 
-### Document Update Checklist
-
-**Pre-filter before running any checklist item:**
-Only check items whose trigger condition could plausibly be true given what this task actually changed.
-Skip an item immediately if the task did not touch the relevant area — do not read the item's full detail.
-
-Quick filter guide:
-| If the task only touched… | Skip these checklist items entirely |
-|---|---|
-| Python/JS scripts only | architecture.md, backend.md, frontend.md, database.md, data-model.md, business-objects.md |
-| Frontend UI only | data-model.md, api-contract.md (unless new endpoints), backend.md, deployment.md, business-rules.md |
-| DB schema only | frontend.md, codebase-map.md page structure, business-process.md, module-flow.md |
-| Documentation only | All code-related items (data-model, api-contract, permissions, architecture, backend, frontend) |
-| Config / env vars only | All items except deployment.md and quickstart.md |
-
-Apply this filter first. Then run only the remaining items.
-
-- [ ] docs/specs/research.md — did this task involve a new technology decision, or resolve a NEEDS CLARIFICATION? If yes, update. Note: research.md is excluded from the PDF by default (pdf_allowlist.py) — uncomment its entry once it has real content.
-- [ ] docs/specs/data-model.md — did the schema, entities, relationships, or indexes change? If yes, update, then:
-  - Regenerate ERD: `Edit the ```plantuml block in the file, then run build_pdf.py`
-    (output must go inside docs/ so build_pdf.py can find it)
-  - Regenerate state diagram: `# Edit the ```plantuml block in data-model.md, then rebuild PDF`
-  State Machine Consistency check: if this task touched an entity with a status lifecycle, confirm the State Machine section here matches the canonical definition in docs/business/[object-name]-object.md exactly. If they differ, update this file to match — the object file wins.
-- [ ] docs/specs/api-contract.md — were endpoints added/changed, did error codes or validation rules change, or were WebSocket/Socket.IO events / GraphQL queries or mutations / gRPC methods / CLI commands added or changed? If yes, update the relevant protocol section.
-  API Endpoint Overlap check: if this task added an endpoint whose purpose overlaps with an existing one (e.g. two endpoints affecting the same state), add a **Design Note:** under each explaining why they are separate, or consolidate into one.
-- [ ] docs/specs/permissions.md — were roles, the permission matrix, or API endpoints changed? If yes, update, then regenerate use case diagram: `# Edit the ```plantuml block in permissions.md, then rebuild PDF`
-  After updating: cross-check every role listed as "Responsible role" in any `*-process.md` against the API Endpoint Access table and Page Access Matrix. If a role is responsible for an action but has no access to the required page or endpoint, check the Source column:
-  - `Hardcoded` → this is a logical contradiction — resolve it before proceeding.
-  - `Seeded default` → this may be intentional (the default simply hasn't been granted yet). Confirm with the project owner whether to update the default, then mark the row "(Default)" — do not write it into business-rules.md as a permanent rule.
-- [ ] docs/architecture/architecture.md — did components or data flows change? If yes, update, then regenerate diagram: `# Edit the ```plantuml block in architecture.md, then rebuild PDF`
-- [ ] docs/codebase-map.md Page Structure block — did the frontend page/screen structure change? If yes, update the component block, then regenerate: `# Edit the ```plantuml block in codebase-map.md, then rebuild PDF`
-- [ ] docs/architecture/backend.md — did backend layering, stack, or module pattern change? If yes, update, then regenerate component diagram: `# Edit the ```plantuml block in backend.md, then rebuild PDF`
-- [ ] docs/architecture/frontend.md — did frontend stack, page structure, or component strategy change? If yes, update, then regenerate component diagram: `# Edit the ```plantuml block in frontend.md, then rebuild PDF`
-- [ ] docs/architecture/database.md — did main entities or relationships change (conceptual level)? If yes, update.
-- [ ] docs/architecture/deployment.md — did services, env vars, build/deploy flow, or deployment topology change? If yes, update, then regenerate deployment diagram: `# Edit the ```plantuml block in deployment.md, then rebuild PDF`
-- [ ] docs/specs/quickstart.md — did setup steps, prerequisites, or verification steps change? If yes, update.
-- [ ] docs/specs/logging-spec.md Module Naming Convention table — does this task introduce a module name not yet listed? If yes, add one line (name + short description) to the table. Do not add module-specific logging detail here — that belongs in docs/modules/<module-name>/log-<module-name>.md.
-- [ ] docs/business/business-rules.md — did business constraints or policies change? If yes, update.
-- [ ] docs/business/[object-name]-object.md — were business entities added or changed? If yes, update, then regenerate state diagram: `Edit the ```plantuml block in the file, then run build_pdf.py`
-- [ ] docs/business/business-objects.md — was a new business object file created or did relationships change? If yes, update the index.
-- [ ] docs/business/[process-name]-process.md — did the business workflow, decision points, or exceptions change for this process? If yes, update, then regenerate activity diagram: `Edit the ```plantuml block in the file, then run build_pdf.py`
-- [ ] docs/business/business-process.md — was a new business process file created? If yes, add a row to the index table.
-- [ ] docs/modules/[module]/[module]-module-data-flow.md — did function names, file paths, or flow steps change for this module? If yes, update, then regenerate class diagram: `# Edit the ```plantuml block in the module data flow file, then rebuild PDF`
-- [ ] docs/modules/module-data-flow.md index table — open the file and verify the current module has a row in the Module Flow Files table. If the row is missing, add it now. Do not rely on memory — read the file.
-- [ ] docs/modules/[module]/[module]-flow.md — did cross-module service calls change for this module? If yes, update, then regenerate sequence diagram: `# Edit the ```plantuml block in the module flow file, then rebuild PDF`
-- [ ] docs/modules/module-flow.md index table — open the file and verify the current module has a row in the Flow Files table (only if a [module]-flow.md exists for this module). If the row is missing, add it now. Do not rely on memory — read the file.
-
-For the full explanation of why each document updates on these triggers, see document-purposes.md.
 
 ---
 
@@ -300,9 +252,7 @@ For the full explanation of why each document updates on these triggers, see doc
 
 **Workflow: Task completed → minimal writes only. Sprint completed → synchronize all documentation.**
 
-Do NOT run the full Document Update Checklist after every task.
-Do NOT update changelog.md, project-plan.md, codebase-map.md, or any spec/architecture/business document after a single task.
-Run the Document Update Checklist only during Sprint Documentation Sync.
+Do NOT update changelog.md, project-plan.md, codebase-map.md, or any spec/architecture/business document after a single task — defer to Sprint Documentation Sync.
 
 ### Mandatory post-task steps (every task)
 
@@ -358,9 +308,60 @@ Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulat
 1. Open `docs/sprint-change-log.md`
 2. For each entry with **Status: Pending documentation synchronization**:
    - Check the Technical Impact flags
-   - Run the relevant sections of the Document Update Checklist below for each affected document
+   - Run the relevant items from the Document Update Checklist below for each affected document
    - Update only the affected documents — do not check unaffected ones
    - Mark the entry **Status: Documentation synchronized — [date]**
 3. Run Module Completion Check for any modules touched during the sprint
 4. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
 5. Confirm PDF renders correctly
+
+---
+
+### Document Update Checklist
+
+**Pre-filter before running any checklist item:**
+Only check items whose trigger condition could plausibly be true given what this task actually changed.
+Skip an item immediately if the task did not touch the relevant area — do not read the item's full detail.
+
+Quick filter guide:
+| If the task only touched… | Skip these checklist items entirely |
+|---|---|
+| Python/JS scripts only | architecture.md, backend.md, frontend.md, database.md, data-model.md, business-objects.md |
+| Frontend UI only | data-model.md, api-contract.md (unless new endpoints), backend.md, deployment.md, business-rules.md |
+| DB schema only | frontend.md, codebase-map.md page structure, business-process.md, module-flow.md |
+| Documentation only | All code-related items (data-model, api-contract, permissions, architecture, backend, frontend) |
+| Config / env vars only | All items except deployment.md and quickstart.md |
+
+Apply this filter first. Then run only the remaining items.
+
+- [ ] docs/specs/research.md — did this task involve a new technology decision, or resolve a NEEDS CLARIFICATION? If yes, update. Note: research.md is excluded from the PDF by default (pdf_allowlist.py) — uncomment its entry once it has real content.
+- [ ] docs/specs/data-model.md — did the schema, entities, relationships, or indexes change? If yes, update, then:
+  - Regenerate ERD: `Edit the ```plantuml block in the file, then run build_pdf.py`
+    (output must go inside docs/ so build_pdf.py can find it)
+  - Regenerate state diagram: `# Edit the ```plantuml block in data-model.md, then rebuild PDF`
+  State Machine Consistency check: if this task touched an entity with a status lifecycle, confirm the State Machine section here matches the canonical definition in docs/business/[object-name]-object.md exactly. If they differ, update this file to match — the object file wins.
+- [ ] docs/specs/api-contract.md — were endpoints added/changed, did error codes or validation rules change, or were WebSocket/Socket.IO events / GraphQL queries or mutations / gRPC methods / CLI commands added or changed? If yes, update the relevant protocol section.
+  API Endpoint Overlap check: if this task added an endpoint whose purpose overlaps with an existing one (e.g. two endpoints affecting the same state), add a **Design Note:** under each explaining why they are separate, or consolidate into one.
+- [ ] docs/specs/permissions.md — were roles, the permission matrix, or API endpoints changed? If yes, update, then regenerate use case diagram: `# Edit the ```plantuml block in permissions.md, then rebuild PDF`
+  After updating: cross-check every role listed as "Responsible role" in any `*-process.md` against the API Endpoint Access table and Page Access Matrix. If a role is responsible for an action but has no access to the required page or endpoint, check the Source column:
+  - `Hardcoded` → this is a logical contradiction — resolve it before proceeding.
+  - `Seeded default` → this may be intentional (the default simply hasn't been granted yet). Confirm with the project owner whether to update the default, then mark the row "(Default)" — do not write it into business-rules.md as a permanent rule.
+- [ ] docs/architecture/architecture.md — did components or data flows change? If yes, update, then regenerate diagram: `# Edit the ```plantuml block in architecture.md, then rebuild PDF`
+- [ ] docs/codebase-map.md Page Structure block — did the frontend page/screen structure change? If yes, update the component block, then regenerate: `# Edit the ```plantuml block in codebase-map.md, then rebuild PDF`
+- [ ] docs/architecture/backend.md — did backend layering, stack, or module pattern change? If yes, update, then regenerate component diagram: `# Edit the ```plantuml block in backend.md, then rebuild PDF`
+- [ ] docs/architecture/frontend.md — did frontend stack, page structure, or component strategy change? If yes, update, then regenerate component diagram: `# Edit the ```plantuml block in frontend.md, then rebuild PDF`
+- [ ] docs/architecture/database.md — did main entities or relationships change (conceptual level)? If yes, update.
+- [ ] docs/architecture/deployment.md — did services, env vars, build/deploy flow, or deployment topology change? If yes, update, then regenerate deployment diagram: `# Edit the ```plantuml block in deployment.md, then rebuild PDF`
+- [ ] docs/specs/quickstart.md — did setup steps, prerequisites, or verification steps change? If yes, update.
+- [ ] docs/specs/logging-spec.md Module Naming Convention table — does this task introduce a module name not yet listed? If yes, add one line (name + short description) to the table. Do not add module-specific logging detail here — that belongs in docs/modules/<module-name>/log-<module-name>.md.
+- [ ] docs/business/business-rules.md — did business constraints or policies change? If yes, update.
+- [ ] docs/business/[object-name]-object.md — were business entities added or changed? If yes, update, then regenerate state diagram: `Edit the ```plantuml block in the file, then run build_pdf.py`
+- [ ] docs/business/business-objects.md — was a new business object file created or did relationships change? If yes, update the index.
+- [ ] docs/business/[process-name]-process.md — did the business workflow, decision points, or exceptions change for this process? If yes, update, then regenerate activity diagram: `Edit the ```plantuml block in the file, then run build_pdf.py`
+- [ ] docs/business/business-process.md — was a new business process file created? If yes, add a row to the index table.
+- [ ] docs/modules/[module]/[module]-module-data-flow.md — did function names, file paths, or flow steps change for this module? If yes, update, then regenerate class diagram: `# Edit the ```plantuml block in the module data flow file, then rebuild PDF`
+- [ ] docs/modules/module-data-flow.md index table — open the file and verify the current module has a row in the Module Flow Files table. If the row is missing, add it now. Do not rely on memory — read the file.
+- [ ] docs/modules/[module]/[module]-flow.md — did cross-module service calls change for this module? If yes, update, then regenerate sequence diagram: `# Edit the ```plantuml block in the module flow file, then rebuild PDF`
+- [ ] docs/modules/module-flow.md index table — open the file and verify the current module has a row in the Flow Files table (only if a [module]-flow.md exists for this module). If the row is missing, add it now. Do not rely on memory — read the file.
+
+For the full explanation of why each document updates on these triggers, see document-purposes.md.
