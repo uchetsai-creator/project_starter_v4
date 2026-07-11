@@ -314,11 +314,27 @@ Update when:
 
 ### current-state.md
 Purpose:
-The active task. Read first when continuing an existing project.
+The active task and the only file an Agent reads at startup. Self-contained — reading it
+provides everything needed to start work and close out the task.
+
+Contains:
+- EXECUTION RULES comment block at the top (timeout rules, 5-minute stop rule)
+- Current Task (name, goal, status)
+- Required Context (only the files this task needs)
+- Steps and Verify
+- Next Task (pre-filled from project-plan.md so Agent does not need to re-read the plan)
+- Doc Checklist (filtered per-task list of documents to check at completion)
+
+Update when:
+* Task starts — fill in Current Task, Required Context, Steps, Next Task, Doc Checklist
+* Task completes — mark steps [x], promote Next Task to Current Task, update Doc Checklist for new task
 
 ### changelog.md
 Purpose:
-Completed task history. Current Task moves here once finished.
+Completed task history. Updated during Sprint Documentation Sync — not after every task.
+
+Update when:
+* Sprint Documentation Sync runs — move completed task summaries here from sprint-change-log.md
 
 ---
 
@@ -330,7 +346,7 @@ This forces all post-task steps to be completed before reporting done.
 Prevents AI from reporting completion without actual execution or without updating docs.
 
 Format:
-`| date | task | files changed | command run | ✅/❌ result | plan | changelog | current-state | sprint-log |`
+`| date | task | files changed | command run | ✅/❌ result | current-state ✅ | sprint-log ✅ |`
 
 All checklist columns must be ✅. The "sprint-log" column confirms an entry was added to sprint-change-log.md.
 The "docs" column is removed — documentation sync now happens at sprint level, not task level.
