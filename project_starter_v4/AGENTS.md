@@ -203,13 +203,11 @@ current-state.md is a state machine with two fields:
 - **Current Task** → the task being worked on now
 - **Next Task** → pre-filled when current task was set up; becomes the new Current Task on closeout
 
-When all Steps are done and Verify passes, promote Next Task to Current Task:
-1. Copy **Next Task** → **Current Task**
-2. Look up the task after that in project-plan.md → write into **Next Task** (one read, then close the file)
-3. Update **Required Context** for the new current task
-4. Update **Doc Checklist** → filter the full Document Update Checklist in AGENTS.md down to only items relevant to the new task. This filtered list is the ONLY checklist run at task completion — it is NOT the full 18-item Document Update Checklist (which runs at Sprint Documentation Sync only).
+When all Steps are done and Verify passes, do two things before entering Task Completion:
+1. Look up the task after Next Task in project-plan.md → note it as the upcoming task (one read, then close the file)
+2. Filter the full Document Update Checklist in AGENTS.md down to only items relevant to the current task → this becomes the Doc Checklist you will apply in Task Completion step 0. This filtered list is NOT the full 18-item Document Update Checklist (which runs at Sprint Documentation Sync only).
 
-Then follow the steps in **## Task Completion** below.
+Then follow **## Task Completion** below — all current-state.md edits happen there, once.
 
 ### Module Completion Check
 
@@ -306,13 +304,15 @@ Run the Document Update Checklist only during Sprint Documentation Sync.
 
 ### Mandatory post-task steps (every task)
 
-0. **Run Doc Checklist** — open `docs/current-state.md → Doc Checklist` and action every item listed there.
-   This is the filtered subset for this task only. Do not open the full Document Update Checklist in AGENTS.md.
-
-1. **Update `docs/current-state.md`** (1 edit):
-   - Mark completed steps `[x]`.
-   - Set the next task name and goal.
-   - Update Required Context for the next task (list only what the next task actually needs).
+1. **Apply Doc Checklist, then update `docs/current-state.md`** (1 edit block):
+   - Apply each item in `docs/current-state.md → Doc Checklist` — update the listed doc files now.
+     These are the only doc updates that happen at task level. Do not open the full Document Update Checklist in AGENTS.md.
+   - Set **Status** to `Complete — Pending Sprint Doc Sync`
+   - Mark completed steps `[x]`
+   - Promote **Next Task** → **Current Task**
+   - Write upcoming task (noted in Closing out step 1) → **Next Task**
+   - Update **Required Context** for the new current task
+   - Update **Doc Checklist** → filter for the new current task (use the filter guide in the Document Update Checklist section above)
 
 2. **Run verification** for what was changed:
 
