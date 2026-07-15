@@ -21,10 +21,11 @@ PDF section order:
   7. Project Status
 
 Usage:
-  python3 docs/script/build_pdf.py [docs_dir] [-o output.pdf] [--lang en|zh]
+  python3 docs/script/build_pdf.py [docs_dir] [-o output.pdf] [--lang en|zh] [--clean]
 
   --lang en   Section labels and UI text in English (default)
   --lang zh   Section labels and UI text in Traditional Chinese
+  --clean     Delete the diagram cache before building (use after changing plantuml.cfg)
 
 To add a file to the PDF: add it to PDF_ALLOWLIST below. Do not change the discovery logic.
 
@@ -715,6 +716,7 @@ def parse_args():
     docs_dir = "docs"
     output_path = None
     lang = "en"
+    clean = False
 
     i = 0
     while i < len(args):
@@ -725,6 +727,9 @@ def parse_args():
         elif a == "--lang" and i + 1 < len(args):
             lang = args[i + 1]
             i += 2
+        elif a == "--clean":
+            clean = True
+            i += 1
         elif not a.startswith("-"):
             docs_dir = a
             i += 1
@@ -738,11 +743,11 @@ def parse_args():
     if not output_path:
         output_path = os.path.join(docs_dir, f"project-documentation-{lang}.pdf")
 
-    return docs_dir, output_path, lang
+    return docs_dir, output_path, lang, clean
 
 
 def main():
-    docs_dir, output_path, lang = parse_args()
+    docs_dir, output_path, lang, clean = parse_args()
     strings = STRINGS[lang]
 
     if not os.path.isdir(docs_dir):
@@ -750,6 +755,10 @@ def main():
         sys.exit(1)
 
     png_cache_dir = os.path.join(docs_dir, ".pdf_build_cache")
+    if clean and os.path.isdir(png_cache_dir):
+        import shutil
+        shutil.rmtree(png_cache_dir)
+        print("Cleared diagram cache.")
     os.makedirs(png_cache_dir, exist_ok=True)
 
     # Legacy: find manually-generated SVG/HTML pairs (e.g. schema ERD)
