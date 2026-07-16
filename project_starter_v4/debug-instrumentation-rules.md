@@ -67,7 +67,7 @@ Where the first external trigger enters the code. Map to whichever applies to th
 | **Library / SDK** | Public function — first line of the exported function body |
 | **Data Pipeline** | Stage entry — first line after the input dataset or file is received |
 | **ML Pipeline** | Stage entry — after input schema is validated, before processing begins |
-| **AI / LLM App** | Prompt assembly function — immediately before the LLM API call is made |
+| **AI / LLM App** | Prompt assembly function — immediately before the LLM API call; also at each MCP tool call entry (tool name + input args) and tool response receipt |
 | **Background Job** | Consumer handler — first line after the queue message is received |
 
 Placement: immediately after the triggering input is captured, before any processing begins.

@@ -68,6 +68,7 @@
   - CLI Tool: typically no infrastructure (unless it connects to a DB or API)
   - Library / SDK: no infrastructure (it is called by the consumer's environment)
   - AI / LLM App (personal / script): only external API — list under External Services instead
+  - AI / LLM App (using MCP via SSE/HTTP transport): add MCP server(s) here; stdio-transport MCP servers run as subprocesses and need no infrastructure entry
 -->
 
 | Component | Technology | Version | Purpose |

@@ -341,7 +341,7 @@ An external interface is any contract between two components:
 | **Data Pipeline** | File sensor glob ↔ data asset name ↔ dbt source name ↔ DB schema |
 | **ML Pipeline** | Feature schema ↔ training input contract ↔ model artifact format ↔ serving schema |
 | **Microservices** | Event schema published by service A ↔ event schema consumed by service B |
-| **AI / LLM App** | Prompt variable name ↔ value injected at runtime ↔ expected output format in eval rubric |
+| **AI / LLM App** | Prompt variable name ↔ value injected at runtime ↔ expected output format in eval rubric; MCP tool input schema ↔ actual args the LLM sends ↔ tool output format the response parser expects |
 
 For each interface touched in this task:
 

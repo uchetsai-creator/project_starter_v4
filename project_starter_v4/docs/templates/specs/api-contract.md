@@ -12,7 +12,7 @@
   | CLI Tool                        | cli-contract.md                                    |
   | Library / SDK                   | public-api.md                                      |
   | Data Pipeline / ML Pipeline     | pipeline-contract.md                               |
-  | AI / LLM App                    | llm-contract.md  +  rag-contract.md (if RAG)       |
+  | AI / LLM App                    | llm-contract.md  +  rag-contract.md (if RAG)  +  mcp-contract.md (if MCP) |
 
   Mixed-protocol projects (e.g. REST + WebSocket, REST + gRPC) should have one section
   per protocol inside this file. Do not omit a protocol because it was not in the

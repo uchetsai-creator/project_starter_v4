@@ -61,7 +61,7 @@ Avoid:
 
   Web App / Microservices: DATABASE_URL, JWT_SECRET (or SESSION_SECRET), PORT, CORS_ORIGIN
   Data / ML Pipeline:      DATABASE_URL, S3_BUCKET, AWS_REGION, AIRFLOW_HOME
-  AI / LLM App:            OPENAI_API_KEY (or equivalent), LLM_MODEL, VECTOR_STORE_URL
+  AI / LLM App:            OPENAI_API_KEY (or equivalent), LLM_MODEL, VECTOR_STORE_URL, MCP_SERVER_URL (if using SSE/HTTP MCP transport)
   CLI Tool:                CONFIG_PATH, LOG_LEVEL (if configurable via env)
   Library / SDK:           (usually none — configured by the caller, not env vars)
 
