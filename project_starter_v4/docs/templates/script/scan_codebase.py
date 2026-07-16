@@ -13,13 +13,25 @@ Outputs:
 
 Usage:
   python3 docs/script/scan_codebase.py <src_dir>
+  python3 docs/script/scan_codebase.py <src_dir> --project-type <type>
   python3 docs/script/scan_codebase.py <src_dir> --tree
   python3 docs/script/scan_codebase.py <src_dir> --coverage
   python3 docs/script/scan_codebase.py <src_dir> --update docs/codebase-map.md
 
+Project types (controls module boundary detection heuristic):
+  web-app        Folders = Feature modules, Background Jobs, or Shared/Infrastructure (default)
+  cli-tool       Folders = Commands or Shared/Infrastructure
+  library        Folders = Namespaces or Shared/Infrastructure
+  data-pipeline  Folders = Pipeline Stages or Shared/Infrastructure
+  ml-pipeline    Folders = Pipeline Stages or Shared/Infrastructure
+  microservices  Folders = Services or Shared/Infrastructure
+  llm-app        Folders = Feature modules, Background Jobs, or Shared/Infrastructure
+
 Examples:
   python3 docs/script/scan_codebase.py src
-  python3 docs/script/scan_codebase.py src --update docs/codebase-map.md
+  python3 docs/script/scan_codebase.py src --project-type data-pipeline
+  python3 docs/script/scan_codebase.py stages --project-type ml-pipeline --update docs/codebase-map.md
+  python3 docs/script/scan_codebase.py src --project-type cli-tool --coverage
 """
 
 import sys
@@ -51,6 +63,50 @@ JOB_PATTERNS = {
     "handlers", "events",
 }
 
+# Pipeline stage name patterns — folder names commonly used in Data/ML pipelines.
+# Numbers are stripped before matching (e.g. "01_extract" → "extract").
+PIPELINE_STAGE_PATTERNS = {
+    # Data pipeline stages
+    "extract", "ingest", "intake", "fetch", "collect",
+    "validate", "validation", "quality", "check",
+    "transform", "transformation", "process", "processing", "enrich",
+    "load", "export", "output", "sink",
+    "stage", "staging",
+    "raw", "curated", "clean", "cleaned",
+    # ML pipeline stages
+    "data", "dataset",
+    "preprocess", "preprocessing",
+    "features", "feature_engineering", "featurize",
+    "train", "training",
+    "evaluate", "evaluation", "eval",
+    "predict", "prediction", "inference", "score", "scoring",
+    "serve", "serving",
+    "deploy", "deployment",
+    "monitor", "monitoring",
+    "register", "registry",
+}
+
+# ---------------------------------------------------------------------------
+# Per-type vocabulary: what to call a non-shared folder
+# ---------------------------------------------------------------------------
+
+# Maps project-type → (singular label, plural label for summary line)
+MODULE_VOCAB: dict[str, tuple[str, str]] = {
+    "web-app":       ("Feature",        "feature modules"),
+    "cli-tool":      ("Command",        "commands"),
+    "library":       ("Namespace",      "namespaces"),
+    "data-pipeline": ("Pipeline Stage", "pipeline stages"),
+    "ml-pipeline":   ("Pipeline Stage", "pipeline stages"),
+    "microservices": ("Service",        "services"),
+    "llm-app":       ("Feature",        "feature modules"),
+}
+
+VALID_PROJECT_TYPES = list(MODULE_VOCAB.keys())
+
+
+# ---------------------------------------------------------------------------
+# Classification helpers
+# ---------------------------------------------------------------------------
 
 def is_shared(name: str) -> bool:
     return name.lower() in SHARED_PATTERNS
@@ -65,9 +121,45 @@ def is_job_folder(name: str) -> bool:
     return any(p in JOB_PATTERNS for p in parts)
 
 
-def guess_type(name: str) -> str:
+def is_pipeline_stage(name: str) -> bool:
+    """Return True if the folder name matches a known pipeline stage pattern."""
+    lower = name.lower()
+    if lower in PIPELINE_STAGE_PATTERNS:
+        return True
+    # Strip leading numeric prefix: "01_extract" → "extract", "02-validate" → "validate"
+    stripped = re.sub(r"^\d+[_\-]", "", lower)
+    return stripped in PIPELINE_STAGE_PATTERNS
+
+
+def guess_type(name: str, project_type: str | None = None) -> str:
+    """Classify a source folder based on its name and the declared project type.
+
+    Project type controls which module boundary heuristic applies:
+    - data-pipeline / ml-pipeline: all non-shared folders are Pipeline Stages
+    - cli-tool: all non-shared folders are Commands
+    - library: all non-shared folders are Namespaces
+    - microservices: all non-shared folders are Services
+    - web-app / llm-app / None: Feature or Background Job (existing behaviour)
+    """
     if is_shared(name):
         return "Shared / Infrastructure"
+
+    if project_type in ("data-pipeline", "ml-pipeline"):
+        # In a pipeline project all non-shared folders are stages.
+        # is_pipeline_stage() provides extra confidence but does not gate the label —
+        # an unknown folder name in a pipeline project is still a Pipeline Stage.
+        return "Pipeline Stage"
+
+    if project_type == "cli-tool":
+        return "Command"
+
+    if project_type == "library":
+        return "Namespace"
+
+    if project_type == "microservices":
+        return "Service"
+
+    # web-app, llm-app, and unspecified (default)
     if is_job_folder(name):
         return "Background Job"
     return "Feature"
@@ -77,7 +169,7 @@ def guess_type(name: str) -> str:
 # Discovery
 # ---------------------------------------------------------------------------
 
-def find_source_folders(src_dir: str) -> list[dict]:
+def find_source_folders(src_dir: str, project_type: str | None = None) -> list[dict]:
     """Return all immediate subdirectories of src_dir (one level only)."""
     src_path = Path(src_dir)
     if not src_path.exists():
@@ -91,7 +183,7 @@ def find_source_folders(src_dir: str) -> list[dict]:
                 "name": entry.name,
                 "path": str(entry),
                 "rel": str(entry.relative_to(src_path.parent)),
-                "type": guess_type(entry.name),
+                "type": guess_type(entry.name, project_type),
             })
     return folders
 
@@ -254,9 +346,11 @@ def print_tree(src_dir: str, folders: list[dict], docs_dir: str = "docs") -> str
 # Output: Coverage table
 # ---------------------------------------------------------------------------
 
-def print_coverage(folders: list[dict]) -> str:
+def print_coverage(folders: list[dict], project_type: str | None = None) -> str:
+    _, plural_label = MODULE_VOCAB.get(project_type, ("Feature", "feature modules"))
+
     lines = []
-    lines.append("=== Module Coverage Report ===\n")
+    lines.append(f"=== {plural_label.title()} Coverage Report ===\n")
 
     documented = [f for f in folders if f["status"] == "Documented"]
     undocumented = [f for f in folders if f["status"] == "Not documented"]
@@ -280,9 +374,9 @@ def print_coverage(folders: list[dict]) -> str:
             lines.append(f"    {f['rel']}")
         lines.append("")
 
-    total_feature = len(documented) + len(undocumented)
-    pct = int(len(documented) / total_feature * 100) if total_feature else 100
-    lines.append(f"Coverage: {len(documented)}/{total_feature} feature modules documented ({pct}%)")
+    total = len(documented) + len(undocumented)
+    pct = int(len(documented) / total * 100) if total else 100
+    lines.append(f"Coverage: {len(documented)}/{total} {plural_label} documented ({pct}%)")
 
     if undocumented:
         lines.append("")
@@ -361,14 +455,25 @@ def main():
     parser = argparse.ArgumentParser(
         description="Scan source directory and check documentation coverage."
     )
-    parser.add_argument("src_dir", help="Source directory to scan (e.g. src, app, backend)")
+    parser.add_argument("src_dir", help="Source directory to scan (e.g. src, app, stages)")
+    parser.add_argument(
+        "--project-type",
+        metavar="TYPE",
+        choices=VALID_PROJECT_TYPES,
+        help=(
+            f"Project type — controls module boundary detection heuristic. "
+            f"Valid values: {', '.join(VALID_PROJECT_TYPES)}"
+        ),
+    )
     parser.add_argument("--tree", action="store_true", help="Print tree view with coverage icons")
     parser.add_argument("--coverage", action="store_true", help="Print coverage summary")
     parser.add_argument("--update", metavar="CODEBASE_MAP", help="Update codebase-map.md in place")
     parser.add_argument("--docs", default="docs", help="Path to docs directory (default: docs)")
     args = parser.parse_args()
 
-    folders = find_source_folders(args.src_dir)
+    project_type = args.project_type  # None if not supplied — falls back to web-app behaviour
+
+    folders = find_source_folders(args.src_dir, project_type)
     documented = find_documented_modules(args.docs)
     folders = annotate_folders(folders, documented)
 
@@ -380,7 +485,7 @@ def main():
         print()
 
     if args.coverage or show_all:
-        print(print_coverage(folders))
+        print(print_coverage(folders, project_type))
 
     if args.update:
         update_codebase_map(args.update, args.src_dir, folders, args.docs)

@@ -86,11 +86,23 @@ The Document Update Checklist in sprint-sync.md lists all documents. When a proj
 
 ---
 
-## Phase 4 — scan_codebase.py per-type awareness (future)
+## Phase 4 — scan_codebase.py per-type awareness ✅ Complete
 
-`scan_codebase.py` currently identifies modules by folder structure. For pipeline and ML projects, "modules" are stages, not folders. For libraries, they are namespaces.
+`scan_codebase.py` previously identified all modules as Feature / Background Job / Shared — a Web App–centric classification that produced misleading output for pipeline and library projects.
 
 **Goal:** Accept a `--project-type` flag so the scanner applies the right module boundary detection heuristic per type.
+
+### Done
+
+| Change | Effect |
+|---|---|
+| `--project-type` flag added (7 valid values matching AGENTS.md types) | Scanner applies the correct boundary heuristic without guessing |
+| `PIPELINE_STAGE_PATTERNS` constant | 30+ canonical stage names (extract, validate, transform, train, evaluate, serve, …) used to classify folders in Data Pipeline / ML Pipeline projects |
+| `MODULE_VOCAB` per-type vocabulary table | Singular + plural label per type — report says "pipeline stages" not "feature modules" for pipeline projects |
+| `guess_type(name, project_type)` — per-type branching | data-pipeline/ml-pipeline → Pipeline Stage; cli-tool → Command; library → Namespace; microservices → Service; web-app/llm-app → Feature / Background Job (unchanged) |
+| Coverage report header and summary line use `plural_label` | `=== Pipeline Stages Coverage Report ===`, `3/4 pipeline stages documented` |
+| Numbered stage prefix stripping (`01_extract` → `extract`) | Numbered pipeline layouts are classified correctly |
+| `None` (no flag) falls back to web-app behaviour | Zero breaking change for existing callers |
 
 ---
 
