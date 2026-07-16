@@ -74,7 +74,8 @@ project_starter/                     ← this repo (template only)
     │   │   └── [prompt-id]-prompt.md ← one file per prompt: template, variables, examples, version history
     │   ├── eval-spec.md             ← LLM-as-a-judge criteria, rubric, fixed test case set (stable config)
     │   ├── eval-log.md              ← append-only eval run results (load only when comparing versions)
-    │   └── rag-contract.md          ← retrieval sources, chunking, embedding model, vector store (optional)
+    │   ├── rag-contract.md          ← retrieval sources, chunking, embedding model, vector store (optional)
+    │   └── mcp-contract.md          ← MCP server connections, tool schemas, tool-use policy (optional)
     │
     ├── architecture/
     │   ├── architecture.md          ← components, data flow, structured YAML for diagram (all types)
@@ -242,7 +243,8 @@ docs/specs/
 │   └── [prompt-id]-prompt.md                              ← one per prompt
 ├── eval-spec.md                                            ← judge config + criteria + test cases
 ├── eval-log.md                                             ← append-only run results
-└── rag-contract.md                                         ← optional, if using RAG
+├── rag-contract.md                                         ← optional, if using RAG
+└── mcp-contract.md                                         ← optional, if connecting MCP servers
 docs/architecture/
 └── architecture.md
 docs/modules/
