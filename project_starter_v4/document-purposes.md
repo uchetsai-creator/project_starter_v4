@@ -169,30 +169,58 @@ Update when (update at task level — this is a core spec for LLM applications):
 **Applies to: AI / LLM Application**
 
 Purpose:
-Version-controlled store of all prompt templates used by the application.
-Each entry has an ID, version, input variables, example I/O, and test cases.
-When a prompt changes, a new version entry is added — old versions are not deleted,
-so the history of what worked (and why changes were made) is preserved.
+Index of all prompt templates — lists what exists and defines the naming rules.
+Does not contain prompt content. Actual prompt content lives in individual
+`docs/specs/prompts/[prompt-id]-prompt.md` files so the index stays small
+and the agent does not need to load all prompt text on every task.
 
 Update when (update at task level):
-* A prompt template is added or modified (add new version entry, do not overwrite)
-* A prompt is retired (move to Retired Prompts section)
-* Test cases are added to an existing prompt entry
+* A new prompt file is created — add a row to the Active Prompts table
+* A prompt's current version changes — update the version column
+* A prompt is retired — move its row to the Retired Prompts table
+
+### [prompt-id]-prompt.md
+**Applies to: AI / LLM Application**
+**Location: `docs/specs/prompts/[prompt-id]-prompt.md`**
+
+Purpose:
+One file per prompt. Contains the full prompt template text, input variable definitions,
+an example input/output pair, test cases, and version history.
+Agent loads only the specific prompt file it needs — not the whole library.
+When a prompt changes, a new version entry is added to the Version History table;
+old version text is kept so changes can be audited and rolled back.
+
+Update when (update at task level):
+* The prompt template text is changed — add a new version row, do not overwrite old text
+* Input variables are added, removed, or renamed
+* A test case is added (never remove existing test cases)
+* After updating: verify the row in prompt-library.md shows the new current version
 
 ### eval-spec.md
 **Applies to: AI / LLM Application**
 
 Purpose:
-Defines how LLM output quality is measured using LLM-as-a-judge.
-Documents the judge model, evaluation criteria with scoring rubrics, the fixed test case set,
-the pass threshold, and a log of eval run results per prompt version.
-Run the eval suite whenever a prompt version changes to compare objectively — not just by feel.
+Stable configuration for LLM-as-a-judge evaluation: judge model, scoring criteria with
+rubrics (1–5 scale), the judge prompt template, and the fixed test case set.
+This file changes rarely — only when criteria or the judge model change.
+Eval run results are appended to eval-log.md, not here.
 
 Update when (update at task level):
 * A new eval criterion is added or an existing rubric is changed
 * The judge model is changed
 * Test cases are added to the fixed set (never remove existing cases)
-* A new eval run is completed — add a row to the Eval Run Log
+
+### eval-log.md
+**Applies to: AI / LLM Application**
+
+Purpose:
+Append-only log of every eval run result — one row per run.
+Kept separate from eval-spec.md so the agent does not need to load the growing
+run history on every task; it loads this file only when comparing prompt versions.
+
+Update when:
+* An eval run completes — append one row with date, prompt version, scores, and pass/fail.
+  Never edit existing rows.
 
 ### rag-contract.md
 **Applies to: AI / LLM Application (optional — only when using Retrieval-Augmented Generation)**

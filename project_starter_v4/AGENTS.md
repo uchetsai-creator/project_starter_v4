@@ -190,21 +190,34 @@ At the system (repo root) level, additionally create:
 3. Create docs/specs/quickstart.md from templates/specs/quickstart.md (API key setup, local run, first query).
 4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
 5. Create docs/specs/llm-contract.md from templates/specs/llm-contract.md (model, system prompt, parameters, tools).
-6. Create docs/specs/prompt-library.md from templates/specs/prompt-library.md.
-7. Create docs/specs/eval-spec.md from templates/specs/eval-spec.md (judge model, criteria, test case set).
-8. If using RAG: Create docs/specs/rag-contract.md from templates/specs/rag-contract.md.
-9. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-10. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
-11. Create docs/codebase-map.md from templates/codebase-map.md.
-12. Create docs/project-plan.md from templates/project-plan.md.
-13. Create docs/task-log.md from templates/task-log.md.
-14. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
-15. Create docs/current-state.md from templates/current-state.md.
+6. Create docs/specs/prompt-library.md from templates/specs/prompt-library.md (index only — prompt content goes in per-prompt files).
+7. Create docs/specs/prompts/ folder. For each prompt, create docs/specs/prompts/[prompt-id]-prompt.md from templates/specs/prompts/prompt.md.
+8. Create docs/specs/eval-spec.md from templates/specs/eval-spec.md (judge model, criteria, test case set).
+9. Create docs/specs/eval-log.md from templates/specs/eval-log.md (append-only run log — load only during eval tasks).
+10. If using RAG: Create docs/specs/rag-contract.md from templates/specs/rag-contract.md.
+11. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
+12. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+13. Create docs/codebase-map.md from templates/codebase-map.md.
+14. Create docs/project-plan.md from templates/project-plan.md.
+15. Create docs/task-log.md from templates/task-log.md.
+16. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
+17. Create docs/current-state.md from templates/current-state.md.
+
+### Prompt Index Verification Rule
+
+After creating or updating any prompt file under `docs/specs/prompts/`, you MUST:
+1. Open `docs/specs/prompt-library.md`
+2. Check the Active Prompts table
+3. Verify the current prompt has a row with the correct current version
+4. If the row is missing or the version is stale, update it before moving on
+
+Do not assume the row exists. Do not rely on memory. Read the file and check.
 
 **Quick filter for AI / LLM Application — only check these on every task:**
 - `llm-contract.md` — if system prompt, model, or parameters changed
-- `prompt-library.md` — if a prompt template was added or modified
-- `eval-spec.md` — if test cases were added or eval threshold changed
+- `prompt-library.md` + matching `prompts/[id]-prompt.md` — if a prompt was added or modified
+- `eval-spec.md` — if test cases were added or eval criteria changed
+- `eval-log.md` — append one row after every eval run (load this file only during eval tasks)
 - `rag-contract.md` — if retrieval sources, chunking, or embedding model changed
 - `research.md` — if a new model or provider was evaluated
 

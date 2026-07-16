@@ -2,86 +2,46 @@
 
 <!--
   For: AI / LLM Application
-  Purpose: Version-controlled store of all prompt templates used by the application.
-           Each entry has an ID, version, variables, example I/O, and test cases.
-           When a prompt changes, add a new version entry — do not overwrite the old one.
-  Update when: A prompt template is added, changed, or retired.
+  Purpose: Index of all prompt templates. This file lists what exists and defines the rules.
+           Actual prompt content lives in individual [prompt-id]-prompt.md files.
+           Do not put prompt content in this file — keep it as index only.
+  Update when: A prompt file is created, retired, or its current version changes.
 -->
 
-## Prompt Naming Convention
+## Rules
+
+* This file is the index only. Do not write prompt content here.
+* Each prompt must have its own file: `docs/specs/prompts/[prompt-id]-prompt.md`
+* After creating or updating a prompt file, verify the row in the Active Prompts table below.
+* When retiring a prompt, move its row to the Retired Prompts table and update the file status.
+
+## Naming Convention
 
 ```
-[feature]-[purpose]-v[N]
+[feature]-[purpose]
 ```
 
-Examples: `financial-advice-system-v2`, `rag-synthesis-v1`, `intent-classifier-v3`
+File: `docs/specs/prompts/[prompt-id]-prompt.md`
+
+Examples:
+```
+docs/specs/prompts/financial-advice-prompt.md
+docs/specs/prompts/rag-synthesis-prompt.md
+docs/specs/prompts/intent-classifier-prompt.md
+```
 
 ---
 
 ## Active Prompts
 
-| ID | Version | Purpose | Status |
+| Prompt ID | Current version | Purpose | File |
 |---|---|---|---|
-| [prompt-id] | v1 | [what it does] | Active |
-| [prompt-id] | v2 | [updated version] | Active |
-
----
-
-## Prompt Entries
-
-### `[prompt-id]` — v[N]
-
-**Purpose:** [One line — what this prompt makes the model do]
-
-**Used by:** [which feature or module invokes this prompt]
-
-**Input variables:**
-
-| Variable | Type | Description |
-|---|---|---|
-| `{{variable_name}}` | string | [what to inject here] |
-| `{{variable_name}}` | list | [what to inject here] |
-
-**Template:**
-
-```
-[Full prompt text with {{variable}} placeholders.
-Keep the template exactly as sent to the model — do not paraphrase.]
-```
-
-**Example input:**
-
-```json
-{
-  "variable_name": "example value",
-  "variable_name": ["item1", "item2"]
-}
-```
-
-**Example output (expected):**
-
-```
-[Paste a representative model response for the example input above.]
-```
-
-**Test cases:**
-
-| # | Input | Expected behaviour | Pass/Fail |
-|---|---|---|---|
-| 1 | [input description] | [what a good response looks like] | |
-| 2 | [edge case input] | [expected handling] | |
-
-**Version history:**
-
-| Version | Date | Change | Reason |
-|---|---|---|---|
-| v1 | [YYYY-MM-DD] | Initial | |
-| v2 | [YYYY-MM-DD] | [what changed] | [why — e.g., eval score improved / added guardrail] |
+| [prompt-id] | v1 | [what it does] | `prompts/[prompt-id]-prompt.md` |
 
 ---
 
 ## Retired Prompts
 
-| ID | Last version | Retired date | Replaced by | Reason |
+| Prompt ID | Last version | Retired date | Replaced by | Reason |
 |---|---|---|---|---|
 | [prompt-id] | v2 | [YYYY-MM-DD] | [new-prompt-id] | [e.g., model change required rewrite] |

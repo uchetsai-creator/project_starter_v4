@@ -69,8 +69,11 @@ project_starter/                     ← this repo (template only)
     │   └── service-contract.md      ← inter-service REST contracts and event schemas
     │   │                              ── AI / LLM Application ──
     │   ├── llm-contract.md          ← model, system prompt, parameters, tool schemas, retry strategy
-    │   ├── prompt-library.md        ← versioned prompt templates with variables, examples, test cases
-    │   ├── eval-spec.md             ← LLM-as-a-judge criteria, rubric, test case set, eval run log
+    │   ├── prompt-library.md        ← index only: prompt list + naming rules (no prompt content here)
+    │   ├── prompts/
+    │   │   └── [prompt-id]-prompt.md ← one file per prompt: template, variables, examples, version history
+    │   ├── eval-spec.md             ← LLM-as-a-judge criteria, rubric, fixed test case set (stable config)
+    │   ├── eval-log.md              ← append-only eval run results (load only when comparing versions)
     │   └── rag-contract.md          ← retrieval sources, chunking, embedding model, vector store (optional)
     │
     ├── architecture/

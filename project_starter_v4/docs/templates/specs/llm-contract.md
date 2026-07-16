@@ -36,6 +36,10 @@
 
 Version: `[v1 / date / git tag]`
 
+> **If the system prompt exceeds ~400 tokens:** store it in a separate file
+> (`docs/specs/system-prompt-[version].md`) and reference it here by path.
+> Paste only the current version inline when it fits within one screen.
+
 ```
 [Paste the full system prompt here.
 Include persona, domain constraints, tone, and any output format instructions.]

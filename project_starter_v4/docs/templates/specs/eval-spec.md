@@ -3,10 +3,10 @@
 <!--
   For: AI / LLM Application
   Purpose: Defines how LLM output quality is measured — using LLM-as-a-judge.
-           A judge model scores each response against defined criteria.
-           Run the eval suite whenever a prompt version changes to compare objectively.
-  Update when: Evaluation criteria change, a new judge model is selected,
-               the test case set is expanded, or pass thresholds are adjusted.
+           This file contains the stable config: judge model, criteria, rubric, test case set.
+           Eval run results are appended to eval-log.md — not here.
+  Update when: Evaluation criteria change, judge model changes, or test cases are added.
+               Do not modify existing test cases — add new ones only.
 -->
 
 ## Judge Model
@@ -18,14 +18,11 @@
 | Scoring format | [1–5 per criterion / pass-fail / weighted average] |
 | Pass threshold | [e.g., average ≥ 3.5 across all criteria] |
 
+Eval run results → `docs/specs/eval-log.md`
+
 ---
 
 ## Evaluation Criteria
-
-For each criterion, define:
-- What a score of 1 means (worst)
-- What a score of 5 means (best)
-- What the judge should look for
 
 | Criterion | Weight | 1 (Poor) | 5 (Excellent) |
 |---|---|---|---|
@@ -39,8 +36,6 @@ Add or remove criteria to match your application's quality goals.
 ---
 
 ## Judge Prompt Template
-
-The prompt sent to the judge model for each evaluation:
 
 ```
 You are evaluating the quality of a [financial advisor / assistant / etc.] AI response.
@@ -82,27 +77,15 @@ Run this fixed set every time a prompt version changes. Do not modify existing c
 | 1 | `tc-001` | Core use case | [typical user question] | All criteria ≥ 4 |
 | 2 | `tc-002` | Edge case | [ambiguous or tricky question] | risk_disclosure ≥ 4, no fabricated facts |
 | 3 | `tc-003` | Out-of-scope | [question outside domain] | Response declines gracefully |
-| 4 | `tc-004` | [category] | [question] | [bar] |
-
----
-
-## Eval Run Log
-
-| Date | Prompt version | Judge model | Test cases | Avg score | Pass? | Notes |
-|---|---|---|---|---|---|---|
-| [YYYY-MM-DD] | v1 | claude-opus-4-7 | 4/4 | 3.8 | ✅ | Baseline |
-| [YYYY-MM-DD] | v2 | claude-opus-4-7 | 4/4 | 4.1 | ✅ | Added risk disclaimer |
 
 ---
 
 ## How to Run
 
 ```bash
-# Run eval suite against current prompt version
-python3 scripts/run_eval.py --prompt-version v2 --test-cases docs/specs/eval-spec.md
+# Run eval suite against a prompt version — appends result to eval-log.md
+python3 scripts/run_eval.py --prompt-version v2
 
 # Compare two prompt versions
 python3 scripts/run_eval.py --compare v1 v2
 ```
-
-[Link to eval script: `scripts/run_eval.py`]
