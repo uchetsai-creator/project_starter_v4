@@ -31,6 +31,8 @@ After updating, regenerate both diagrams:
 * State diagram: `Edit the ```plantuml block in the file, then run build_pdf.py`
 
 ### api-contract.md
+**Applies to: Web App, Microservices (external API)**
+
 Purpose:
 Describes the full specification for every API endpoint and real-time event.
 Default format assumes REST as the primary protocol. If the project also uses
@@ -43,6 +45,129 @@ Update when (if listed in current-state.md → Doc Checklist, update at task lev
 * Request/response/payload format changes
 * Error codes are added
 * Validation rules change
+
+### cli-contract.md
+**Applies to: CLI Tool**
+
+Purpose:
+Documents every subcommand, flag, positional argument, output format, exit code, and
+stdin/stdout contract. This is the CLI equivalent of api-contract.md.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* A subcommand is added or removed
+* A flag or argument is added, renamed, or removed
+* Output format (stdout schema) changes
+* Exit codes change
+* Config file schema changes
+
+### public-api.md
+**Applies to: Library / SDK**
+
+Purpose:
+Documents the public-facing interface — all public functions, classes, types, and constants.
+Internal symbols are excluded. This is the library equivalent of api-contract.md.
+This file is the canonical source for stability tier declarations and the deprecation log.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* A public function, class, type, or constant is added or changed
+* A symbol is deprecated (add entry to Deprecation Log with target removal version)
+* A symbol is removed (must already be in Deprecation Log)
+* Stability tier changes
+
+### pipeline-contract.md
+**Applies to: Data Pipeline, ML Pipeline**
+
+Purpose:
+Documents every inter-stage data contract — what format each stage expects as input,
+what it produces as output, naming conventions, lifecycle (archive / retain / overwrite),
+and how each stage handles errors. This is the pipeline equivalent of api-contract.md.
+The Cross-Stage Consistency Check table is the authoritative record of verified stage boundaries.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* A stage's input path, format, or naming convention changes
+* A stage's output path, format, or lifecycle changes
+* A stage's error / skip handling policy changes
+* A new stage is added
+
+### service-catalog.md
+**Applies to: Microservices**
+
+Purpose:
+Single source of truth for every service in the system — purpose, owner, port, base URL,
+and inter-service dependencies. The dependency graph diagram shows how services connect.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* A service is added, removed, or renamed
+* Ownership, port, or base URL changes
+* A major dependency relationship changes
+
+After updating the dependency graph block, regenerate the diagram:
+`Edit the \`\`\`plantuml block in the file, then run build_pdf.py`
+
+### service-contract.md
+**Applies to: Microservices**
+
+Purpose:
+Documents inter-service REST contracts and event schemas — request/response format,
+authentication, resilience policy (timeout / retry / circuit breaker), and event
+schema evolution rules. One file covers all inter-service contracts in the system.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* A REST contract between services changes (endpoint, request/response format, auth)
+* An event schema changes (field added, removed, or type changed)
+* A resilience policy changes (timeout, retry, circuit breaker)
+* Schema evolution rules change
+
+### model-contract.md
+**Applies to: ML Pipeline**
+
+Purpose:
+Defines what a trained model accepts as input (feature schema), what it produces as output
+(prediction format), and what quality thresholds it must meet before being promoted to production.
+This is the authoritative contract between the training pipeline and the serving layer.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* Input feature schema changes (field added, removed, or type changed)
+* Output format changes
+* Production thresholds change
+* Retraining policy changes
+* A known limitation is discovered
+
+### experiment-log.md
+**Applies to: ML Pipeline**
+
+Purpose:
+Records each training experiment — hypothesis, configuration, results, and decision.
+One entry per completed experiment run. Newest entry at the top.
+Not a sprint-change-log (which tracks code changes); this tracks model behaviour across runs.
+
+Update when:
+* A training run is completed — add one entry with hypothesis, config, results, and decision.
+  Do not add an entry without a decision. "No conclusion yet — running follow-up" is a valid decision.
+
+### release-guide.md
+**Applies to: Library / SDK, CLI Tool**
+
+Purpose:
+Documents the versioning policy (semver rules), release checklist, publish process,
+changelog format, and deprecation policy. This is the library/CLI equivalent of deployment.md.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* The release process changes
+* A new registry or publish target is added
+* The versioning or deprecation policy changes
+
+### compatibility-matrix.md
+**Applies to: Library / SDK, CLI Tool (optional)**
+
+Purpose:
+Documents which runtime versions and peer dependency version ranges are supported,
+which platform/OS combinations are tested, and any known incompatibilities.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* Support for a runtime version is added or dropped
+* A peer dependency version range changes
+* A known incompatibility is discovered or resolved
 
 ### permissions.md
 Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
@@ -148,6 +273,8 @@ Update when (if listed in current-state.md → Doc Checklist, update at task lev
 * Main entities or relationships change
 
 ### deployment.md
+**Applies to: Web App, Data Pipeline, ML Pipeline, Microservices**
+
 Purpose:
 Describe runtime structure — services, environment variables, local startup flow,
 build/deploy flow, and deployment topology. Includes Cache Policy section for any
@@ -161,7 +288,21 @@ Update when (if listed in current-state.md → Doc Checklist, update at task lev
 * Cache boundary conditions or consumer behaviour is clarified
 
 After updating the Deployment Diagram block, regenerate the diagram:
-`Edit the ```plantuml block in the file, then run build_pdf.py`
+`Edit the \`\`\`plantuml block in the file, then run build_pdf.py`
+
+### distribution.md
+**Applies to: Library / SDK, CLI Tool**
+
+Purpose:
+Documents how the package is built, published to a registry, and installed by end users.
+This is the library/CLI equivalent of deployment.md — libraries and CLIs are not "deployed"
+to a server; they are distributed to callers.
+
+Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
+* Build process or output artifacts change
+* A registry or publish target is added, removed, or changed
+* Installation instructions change
+* CI/CD pipeline stages change
 
 ---
 
@@ -170,7 +311,8 @@ After updating the Deployment Diagram block, regenerate the diagram:
 ### module-data-flow.md
 Purpose:
 Index and rule definition for module-level code flows. Sits at `docs/modules/module-data-flow.md`.
-Defines three module types — Feature, Background Job, Shared Utility — each with its own flow format.
+Defines four module types — Feature, Background Job, Pipeline Stage, Shared Utility — each with its own flow format.
+Pipeline Stage is used in Data Pipeline and ML Pipeline projects for stages that consume upstream data and produce downstream data.
 Each module gets its own subfolder (`docs/modules/[module]/`) with its own flow file.
 
 Update when (at module completion, together with the module's flow file — see AGENTS.md → Module Completion Check):

@@ -14,9 +14,57 @@ before starting. For example, if you use `docs/flows/` instead of `docs/modules/
 
 ---
 
+## Project Type
+
+Declare the project type at the top of your project's AGENTS.md.
+The type gates which documents are required and which are N/A — do not create N/A documents.
+
+**Supported types:**
+
+| Type | Description |
+|---|---|
+| **Web App** | Backend + optional frontend, HTTP/GraphQL API, user auth, persistent DB |
+| **CLI Tool** | Command-line interface, subcommands, flags, stdin/stdout; no persistent server |
+| **Library / SDK** | Reusable package published to a registry; callers import it; no deployment |
+| **Data Pipeline** | ETL/ELT batch or streaming; data in → data out; no user-facing API |
+| **ML Pipeline** | Training → evaluation → serving; model artifact is the primary output |
+| **Microservices** | Multiple independently deployed services communicating via API or events |
+
+**Document matrix — Required (✅) / Optional (⚠️) / Not applicable (❌):**
+
+| Document | Web App | CLI | Library | Data Pipeline | ML Pipeline | Microservices |
+|---|---|---|---|---|---|---|
+| `architecture.md` | ✅ | ✅ | ⚠️ | ✅ | ✅ | ✅ |
+| `backend.md` | ✅ | ✅ | ❌ | ✅ | ✅ | per-service |
+| `frontend.md` | ⚠️ if UI | ❌ | ❌ | ❌ | ❌ | ⚠️ if UI |
+| `database.md` | ✅ | ⚠️ if DB | ❌ | ✅ | ✅ | per-service |
+| `deployment.md` | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| `distribution.md` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `api-contract.md` | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ (external API) |
+| `cli-contract.md` | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| `public-api.md` | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| `pipeline-contract.md` | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ |
+| `service-catalog.md` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| `service-contract.md` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| `model-contract.md` | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| `experiment-log.md` | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| `release-guide.md` | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| `compatibility-matrix.md` | ❌ | ⚠️ | ✅ | ❌ | ❌ | ❌ |
+| `permissions.md` | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| `data-model.md` | ✅ | ⚠️ if DB | ❌ | ✅ | ✅ | per-service |
+| `business-process.md` | ✅ | ⚠️ | ❌ | ⚠️ | ❌ | ✅ |
+| `business-objects.md` | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| `business-rules.md` | ✅ | ⚠️ | ❌ | ✅ | ⚠️ | ✅ |
+| `logging-spec.md` | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
+| `research.md` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `quickstart.md` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+---
+
 ## Project Initialization
 
-If starting a new project:
+### Web App
+
 1. Create docs/project-requirements.md from templates/project-requirements.md.
 2. Create docs/specs/research.md from templates/specs/research.md (resolve all NEEDS CLARIFICATION).
 3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.
@@ -36,6 +84,99 @@ If starting a new project:
 17. Create docs/task-log.md from templates/task-log.md.
 18. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
 19. Create docs/current-state.md from templates/current-state.md.
+
+### CLI Tool
+
+1. Create docs/project-requirements.md from templates/project-requirements.md.
+2. Create docs/specs/research.md from templates/specs/research.md.
+3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.
+4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
+5. Create docs/architecture/backend.md from templates/architecture/backend.md.
+6. Create docs/architecture/distribution.md from templates/architecture/distribution.md.
+7. Create docs/specs/cli-contract.md from templates/specs/cli-contract.md.
+8. Create docs/specs/release-guide.md from templates/specs/release-guide.md.
+9. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
+10. Create docs/business/business-rules.md from templates/business/business-rules.md (CLI constraints and validation rules).
+11. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
+12. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+13. Create docs/codebase-map.md from templates/codebase-map.md.
+14. Create docs/project-plan.md from templates/project-plan.md.
+15. Create docs/task-log.md from templates/task-log.md.
+16. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
+17. Create docs/current-state.md from templates/current-state.md.
+
+### Library / SDK
+
+1. Create docs/project-requirements.md from templates/project-requirements.md.
+2. Create docs/specs/research.md from templates/specs/research.md.
+3. Create docs/specs/quickstart.md from templates/specs/quickstart.md (covers local dev setup and running tests).
+4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
+5. Create docs/architecture/distribution.md from templates/architecture/distribution.md.
+6. Create docs/specs/public-api.md from templates/specs/public-api.md.
+7. Create docs/specs/release-guide.md from templates/specs/release-guide.md.
+8. Create docs/specs/compatibility-matrix.md from templates/specs/compatibility-matrix.md.
+9. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
+10. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+11. Create docs/codebase-map.md from templates/codebase-map.md.
+12. Create docs/project-plan.md from templates/project-plan.md.
+13. Create docs/task-log.md from templates/task-log.md.
+14. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
+15. Create docs/current-state.md from templates/current-state.md.
+
+### Data Pipeline
+
+1. Create docs/project-requirements.md from templates/project-requirements.md.
+2. Create docs/specs/research.md from templates/specs/research.md.
+3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.
+4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
+5. Create docs/architecture/backend.md from templates/architecture/backend.md (pipeline stack and layering).
+6. Create docs/architecture/database.md from templates/architecture/database.md.
+7. Create docs/architecture/deployment.md from templates/architecture/deployment.md.
+8. Create docs/specs/data-model.md from templates/specs/data-model.md.
+9. Create docs/specs/pipeline-contract.md from templates/specs/pipeline-contract.md.
+10. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
+11. Create docs/business/business-rules.md from templates/business/business-rules.md (data quality rules, validation constraints).
+12. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
+13. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+14. Create docs/codebase-map.md from templates/codebase-map.md.
+15. Create docs/project-plan.md from templates/project-plan.md.
+16. Create docs/task-log.md from templates/task-log.md.
+17. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
+18. Create docs/current-state.md from templates/current-state.md.
+
+### ML Pipeline
+
+1. Create docs/project-requirements.md from templates/project-requirements.md.
+2. Create docs/specs/research.md from templates/specs/research.md.
+3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.
+4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
+5. Create docs/architecture/backend.md from templates/architecture/backend.md.
+6. Create docs/architecture/database.md from templates/architecture/database.md.
+7. Create docs/architecture/deployment.md from templates/architecture/deployment.md.
+8. Create docs/specs/data-model.md from templates/specs/data-model.md.
+9. Create docs/specs/pipeline-contract.md from templates/specs/pipeline-contract.md.
+10. Create docs/specs/model-contract.md from templates/specs/model-contract.md.
+11. Create docs/specs/experiment-log.md from templates/specs/experiment-log.md.
+12. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
+13. Create docs/business/business-rules.md from templates/business/business-rules.md.
+14. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
+15. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+16. Create docs/codebase-map.md from templates/codebase-map.md.
+17. Create docs/project-plan.md from templates/project-plan.md.
+18. Create docs/task-log.md from templates/task-log.md.
+19. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
+20. Create docs/current-state.md from templates/current-state.md.
+
+### Microservices
+
+Each individual service uses the Web App initialization sequence above for its own `docs/` folder.
+
+At the system (repo root) level, additionally create:
+
+1. Create docs/specs/service-catalog.md from templates/specs/service-catalog.md.
+2. Create docs/specs/service-contract.md from templates/specs/service-contract.md.
+3. Create docs/architecture/architecture.md (system-level — shows all services and their connections).
+4. Create docs/architecture/deployment.md (system-level — shows deployment topology across all services).
 
 ---
 
@@ -331,6 +472,10 @@ Quick filter guide:
 | DB schema only | frontend.md, codebase-map.md page structure, business-process.md, module-flow.md |
 | Documentation only | All code-related items (data-model, api-contract, permissions, architecture, backend, frontend) |
 | Config / env vars only | All items except deployment.md and quickstart.md |
+| Pipeline stage logic only | frontend.md, api-contract.md, permissions.md, business-objects.md, business-process.md |
+| ML model / experiment only | frontend.md, api-contract.md, permissions.md, business-objects.md, business-process.md, deployment.md |
+| Library / SDK public API only | frontend.md, deployment.md, permissions.md, business-objects.md, business-process.md, data-model.md |
+| CLI subcommand only | frontend.md, deployment.md, permissions.md, business-objects.md, business-process.md, data-model.md |
 
 Apply this filter first. Then run only the remaining items.
 
@@ -340,8 +485,17 @@ Apply this filter first. Then run only the remaining items.
     (output must go inside docs/ so build_pdf.py can find it)
   - Regenerate state diagram: `# Edit the ```plantuml block in data-model.md, then rebuild PDF`
   State Machine Consistency check: if this task touched an entity with a status lifecycle, confirm the State Machine section here matches the canonical definition in docs/business/[object-name]-object.md exactly. If they differ, update this file to match — the object file wins.
-- [ ] docs/specs/api-contract.md — were endpoints added/changed, did error codes or validation rules change, or were WebSocket/Socket.IO events / GraphQL queries or mutations / gRPC methods / CLI commands added or changed? If yes, update the relevant protocol section.
+- [ ] docs/specs/api-contract.md — (Web App / Microservices only) were endpoints added/changed, did error codes or validation rules change, or were WebSocket/Socket.IO events / GraphQL queries or mutations / gRPC methods / CLI commands added or changed? If yes, update the relevant protocol section.
   API Endpoint Overlap check: if this task added an endpoint whose purpose overlaps with an existing one (e.g. two endpoints affecting the same state), add a **Design Note:** under each explaining why they are separate, or consolidate into one.
+- [ ] docs/specs/cli-contract.md — (CLI Tool only) were subcommands, flags, arguments, output format, or exit codes added or changed? If yes, update.
+- [ ] docs/specs/public-api.md — (Library / SDK only) were public functions, classes, types, or constants added, changed, or deprecated? If yes, update. If removing a public symbol, ensure a deprecation entry exists first.
+- [ ] docs/specs/pipeline-contract.md — (Data Pipeline / ML Pipeline only) did an inter-stage input or output format, path, naming rule, or error handling policy change? If yes, update. Then run the Cross-Stage Consistency Check table.
+- [ ] docs/specs/service-catalog.md — (Microservices only) was a service added, removed, or renamed? Did ownership, port, base URL, or key dependencies change? If yes, update.
+- [ ] docs/specs/service-contract.md — (Microservices only) did a REST contract, event schema, or resilience policy between services change? If yes, update.
+- [ ] docs/specs/model-contract.md — (ML Pipeline only) did input feature schema, output format, or production thresholds change? If yes, update.
+- [ ] docs/architecture/distribution.md — (Library / SDK / CLI Tool only) did the build process, registry, publish command, or installation instructions change? If yes, update.
+- [ ] docs/specs/release-guide.md — (Library / SDK / CLI Tool only) did the versioning policy, release checklist, publish process, or deprecation policy change? If yes, update.
+- [ ] docs/specs/compatibility-matrix.md — (Library / SDK / CLI Tool only) was a runtime version added or dropped, or was a known incompatibility discovered? If yes, update.
 - [ ] docs/specs/permissions.md — were roles, the permission matrix, or API endpoints changed? If yes, update, then regenerate use case diagram: `# Edit the ```plantuml block in permissions.md, then rebuild PDF`
   After updating: cross-check every role listed as "Responsible role" in any `*-process.md` against the API Endpoint Access table and Page Access Matrix. If a role is responsible for an action but has no access to the required page or endpoint, check the Source column:
   - `Hardcoded` → this is a logical contradiction — resolve it before proceeding.

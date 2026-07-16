@@ -34,7 +34,10 @@ Every module must be classified as one of:
 |---|---|---|
 | **Feature** | Has an entry point that handles requests or commands — HTTP, GraphQL, CLI, RPC, WebSocket, etc. | Entry point → internal layers → data sink. Use the operations that apply (CRUD or equivalent). |
 | **Background Job** | Runs outside the request cycle — queue consumer, cron, event handler, worker | Trigger → processing steps → success/failure path |
+| **Pipeline Stage** | Consumes an upstream dataset or artifact, transforms or validates it, and produces a downstream dataset or artifact. Used in Data Pipeline and ML Pipeline projects. | Input contract → processing logic → output contract → error/skip path |
 | **Shared Utility** | No entry point of its own — called by other modules | Class block only, no flow needed |
+
+**Background Job vs Pipeline Stage:** use Background Job when the module's primary concern is responding to an event or message. Use Pipeline Stage when the module's primary concern is transforming or validating data as part of a larger data flow — the distinguishing question is "does this module have an upstream data contract and a downstream data contract?"
 
 Declare the type at the top of every module flow file:
 
@@ -247,6 +250,95 @@ class [YourProcessingClass] {
 
 ---
 
+## Format D — Pipeline Stage
+
+Use this format for modules in Data Pipeline or ML Pipeline projects that consume an upstream
+dataset or artifact and produce a downstream dataset or artifact.
+
+### What to document
+
+1. **Input contract** — where data comes from, what format, what naming convention, schema
+2. **Processing steps** — validation logic, transformation logic, model inference, or metadata push
+3. **Output contract** — where data goes, what format, what naming convention, schema or artifact type
+4. **Error / skip path** — what happens when input is missing, invalid, or downstream is unavailable
+
+### Flow Format
+
+```
+[Stage Name — e.g., GE Validation Gate / dbt Transformation / DataHub Ingest]
+
+Input:
+  Source: [file path / table name / topic / upstream stage output]
+  Format: [CSV / Parquet / SQL table / JSON / model artifact]
+  Naming: [e.g., data/raw/<source>_transactions.csv]
+  Schema: [field names and types — or reference to pipeline-contract.md or data-model.md]
+↓
+[Pre-processing or validation step]
+Function: actualFunctionName()
+File: path/to/file
+↓
+[Core processing step]
+Function: actualFunctionName()
+File: path/to/file
+↓
+[On success]
+Output:
+  Destination: [file path / table name / topic / metadata aspect]
+  Format: [CSV / SQL table / metadata aspect]
+  Naming: [e.g., mart.mart_finance__net_revenue / data/archive/<run-id>/]
+  Lifecycle: [Consumed and archived / Persisted / Overwritten / Immutable append]
+↓
+[On error / skip]
+  [Input retained for retry / Input quarantined / Stage skipped non-blocking / Pipeline halted]
+```
+
+**Step naming for Pipeline Stages:**
+
+| Step type | Use when |
+|---|---|
+| Input Contract | Always first — describes what this stage expects |
+| Schema Validation | Input schema is checked before processing |
+| Idempotency Check | Stage detects and skips already-processed inputs |
+| Data Quality Gate | Quality checks that halt downstream on failure |
+| Transformation | Data is reshaped, enriched, or aggregated |
+| Model Inference | ML model is called to generate predictions |
+| Metadata Push | Lineage, quality scores, or catalog entries are written |
+| Archive / Lifecycle | Input files are moved or marked consumed |
+| Output Contract | Always last — describes what this stage produces |
+
+### Error Handling (required for every Pipeline Stage flow)
+
+```
+Error Handling:
+- Missing input: [Stage waits / fails immediately / skips with log]
+- Invalid input (schema / quality): [Stage fails, input retained / input quarantined to <path>]
+- Processing error (transient): [retry strategy]
+- Downstream unavailable: [non-blocking — log and skip / blocking — retry N times then fail]
+- Alerting: [log level, notification channel]
+```
+
+### Class Block Format (Pipeline Stage)
+
+```plantuml
+@startuml
+title [Stage Name] Structure
+
+class [YourStageClass] {
+  +[runMethod](input: [InputType]): [OutputType]
+  -[validateMethod](data): boolean
+  -[transformMethod](data): [IntermediateType]
+}
+
+class [YourOutputWriterClass] {
+  +[writeMethod](output: [OutputType]): void
+}
+
+[YourStageClass] --> [YourOutputWriterClass] : produces
+@enduml
+```
+
+---
+
 ## Format C — Shared Utility
 
 Use this format for modules that are used by other modules but have no entry point of their own.
@@ -298,6 +390,9 @@ docs/modules/checkout/checkout-module-data-flow.md                  ← Feature 
 docs/modules/report-cli/report-cli-module-data-flow.md              ← Feature (CLI)
 docs/modules/order-consumer/order-consumer-module-data-flow.md      ← Background Job
 docs/modules/cron-inventory/cron-inventory-module-data-flow.md      ← Background Job
+docs/modules/ge-validation/ge-validation-module-data-flow.md        ← Pipeline Stage
+docs/modules/dbt-transform/dbt-transform-module-data-flow.md        ← Pipeline Stage
+docs/modules/model-training/model-training-module-data-flow.md      ← Pipeline Stage
 docs/modules/email-sender/email-sender-module-data-flow.md          ← Shared Utility
 ```
 
@@ -307,4 +402,5 @@ Files matching `*-module-data-flow.md` are automatically included in the PDF.
 |---|---|---|---|
 | [e.g., Order] | Feature | `docs/modules/order/` | `order-module-data-flow.md` |
 | [e.g., Order Consumer] | Background Job | `docs/modules/order-consumer/` | `order-consumer-module-data-flow.md` |
+| [e.g., GE Validation] | Pipeline Stage | `docs/modules/ge-validation/` | `ge-validation-module-data-flow.md` |
 | [module] | [type] | `docs/modules/[module]/` | `[module]-module-data-flow.md` |
