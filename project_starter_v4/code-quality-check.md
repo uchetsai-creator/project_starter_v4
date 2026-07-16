@@ -156,12 +156,12 @@ The layer names and rules depend on the project type — use the row that matche
 
 | Project type | Entry layer rule | Middle layer rule | Data / output layer rule |
 |---|---|---|---|
-| **Web App / Microservices** | Controller: HTTP binding only (parse request, return response) | Service: business logic only | Repository: DB queries only — no business logic |
+| **Web App** | Controller: HTTP binding only (parse request, return response) | Service: business logic only | Repository: DB queries only — no business logic |
+| **Microservices** | Varies by service transport — HTTP: Controller (binding only); gRPC: RPC Handler (request unmarshalling only); Event-driven: Consumer / Listener (message parsing only) | Service: business logic only | Repository: DB queries only — no business logic |
 | **CLI Tool** | Command parser: flag/arg parsing only | Handler / UseCase: command logic | Store / Writer: file I/O or config persistence only |
 | **Library / SDK** | Public API function: input validation + delegation only | Internal implementation | No persistence layer — outputs are return values |
 | **Data Pipeline** | Stage entry: input contract validation only | Transform / Enrich: data logic | Writer / Sink: output contract only — no data logic |
 | **ML Pipeline** | Stage entry: schema + quality checks | Model / Transform: inference or feature logic | Artifact writer: serialisation only |
-| **Microservices** | Per-service: same as Web App | — | — |
 | **AI / LLM App** | Request handler: prompt assembly only | LLM caller: API call + retry logic | Response parser: output extraction only |
 
 Business logic in the entry layer is always a finding, regardless of project type.
