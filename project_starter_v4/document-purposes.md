@@ -92,6 +92,19 @@ Update when (if listed in current-state.md → Doc Checklist, update at task lev
 * A symbol is removed (must already be in Deprecation Log)
 * Stability tier changes
 
+### pipeline-debug.md
+**Applies to: Data Pipeline, ML Pipeline**
+
+Purpose:
+Step-by-step debug guide for pipeline failures and data quality issues.
+Covers how to identify the failing stage, check input data, read stage logs,
+interpret data quality reports, and trace lineage to find where data went bad.
+Load this file only when debugging an active incident — not during normal task work.
+
+Update when:
+* A new failure pattern is discovered and confirmed — add a row to the Common failure patterns table.
+* The orchestrator tool, validation tool, or lineage tool changes — update the relevant steps.
+
 ### pipeline-contract.md
 **Applies to: Data Pipeline, ML Pipeline**
 
@@ -252,6 +265,20 @@ Update when (if listed in current-state.md → Doc Checklist, update at task lev
 * Similarity threshold or top-K is tuned
 * A retrieval failure mode is discovered and handled
 
+### llm-debug.md
+**Applies to: AI / LLM Application**
+
+Purpose:
+Step-by-step debug guide for LLM response failures, retrieval issues, tool call failures,
+and eval score regressions. Covers how to identify the failure type, debug the retriever,
+inspect the rendered prompt, trace tool calls, read eval results, and diagnose API errors.
+Also defines the structured log format for every LLM call.
+Load this file only when debugging an active incident — not during normal task work.
+
+Update when:
+* A new failure pattern is discovered and confirmed — add a row to the relevant step's table.
+* The LLM provider, retrieval tool, or eval tool changes — update the affected steps.
+
 ### mcp-contract.md
 **Applies to: AI / LLM Application (optional — only when connecting to one or more MCP servers)**
 
@@ -324,7 +351,7 @@ at least the minimum API endpoint access to perform that responsibility. A gap i
 contradiction that must be resolved before implementation.
 
 ### logging-spec.md
-**Applies to: Web App, CLI Tool, Data Pipeline, ML Pipeline, Microservices**
+**Applies to: Web App, CLI Tool, Data Pipeline, ML Pipeline, Microservices, AI / LLM Application**
 Not applicable to Library / SDK (libraries should not configure logging; callers own that).
 
 Purpose:

@@ -194,6 +194,42 @@ and in this document — the code method name follows the library.
 
 ---
 
+## Request Tracing
+
+Every external entry point must generate a `trace_id` and propagate it through all downstream log calls within that request, pipeline run, or LLM call.
+
+**When to generate:**
+
+| Project type | Entry point |
+|---|---|
+| Web App / API | Incoming HTTP request handler (generate once, before any module calls) |
+| Data Pipeline | Pipeline trigger / DAG run start |
+| AI / LLM App | Each LLM call or user turn |
+| Background Job | Job start (one trace_id per job execution) |
+
+**How to generate:** UUID v4 (e.g. `crypto.randomUUID()` in Node.js, `uuid.uuid4()` in Python).
+
+**How to propagate:** Pass as a parameter through function calls, or store in a request-scoped context (e.g. AsyncLocalStorage in Node.js, `contextvars` in Python). Do not regenerate downstream.
+
+**How to include in logs:** Add `trace_id` as the first field in the data payload on every log line within the traced operation.
+
+```
+[2026-06-12T10:23:01.123Z] [INFO]  [ORDER]     create order — start
+  → {"trace_id": "a1b2c3d4-...", "userId": "u_001", "itemCount": 3}
+
+[2026-06-12T10:23:01.400Z] [INFO]  [INVENTORY] deduct stock — start
+  → {"trace_id": "a1b2c3d4-...", "productId": "p_099", "requested": 2}
+
+[2026-06-12T10:23:01.456Z] [ERROR] [PAYMENT]   payment API call — failed: timeout
+  → {"trace_id": "a1b2c3d4-...", "message": "Connection timeout"}
+```
+
+The same `trace_id` threads all three log lines together — you can filter by `trace_id` in any log aggregator to see the complete chain for one request.
+
+**Not applicable to:** Library / SDK projects (libraries do not own entry points and should not generate trace IDs).
+
+---
+
 ## Module Log Files
 
 | Module | Log File |

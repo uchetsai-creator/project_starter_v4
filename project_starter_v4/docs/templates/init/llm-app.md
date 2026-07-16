@@ -15,15 +15,17 @@
 7. Create docs/specs/prompts/ folder. For each prompt, create docs/specs/prompts/[prompt-id]-prompt.md from templates/specs/prompts/prompt.md.
 8. Create docs/specs/eval-spec.md from templates/specs/eval-spec.md (judge model, criteria, test case set).
 9. Create docs/specs/eval-log.md from templates/specs/eval-log.md (append-only run log — load only during eval tasks).
-10. If using RAG: Create docs/specs/rag-contract.md from templates/specs/rag-contract.md.
-11. If using MCP servers: Create docs/specs/mcp-contract.md from templates/specs/mcp-contract.md. Add one Server Detail block per connected server. Cross-reference tool names in llm-contract.md Tool Calling section.
-12. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-13. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
-14. Create docs/codebase-map.md from templates/codebase-map.md.
-15. Create docs/project-plan.md from templates/project-plan.md.
-16. Create docs/task-log.md from templates/task-log.md.
-17. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
-18. Create docs/current-state.md from templates/current-state.md.
+10. Create docs/specs/llm-debug.md from templates/specs/llm-debug.md.
+11. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
+12. If using RAG: Create docs/specs/rag-contract.md from templates/specs/rag-contract.md.
+13. If using MCP servers: Create docs/specs/mcp-contract.md from templates/specs/mcp-contract.md. Add one Server Detail block per connected server. Cross-reference tool names in llm-contract.md Tool Calling section.
+14. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
+15. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+16. Create docs/codebase-map.md from templates/codebase-map.md.
+17. Create docs/project-plan.md from templates/project-plan.md.
+18. Create docs/task-log.md from templates/task-log.md.
+19. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
+20. Create docs/current-state.md from templates/current-state.md.
 
 ---
 
