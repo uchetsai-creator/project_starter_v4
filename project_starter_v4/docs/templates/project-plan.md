@@ -54,6 +54,12 @@ Tasks in this sprint:
   - Config/infra task:  deployment.md, quickstart.md
   - Business logic:     business-rules.md, business-process.md, business-objects.md
   - Script/utility:     (usually none)
+  - Prompt/LLM task:    llm-contract.md, prompt-library.md, prompts/[id]-prompt.md, eval-spec.md
+  - Eval run task:      eval-log.md (append one row), eval-spec.md (if criteria changed)
+  - RAG task:           rag-contract.md, llm-contract.md (Context Window Strategy)
+  - MCP server task:    mcp-contract.md, llm-contract.md (Tool Calling section)
+  - Pipeline stage:     pipeline-contract.md, module-data-flow.md
+  - ML model task:      model-contract.md, experiment-log.md
 -->
 - [ ] `docs/[relevant spec]` — [what to check]
 
