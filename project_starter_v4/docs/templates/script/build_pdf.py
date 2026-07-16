@@ -225,6 +225,17 @@ def find_allowed_files(docs_dir, strings):
                     seen.add(rel)
                     break
 
+    # Auto-include *-prompt.md files under specs/prompts/ (AI / LLM App — one file per prompt)
+    design_label = strings["sections"]["design"]
+    for path in sorted(glob.glob(os.path.join(docs_dir, "specs", "prompts", "*-prompt.md"))):
+        rel = os.path.relpath(path, docs_dir)
+        if rel not in seen:
+            for idx, (r, _, _) in enumerate(result):
+                if r == "specs/prompt-library.md":
+                    result.insert(idx + 1, (rel, path, design_label))
+                    seen.add(rel)
+                    break
+
     return result
 
 
@@ -301,9 +312,10 @@ def find_plantuml_diagrams(docs_dir, png_cache_dir):
         abs_path = os.path.join(docs_dir, rel)
         if os.path.exists(abs_path):
             md_files.add(abs_path)
-    # Also scan all business/*-process.md and modules/*/*-module-data-flow.md
+    # Also scan auto-included files not in the static allowlist
     for pattern in ['business/*-process.md', 'business/*-object.md',
-                    'modules/*/*-module-data-flow.md', 'modules/*/*-flow.md']:
+                    'modules/*/*-module-data-flow.md', 'modules/*/*-flow.md',
+                    'specs/prompts/*-prompt.md']:
         for p in glob.glob(os.path.join(docs_dir, pattern)):
             md_files.add(p)
 

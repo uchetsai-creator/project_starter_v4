@@ -38,16 +38,27 @@ PDF_ALLOWLIST = [
     # ── Chapter 3: Design ────────────────────────────────────────────────────
     ("design",         "architecture/architecture.md"),
     ("design",         "architecture/backend.md"),
-    ("design",         "architecture/frontend.md"),
+    ("design",         "architecture/frontend.md"),       # Web App / Microservices only
     ("design",         "architecture/database.md"),
+    ("design",         "architecture/distribution.md"),   # CLI Tool / Library / SDK
     ("design",         "specs/data-model.md"),
-    ("design",         "specs/api-contract.md"),
-    ("design",         "specs/permissions.md"),
+    ("design",         "specs/api-contract.md"),          # Web App / Microservices
+    ("design",         "specs/permissions.md"),           # Web App / Microservices
+    ("design",         "specs/pipeline-contract.md"),     # Data Pipeline / ML Pipeline
+    ("design",         "specs/cli-contract.md"),          # CLI Tool
+    ("design",         "specs/public-api.md"),            # Library / SDK
+    ("design",         "specs/model-contract.md"),        # ML Pipeline
+    ("design",         "specs/service-catalog.md"),       # Microservices
+    ("design",         "specs/service-contract.md"),      # Microservices
+    ("design",         "specs/llm-contract.md"),          # AI / LLM Application
+    ("design",         "specs/prompt-library.md"),        # AI / LLM App — index; *-prompt.md auto-scanned
+    ("design",         "specs/rag-contract.md"),          # AI / LLM App (optional)
     # specs/research.md is excluded until filled with real content.
     # Uncomment the line below once it has actual technology decisions (not just placeholders):
     # ("design",         "specs/research.md"),
     # *-module-data-flow.md auto-scanned (class diagrams)
     # module-flow files auto-scanned (sequence diagrams)
+    # specs/prompts/*-prompt.md auto-scanned (AI / LLM App)
 
     # ── Chapter 4: Build ─────────────────────────────────────────────────────
     ("build",          "modules/module-data-flow.md"),    # index (section-filtered)
@@ -55,14 +66,19 @@ PDF_ALLOWLIST = [
     ("build",          "codebase-map.md"),
     ("build",          "specs/dependencies.md"),
     ("build",          "architecture/deployment.md"),     # build steps + startup
+    ("build",          "specs/experiment-log.md"),        # ML Pipeline
+    ("build",          "specs/eval-spec.md"),             # AI / LLM App
 
     # ── Chapter 5: Test ──────────────────────────────────────────────────────
     ("test",           "specs/test-plan.md"),
     ("test",           "specs/test-report.md"),
+    ("test",           "specs/eval-log.md"),              # AI / LLM App — append-only eval run log
 
     # ── Chapter 6: Deployment ────────────────────────────────────────────────
     ("deployment",     "specs/logging-spec.md"),
     ("deployment",     "specs/quickstart.md"),
+    ("deployment",     "specs/release-guide.md"),         # CLI Tool / Library / SDK
+    ("deployment",     "specs/compatibility-matrix.md"),  # CLI Tool / Library / SDK
 ]
 
 
@@ -76,4 +92,6 @@ PDF_SECTION_FILTER = {
     # business-rules.md: keep real rule sections, strip placeholder BR-001/BR-002 blocks
     "business/business-rules.md":     ["## Approval Rules", "## Validation Rules",
                                        "## Notification Rules", "## Audit Rules"],
+    # prompt-library.md: index only — show active prompts table, hide retired section
+    "specs/prompt-library.md":        ["## Active Prompts"],
 }
