@@ -2,12 +2,26 @@
 
 <!--
   Reference only. Not read every task.
-  Reference only. Not read every task.
   Per-task doc updates are driven by current-state.md → Doc Checklist (filtered at task setup).
   The full Document Update Checklist lives in AGENTS.md → Sprint Documentation Sync and runs at sprint end.
   This file explains WHY and details each document's purpose, update triggers, and
   which diagram script to run after updating.
 -->
+
+## How to use this file
+
+Each entry below lists which project type(s) it applies to.
+
+**Single project type:** create a document only if your declared type appears in its `Applies to` line.
+
+**Mixed / Hybrid project types** (e.g., `Project Type: Data Pipeline + Web App`):
+create a document if ANY of your declared types appears in its `Applies to` line.
+Skip only documents where ALL your declared types are absent from the `Applies to` line.
+
+Example: for `Data Pipeline + Web App`, `api-contract.md` (Applies to: Web App, Microservices)
+should be created because Web App is one of your declared types.
+
+---
 
 ## Specs (docs/specs/)
 
