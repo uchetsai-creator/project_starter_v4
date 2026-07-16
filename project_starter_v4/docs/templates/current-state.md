@@ -72,12 +72,18 @@
 
   HOW TO FILL: filter the full Document Update Checklist in AGENTS.md down to only items
   that could be triggered by this specific task:
-  - DB schema task      → keep: data-model.md, database.md, business-objects.md
-  - BE endpoint task    → keep: api-contract.md, permissions.md, module-data-flow.md, module-flow.md, logging-spec.md
-  - FE task             → keep: frontend.md, codebase-map.md (page structure)
-  - Config/infra task   → keep: deployment.md, quickstart.md
-  - Business logic task → keep: business-rules.md, business-process.md, business-objects.md
-  - Script/utility task → keep: nothing (doc updates usually not needed)
+  - DB schema task          → keep: data-model.md, database.md, business-objects.md
+  - BE endpoint task        → keep: api-contract.md, permissions.md, module-data-flow.md, module-flow.md, logging-spec.md
+  - FE task                 → keep: frontend.md, codebase-map.md (page structure)
+  - Config/infra task       → keep: deployment.md, quickstart.md
+  - Business logic task     → keep: business-rules.md, business-process.md, business-objects.md
+  - Script/utility task     → keep: nothing (doc updates usually not needed)
+  - Prompt / LLM task       → keep: llm-contract.md, prompt-library.md + prompts/[id]-prompt.md, eval-spec.md
+  - Eval run task           → keep: eval-log.md (append one row), eval-spec.md (if criteria changed)
+  - RAG task                → keep: rag-contract.md, llm-contract.md (Context Window Strategy)
+  - MCP server task         → keep: mcp-contract.md, llm-contract.md (Tool Calling section)
+  - Pipeline stage task     → keep: pipeline-contract.md, module-data-flow.md
+  - ML model task           → keep: model-contract.md, experiment-log.md
 
   WHEN TO RUN: at task completion (Task Completion step 1a).
   Apply each item listed here — do NOT re-open AGENTS.md at closeout.
