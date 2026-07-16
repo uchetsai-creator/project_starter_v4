@@ -114,12 +114,15 @@ When a new project starts, `templates/` is copied in and becomes `docs/` — see
 
 ## Project Initialization
 
-A new project does **not** keep `templates/` — it copies each file into `docs/`, filling in the
-placeholders as it goes:
+A new project does **not** keep `templates/` — it copies only the files its project type needs
+into `docs/`, filling in the placeholders as it goes. The document matrix in `AGENTS.md` defines
+which files are required, optional, or N/A for each type.
+
+The root files are the same for every type:
 
 ```
 new_project/
-├── AGENTS.md
+├── AGENTS.md                ← declare Project Type at the top
 ├── debug-instrumentation-rules.md
 ├── code-quality-check.md
 ├── document-purposes.md
@@ -128,27 +131,128 @@ new_project/
     ├── project-plan.md
     ├── current-state.md
     ├── changelog.md
+    ├── task-log.md
+    ├── sprint-change-log.md
     ├── codebase-map.md
-    ├── specs/
-    ├── architecture/
-    ├── business/
-    │   ├── business-process.md            ← index
-    │   ├── [process-name]-process.md      ← one per business process, auto-included in PDF
-    │   ├── business-objects.md            ← index
-    │   ├── [object-name]-object.md        ← one per business object, auto-included in PDF
-    │   └── business-rules.md
-    ├── modules/
-    │   ├── module-data-flow.md            ← index file
-    │   ├── module-flow.md                 ← index file
-    │   └── [module-name]/                 ← one subfolder per module (Feature or Background Job)
-    │       ├── [module]-module-data-flow.md  ← auto-included in PDF
-    │       └── log-[module].md               ← not in PDF, dev reference only
-    └── script/
+    ├── specs/ architecture/ modules/ script/    ← vary by type (see below)
 ```
 
-`AGENTS.md` drives this automatically — an AI agent starting a new project will create each file
-from its matching template in order (requirements → research → architecture → data model →
-API contract → permissions → plan → current state).
+The `docs/specs/`, `docs/architecture/`, and `docs/modules/` contents differ per project type:
+
+### Web App
+
+```
+docs/specs/
+├── research.md  quickstart.md  data-model.md  api-contract.md
+├── permissions.md  logging-spec.md
+docs/architecture/
+├── architecture.md  backend.md  database.md  deployment.md
+└── frontend.md                                              ← optional
+docs/business/
+├── business-process.md  ← index
+├── [process-name]-process.md                               ← one per process
+├── business-objects.md  ← index
+├── [object-name]-object.md                                 ← one per object
+└── business-rules.md
+docs/modules/
+├── module-data-flow.md  module-flow.md                     ← index files
+└── [module-name]/
+    ├── [module]-module-data-flow.md
+    └── log-[module].md
+```
+
+### CLI Tool
+
+```
+docs/specs/
+├── research.md  quickstart.md  cli-contract.md
+├── release-guide.md  logging-spec.md
+└── compatibility-matrix.md                                 ← optional
+docs/architecture/
+└── architecture.md  backend.md  distribution.md
+docs/modules/
+├── module-data-flow.md  module-flow.md                     ← index files
+└── [module-name]/
+    └── [module]-module-data-flow.md
+```
+
+### Library / SDK
+
+```
+docs/specs/
+├── research.md  quickstart.md  public-api.md
+└── release-guide.md  compatibility-matrix.md
+docs/architecture/
+└── architecture.md  distribution.md                        ← architecture.md optional
+docs/modules/
+├── module-data-flow.md  module-flow.md
+└── [module-name]/
+    └── [module]-module-data-flow.md
+```
+
+### Data Pipeline
+
+```
+docs/specs/
+├── research.md  quickstart.md  pipeline-contract.md
+├── data-model.md  logging-spec.md
+docs/architecture/
+└── architecture.md  backend.md  database.md  deployment.md
+docs/modules/
+├── module-data-flow.md  module-flow.md                     ← index files
+└── [stage-name]/                                           ← one per Pipeline Stage
+    └── [stage]-module-data-flow.md
+```
+
+### ML Pipeline
+
+```
+docs/specs/
+├── research.md  quickstart.md  pipeline-contract.md
+├── data-model.md  model-contract.md  experiment-log.md  logging-spec.md
+docs/architecture/
+└── architecture.md  backend.md  database.md  deployment.md
+docs/modules/
+├── module-data-flow.md  module-flow.md
+└── [stage-name]/
+    └── [stage]-module-data-flow.md
+```
+
+### Microservices
+
+Each service has its own `docs/` following the Web App structure above.
+At the system level, add:
+
+```
+docs/specs/
+├── service-catalog.md                                      ← all services: owner, port, deps
+└── service-contract.md                                     ← inter-service REST + event schemas
+docs/architecture/
+├── architecture.md                                         ← system-level component diagram
+└── deployment.md                                           ← cross-service deployment topology
+```
+
+### AI / LLM Application
+
+```
+docs/specs/
+├── research.md  quickstart.md  llm-contract.md
+├── prompt-library.md                                       ← index only
+├── prompts/
+│   └── [prompt-id]-prompt.md                              ← one per prompt
+├── eval-spec.md                                            ← judge config + criteria + test cases
+├── eval-log.md                                             ← append-only run results
+└── rag-contract.md                                         ← optional, if using RAG
+docs/architecture/
+└── architecture.md
+docs/modules/
+├── module-data-flow.md  module-flow.md
+└── [module-name]/
+    └── [module]-module-data-flow.md
+```
+
+`AGENTS.md` drives initialization automatically — declare the project type at the top of your
+project's `AGENTS.md` and the agent will create each file in the correct order for that type.
 
 ---
 
