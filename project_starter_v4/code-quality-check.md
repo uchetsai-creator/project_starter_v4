@@ -470,6 +470,211 @@ Do not guess.
 
 ---
 
+## Type-Specific Checks
+
+Run only the sub-section(s) that match the project type declared in `AGENTS.md`.
+Skip sub-sections for types not declared.
+
+---
+
+### CLI Tool
+
+**Flag parsing isolation**
+
+The command parser layer must only parse flags and arguments, not execute business logic.
+
+Check:
+- Does the command parser call file systems, databases, or network services during flag parsing?
+- Are flags validated beyond type-checking inside the parser?
+
+Severity: **Medium** if I/O or external calls occur during flag parsing (belongs in the handler layer). **High** if flag parsing triggers a write or mutation.
+
+---
+
+**Command responsibility separation**
+
+Each subcommand should do one thing. A subcommand that both mutates state and produces output is doing two jobs.
+
+Check:
+- Does any subcommand perform more than one distinct user-facing operation?
+- Are side effects (file write, API call) mixed with read-only output in the same command path?
+
+Severity: **Medium** if a subcommand has mixed responsibilities.
+
+---
+
+**Exit code consistency**
+
+Exit codes must be consistent across all subcommands and match `cli-contract.md`.
+
+Check:
+- Do all subcommands return 0 on success and non-zero on any failure?
+- Are there cases where a command exits 0 when the operation failed (silent failure)?
+- Are any exit codes used that are not documented in `cli-contract.md`?
+
+Severity: **High** if a command exits 0 on failure — callers cannot detect the error. **Medium** if exit codes are inconsistent but failures are not silent.
+
+---
+
+### Library / SDK
+
+**No side effects at import**
+
+Importing the library must not trigger I/O, network calls, global state mutation, or stdout/stderr output. Initialization must be explicit.
+
+Check:
+- Does module-level code (outside functions and classes) perform file reads, network calls, or global state changes?
+- Does importing the library print to stdout or stderr?
+
+Severity: **High** if import has side effects — breaks test isolation and integration workflows.
+
+---
+
+**Public API stability**
+
+Any symbol documented in `public-api.md` must not change signature without a deprecation log entry.
+
+Check:
+- Has any public function signature changed without a corresponding deprecation log entry in `public-api.md`?
+- Has any public symbol been removed that was not first listed in the deprecation log?
+
+Severity: **High** if a public symbol was removed or had a breaking change without a deprecation log entry.
+
+---
+
+**Test coverage of public surface**
+
+Every public function, class, and type must have at least one test that exercises the documented contract.
+
+Check:
+- Is there a test for each public function listed in `public-api.md`?
+- Do tests verify the documented return type and error behaviour, not just "no exception thrown"?
+
+Severity: **Medium** if a public function has no test. **High** if the only tests are on internal code and the entire public surface is untested.
+
+---
+
+### Data Pipeline
+
+**Inter-stage contract verification**
+
+Each stage must validate its input against the upstream output contract before processing. Silent truncation or skipping of invalid rows without logging is a data quality risk.
+
+Check:
+- Does each stage validate column names, types, and required fields against `pipeline-contract.md` at startup?
+- Are schema mismatches logged and surfaced — not silently dropped?
+
+Severity: **High** if a stage processes data without validating the input contract (silent data corruption risk).
+
+---
+
+**Idempotency**
+
+Re-running a stage must produce the same output. A stage that appends to a file or table without first truncating or deduplicating is not idempotent.
+
+Check:
+- Can each stage be safely re-run if interrupted?
+- Does a re-run produce duplicate rows in the output dataset?
+- Is the output path or table overwritten (safe) or appended without deduplication (risky)?
+
+Severity: **High** if re-running a stage produces duplicate output rows (data duplication in all downstream stages).
+
+---
+
+**Archive / replay guarantees**
+
+Raw input data must be preserved before transformation so a full replay from the raw layer is possible.
+
+Check:
+- Is the raw (pre-transform) data preserved after the extract stage?
+- Is there a documented replay procedure in `pipeline-contract.md`?
+- Is the archive path stable (not overwritten by subsequent runs)?
+
+Severity: **Medium** if raw data is overwritten or discarded after transformation (no replay path). **High** if the project has compliance or audit requirements and no replay path exists.
+
+---
+
+### ML Pipeline
+
+**Data leakage checks**
+
+Training data must not contain information unavailable at inference time (future-dated fields, target-derived features, test set rows in the training set).
+
+Check:
+- Are any features derived from the target variable?
+- Does the training set include row keys that also appear in the held-out test set?
+- For time-series data: is the split ordered correctly (train before test, no shuffle across time)?
+
+Severity: **High** if any data leakage is found — model metrics will not generalise to production.
+
+---
+
+**Train / test split integrity**
+
+Splits must be reproducible and documented.
+
+Check:
+- Is the random seed fixed and logged for every split?
+- Is the split ratio documented in `model-contract.md`?
+- Is split logic isolated in a single function so it cannot vary between runs?
+
+Severity: **Medium** if seed is not fixed. **High** if the split is applied differently across two runs (non-reproducible evaluation hides real model degradation).
+
+---
+
+**Metric reproducibility**
+
+Re-running training with the same data and config must produce the same metrics (within floating-point tolerance).
+
+Check:
+- Are all sources of non-determinism controlled (random seeds, dropout, data shuffle order)?
+- Are metric results logged with the exact config hash or experiment ID in `experiment-log.md`?
+
+Severity: **Medium** if results vary between runs with identical config.
+
+---
+
+### Microservices
+
+**Service contract conformance**
+
+Every cross-service API call must conform to the contract in `service-contract.md`. A caller that sends an undeclared field or omits a required field is a latent runtime failure.
+
+Check:
+- Do all inter-service request payloads match the schema in `service-contract.md`?
+- Do all consumers validate the response schema before accessing fields?
+- If the contract was updated, have all callers been updated to match?
+
+Severity: **High** if a caller sends or expects fields not in the current contract — runtime failure when the receiving service validates input.
+
+---
+
+**Circuit breaker coverage**
+
+Every synchronous call to another service or external dependency must have a circuit breaker or equivalent protection: timeout + retry with backoff + fallback.
+
+Check:
+- Are there synchronous inter-service calls without a timeout configured?
+- Are there retry loops without a backoff strategy or max-retry cap?
+- Is there a fallback (cached result, degraded response, or explicit error) when an upstream service is unavailable?
+
+Severity: **High** if a synchronous call has no timeout — one slow upstream can cascade to a full system outage. **Medium** if a timeout exists but no backoff or fallback is defined.
+
+---
+
+**Distributed tracing**
+
+The `trace_id` generated at the entry service must be forwarded in every outbound call so the full request graph can be reconstructed from logs.
+
+Check:
+- Is `trace_id` included in every outbound HTTP header (e.g., `X-Trace-Id` or `traceparent`)?
+- Does each downstream service extract the incoming `trace_id` and include it in all log entries for that request?
+- Is `trace_id` forwarded in inter-service event messages (Kafka, SQS, etc.)?
+
+Severity: **Medium** if `trace_id` is not propagated to outbound calls (cross-service debugging requires manual correlation). **High** if no `trace_id` is generated at the entry service (zero traceability across the system).
+
+---
+
 # Rules During Fixes
 
 Follow AGENTS.md principles:
