@@ -4,7 +4,7 @@
 
 Module flow files live in: `docs/modules/`
 Codebase map lives in: `docs/codebase-map.md`
-Document purposes reference lives in: `document-purposes.md` (repo root)
+Document purposes reference lives in: `document-purposes-common.md` + `document-purposes-[type].md` (repo root); see `document-purposes.md` for the type-to-file lookup table
 
 If your project uses different folder names, search-replace the paths in this file
 before starting. For example, if you use `docs/flows/` instead of `docs/modules/`:
@@ -104,7 +104,7 @@ then determine the next step from project-plan.md. Do not read AGENTS.md otherwi
 
 Do not scan repository.
 
-For what each document is for and when it changes, read document-purposes.md — reference only, not required every task.
+For what each document is for and when it changes, read document-purposes-common.md + document-purposes-[your-type].md — reference only, not required every task. See document-purposes.md for the type-to-file lookup table.
 
 ---
 

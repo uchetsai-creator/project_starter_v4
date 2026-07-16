@@ -51,15 +51,20 @@ All 7 init files verified against `document-matrix.md`. Gaps fixed:
 
 ---
 
-## Phase 2 — Per-Type Document Update Checklist (future)
+## Phase 2 — Per-Type Document Update Checklist ✅ Complete
 
 The Document Update Checklist in sprint-sync.md lists all documents. When a project declares itself as CLI or Library, many checklist items are not applicable, but the agent still has to read and skip them.
 
 **Goal:** Gate checklist items by project type so agents only evaluate relevant items.
 
-Approach options:
-- Tag each checklist item with applicable project types (e.g., `[Web App, Microservices]`)
-- Split into per-type checklists (higher maintenance cost)
+### Done
+
+| Change | Effect |
+|---|---|
+| Added project-type skip table at the top of the checklist in `sprint-sync.md` | Agents look up their type once and skip non-applicable groups entirely |
+| Tagged all 34 checklist items with `[Types: ...]` | Every item is scannable without reading its full trigger condition |
+| `[Types: All]` sentinel for universal items | Avoids enumerating 7 types for items that always apply |
+| Mixed / Hybrid type instruction in the skip table | Hybrid projects take the union without loading extra files |
 
 ---
 
@@ -89,7 +94,7 @@ Approach options:
 
 ---
 
-## Phase 5 — Token load optimization (in progress)
+## Phase 5 — Token load optimization ✅ Complete
 
 AI agents load AGENTS.md on every task setup. As the framework grows, this cost compounds.
 
@@ -102,11 +107,10 @@ AI agents load AGENTS.md on every task setup. As the framework grows, this cost 
 | Fix stale Doc Checklist reference (pointed to AGENTS.md; checklist was in sprint-sync.md) | Eliminates double-file load on every task setup |
 | Current-state.md template: inline quick-filter guide covers standard task types without loading sprint-sync.md | Most task setups need zero extra file loads |
 | Fix stale references in README.md and document-purposes.md (document-matrix location, retrofit location, Doc Checklist source) | Prevents agents following incorrect file-load paths |
-
-### Still needed
-
-- Per-type sprint-sync checklist (links to Phase 2): agents running sprint sync on a CLI project still read LLM and ML items before skipping them
-- `document-purposes.md` (800 lines) is the largest file; loaded only as reference but expensive when it is needed — consider splitting into per-type reference files
+| Per-type sprint-sync checklist (Phase 2): type filter table + `[Types: ...]` tags on all checklist items | CLI project sprint sync skips LLM/ML items without reading them |
+| Split `document-purposes.md` (822 lines) into `document-purposes-common.md` + 7 per-type files | CLI project loads ~330 lines instead of 822; Web App loads ~450 instead of 822 |
+| `document-purposes.md` converted to a short index (type → file lookup table) | Agents never load the full monolith — always load only what applies |
+| Updated `AGENTS.md` reference to point to common + per-type files | Reference path is correct; no stale pointers |
 
 ---
 

@@ -26,7 +26,15 @@ project_starter/                     ← this repo (template only)
 ├── AGENTS.md
 ├── debug-instrumentation-rules.md
 ├── code-quality-check.md            ← code review checklist for retrofitting existing projects
-├── document-purposes.md             ← reference for what each document is for and when it changes
+├── document-purposes.md             ← index: type → per-type file lookup
+├── document-purposes-common.md      ← document purposes for entries that apply to all types
+├── document-purposes-web-app.md     ← document purposes for Web App projects
+├── document-purposes-cli-tool.md    ← document purposes for CLI Tool projects
+├── document-purposes-library.md     ← document purposes for Library / SDK projects
+├── document-purposes-data-pipeline.md ← document purposes for Data Pipeline projects
+├── document-purposes-ml-pipeline.md ← document purposes for ML Pipeline projects
+├── document-purposes-microservices.md ← document purposes for Microservices projects
+└── document-purposes-llm-app.md     ← document purposes for AI / LLM App projects
 └── templates/
     ├── project-requirements.md      ← project scope, goals, edge cases, acceptance criteria
     ├── project-plan.md              ← sprint/task breakdown per feature
