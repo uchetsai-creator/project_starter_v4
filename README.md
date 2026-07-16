@@ -36,26 +36,45 @@ project_starter/                     ← this repo (template only)
     ├── sprint-change-log.md         ← implementation changes this sprint (doc sync deferred to sprint end)
     ├── codebase-map.md              ← package vs. custom code, by layer; includes project tree
     │
-    ├── specs/                        ← quickstart.md, research.md, data-model.md, api-contract.md,
-    │                                     permissions.md, logging-spec.md, glossary.md,
-    │                                     dependencies.md, test-plan.md, test-report.md
+    ├── specs/
+    │   │                              ── Universal (all project types) ──
     │   ├── quickstart.md            ← setup steps, prerequisites, local startup, verification
     │   ├── research.md              ← technology decisions + alternatives considered (excluded from PDF until filled)
-    │   ├── data-model.md            ← schema, indexes, state machines, migrations
-    │   ├── api-contract.md          ← endpoints, events, validation rules, error codes (REST + WebSocket + GraphQL + gRPC + CLI)
-    │   ├── permissions.md           ← roles, permission matrix, endpoint access control
-    │   ├── logging-spec.md          ← logging rules, logger instantiation, module naming
     │   ├── glossary.md              ← business terms, technical terms, abbreviations
     │   ├── dependencies.md          ← runtime packages, dev packages, external services, infrastructure
     │   ├── test-plan.md             ← testing strategy, scope, environment, CI integration
     │   └── test-report.md           ← test results, pass/fail summary, coverage, known issues
+    │   │                              ── Web App / Microservices ──
+    │   ├── data-model.md            ← schema, indexes, state machines, migrations
+    │   ├── api-contract.md          ← endpoints, events, validation rules, error codes (REST + WebSocket + GraphQL + gRPC)
+    │   ├── permissions.md           ← roles, permission matrix, endpoint access control
+    │   ├── logging-spec.md          ← logging rules, logger instantiation, module naming
+    │   │                              ── CLI Tool ──
+    │   ├── cli-contract.md          ← subcommands, flags, exit codes, stdin/stdout contract
+    │   ├── release-guide.md         ← versioning policy, publish checklist, deprecation policy
+    │   ├── compatibility-matrix.md  ← supported runtime versions, peer deps, known incompatibilities
+    │   │                              ── Library / SDK ──
+    │   ├── public-api.md            ← public functions/classes/types, stability tiers, deprecation log
+    │   ├── release-guide.md         ← (same template as CLI Tool)
+    │   ├── compatibility-matrix.md  ← (same template as CLI Tool)
+    │   │                              ── Data Pipeline / ML Pipeline ──
+    │   ├── pipeline-contract.md     ← inter-stage input/output contracts, cross-stage consistency check
+    │   ├── data-model.md            ← schema, indexes (shared with Web App template)
+    │   ├── logging-spec.md          ← (shared with Web App template)
+    │   │                              ── ML Pipeline (additional) ──
+    │   ├── model-contract.md        ← model input/output schema, production thresholds, retraining policy
+    │   └── experiment-log.md        ← per-run experiment record (hypothesis → config → results → decision)
+    │   │                              ── Microservices (additional) ──
+    │   ├── service-catalog.md       ← all services: owner, port, URL, dependencies, events
+    │   └── service-contract.md      ← inter-service REST contracts and event schemas
     │
     ├── architecture/
-    │   ├── architecture.md          ← components, data flow, structured YAML for diagram
-    │   ├── backend.md               ← backend stack, layering, module pattern (architecture-agnostic)
-    │   ├── frontend.md              ← frontend stack, page structure, component strategy
-    │   ├── database.md              ← entities/relationships (conceptual level)
-    │   └── deployment.md            ← services, env vars, startup flow, verification steps
+    │   ├── architecture.md          ← components, data flow, structured YAML for diagram (all types)
+    │   ├── backend.md               ← backend stack, layering, module pattern (not for Library / SDK)
+    │   ├── frontend.md              ← frontend stack, page structure, component strategy (Web App / Microservices only)
+    │   ├── database.md              ← entities/relationships (conceptual level; not for CLI / Library)
+    │   ├── deployment.md            ← services, env vars, startup flow (Web App / Pipeline / Microservices)
+    │   └── distribution.md          ← build, publish, install instructions (CLI Tool / Library / SDK)
     │
     ├── business/
     │   ├── business-process.md      ← index + rules for business process files (per process)
@@ -170,13 +189,16 @@ If a project already has code but no documentation, use the retrofit flow in `AG
 
 ## Module types
 
-`module-data-flow.md` supports three module types, each with its own flow format:
+`module-data-flow.md` supports four module types, each with its own flow format:
 
 | Type | Description | Entry point |
 |---|---|---|
 | **Feature** | Handles requests or commands — HTTP, GraphQL, CLI, RPC, WebSocket, etc. | Request / command |
 | **Background Job** | Runs outside the request cycle — queue consumer, cron, event handler, worker | Queue message / schedule / event |
+| **Pipeline Stage** | Consumes an upstream dataset or artifact, transforms or validates it, and produces a downstream dataset or artifact. Used in Data Pipeline and ML Pipeline projects. | Upstream data contract |
 | **Shared Utility** | No entry point — called by other modules | None (class block only) |
+
+**Background Job vs Pipeline Stage:** use Background Job when the module's primary concern is responding to an event or message. Use Pipeline Stage when the module's primary concern is transforming or validating data as part of a larger data flow — the distinguishing question is "does this module have an upstream data contract and a downstream data contract?"
 
 The flow format does not prescribe layer names. Use whatever names your architecture actually has
 (Controller, Handler, UseCase, Resolver, Model, etc.).
@@ -295,7 +317,8 @@ are auto-scanned and do not need to be added manually.
 - **Module inventory before documentation**: the retrofit flow requires running `scan_codebase.py`
   and getting user confirmation before any documentation is written — so undocumented modules
   are caught at the start, not discovered at the end.
-- **Three module types**: Feature (request-driven), Background Job (event/schedule-driven), and
+- **Four module types**: Feature (request-driven), Background Job (event/schedule-driven),
+  Pipeline Stage (data-contract-driven, for Data Pipeline and ML Pipeline projects), and
   Shared Utility (no entry point). Each has its own flow format in `module-data-flow.md`.
 - **Six-chapter PDF structure**: the generated PDF is organized into Introduction / Plan /
   Design / Build / Test / Deployment — matching standard system analysis document conventions.

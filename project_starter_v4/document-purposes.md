@@ -12,12 +12,16 @@
 ## Specs (docs/specs/)
 
 ### research.md
+**Applies to: All project types**
+
 Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
 * New technology decisions are made
 * NEEDS CLARIFICATION items are resolved
 * Architecture decisions change
 
 ### data-model.md
+**Applies to: Web App, Data Pipeline, ML Pipeline, Microservices (per-service)**
+
 Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
 * Schema changes
 * New entities are added
@@ -170,6 +174,8 @@ Update when (if listed in current-state.md → Doc Checklist, update at task lev
 * A known incompatibility is discovered or resolved
 
 ### permissions.md
+**Applies to: Web App, Microservices**
+
 Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
 * New roles are added
 * Permission matrix changes
@@ -197,6 +203,9 @@ at least the minimum API endpoint access to perform that responsibility. A gap i
 contradiction that must be resolved before implementation.
 
 ### logging-spec.md
+**Applies to: Web App, CLI Tool, Data Pipeline, ML Pipeline, Microservices**
+Not applicable to Library / SDK (libraries should not configure logging; callers own that).
+
 Purpose:
 Define logging rules, format, and module naming conventions.
 Logger instantiation pattern is documented here in a language/framework-agnostic way —
@@ -212,6 +221,10 @@ This file is the rule definition only — do not add module-specific logging con
 Module-specific log points live in docs/modules/[module]/log-[module].md.
 
 ### specs/quickstart.md
+**Applies to: All project types**
+For Library / SDK: covers local dev setup and running tests, not a server startup.
+For CLI Tool: covers installation and first-run verification.
+
 Purpose:
 Step-by-step guide for setting up and running the project locally.
 Covers prerequisites, environment variables, startup commands, and verification steps.
@@ -227,6 +240,9 @@ Update when (if listed in current-state.md → Doc Checklist, update at task lev
 ## Architecture (docs/architecture/)
 
 ### architecture.md
+**Applies to: All project types**
+For Microservices: also create a system-level architecture.md showing all services together.
+
 Purpose:
 Describe system component overview and data flow.
 Contains a ```plantuml component diagram block rendered automatically by build_pdf.py.
@@ -241,9 +257,13 @@ After updating, regenerate diagram:
 `Edit the ```plantuml block in the file, then run build_pdf.py`
 
 ### backend.md
+**Applies to: Web App, CLI Tool, Data Pipeline, ML Pipeline, Microservices (per-service)**
+Not applicable to Library / SDK (libraries have no runtime backend).
+
 Purpose:
 Describe backend structure — stack, layering, layer responsibilities, module pattern.
 Use the actual layer names from the codebase — do not assume Controller/Service/Repository.
+For pipeline projects: describe the pipeline stack and stage layering pattern instead.
 Includes a component block for the backend module structure diagram.
 
 Update when (if listed in current-state.md → Doc Checklist, update at task level; otherwise defer to Sprint Documentation Sync):
@@ -253,6 +273,9 @@ After updating, regenerate component diagram:
 `Edit the ```plantuml block in the file, then run build_pdf.py`
 
 ### frontend.md
+**Applies to: Web App (optional), Microservices (optional if UI service exists)**
+Not applicable to CLI Tool, Library / SDK, Data Pipeline, ML Pipeline.
+
 Purpose:
 Describe frontend structure — stack, page structure, component strategy, API hook strategy.
 Includes a component block for the frontend module structure diagram.
@@ -264,6 +287,9 @@ After updating, regenerate component diagram:
 `Edit the ```plantuml block in the file, then run build_pdf.py`
 
 ### database.md
+**Applies to: Web App, Data Pipeline, ML Pipeline, Microservices (per-service)**
+Not applicable to CLI Tool (unless it uses a persistent DB), Library / SDK.
+
 Purpose:
 Describe database structure at the conceptual level — main entities, main relationships,
 important constraints. Not a field-by-field schema; that level of detail belongs in
@@ -321,7 +347,7 @@ Update when (at module completion, together with the module's flow file — see 
 ### [module]-module-data-flow.md
 Purpose:
 Track code-level execution flow (function names, file paths) for a specific module.
-Declare the module type at the top: Feature / Background Job / Shared Utility.
+Declare the module type at the top: Feature / Background Job / Pipeline Stage / Shared Utility.
 Flow format follows the matching format defined in module-data-flow.md — do not assume
 Controller/Service/Repository; use the real layer names from the codebase.
 Also includes a class block describing the module's structure.
@@ -379,6 +405,9 @@ Track function name or file path changes during development — apply all update
 ## Business (docs/business/)
 
 ### business-process.md
+**Applies to: Web App, Microservices, Data Pipeline (optional), CLI Tool (optional)**
+Not applicable to Library / SDK, ML Pipeline.
+
 Purpose:
 Index file listing all business process documents.
 Each business process has its own dedicated file: `docs/business/[process-name]-process.md`.
@@ -387,6 +416,8 @@ Update when (at task level, together with the new process file — confirm index
 * A new business process file is created — add a row to the table
 
 ### [process-name]-process.md
+**Applies to: Web App, Microservices, Data Pipeline (optional), CLI Tool (optional)**
+
 Purpose:
 Describe one business process — goal, steps, decision points, exceptions, and Activity Diagram.
 Cross-module technical call sequences belong in docs/modules/[module]/[module]-flow.md.
@@ -407,6 +438,9 @@ After updating, regenerate activity diagram:
 `Edit the ```plantuml block in the file, then run build_pdf.py`
 
 ### business-objects.md
+**Applies to: Web App, Microservices**
+Not applicable to CLI Tool, Library / SDK, Data Pipeline, ML Pipeline.
+
 Purpose:
 Index and rule definition for all business object documents.
 Each business object has its own file: `docs/business/[object-name]-object.md`.
@@ -422,6 +456,8 @@ Update when (at task level, together with the new object file — confirm index 
   pointing to its real documentation location instead of creating an object file
 
 ### [object-name]-object.md
+**Applies to: Web App, Microservices**
+
 Purpose:
 Describe one business entity — who owns it, who creates it, its lifecycle, and its
 business-level state machine. Technical field-level detail belongs in docs/specs/data-model.md.
@@ -441,6 +477,10 @@ After updating, regenerate state diagram:
 `Edit the ```plantuml block in the file, then run build_pdf.py`
 
 ### business-rules.md
+**Applies to: Web App, Data Pipeline, ML Pipeline, Microservices, CLI Tool (optional)**
+Not applicable to Library / SDK.
+For Data Pipeline and ML Pipeline: this covers data quality rules and validation constraints enforced in code, not user-facing business policies.
+
 Purpose:
 Describe business constraints and policies — approval rules, validation rules,
 notification rules, audit rules. Each rule must declare its Enforcement Layer.
