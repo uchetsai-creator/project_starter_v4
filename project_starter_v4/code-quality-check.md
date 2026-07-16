@@ -62,6 +62,7 @@ Possible areas:
 - Schema
 - Security
 - Error Handling
+- Observability
 - Permission Consistency
 - State Machine Consistency
 - API Endpoint Overlap
@@ -233,6 +234,66 @@ Check for:
 - Ignored errors
 - Missing rollback
 - Missing retries where required
+
+---
+
+## Observability
+
+Run this check for all project types except Library / SDK.
+
+Apply only the rows that match the project type(s) declared in this project.
+
+### trace_id propagation
+
+| Project type | What to check |
+|---|---|
+| **Web App / Microservices** | Does the HTTP request handler generate a `trace_id` before calling any module? Is `trace_id` passed through to all downstream log calls? |
+| **Data Pipeline** | Does each pipeline run / DAG trigger generate a `trace_id` or equivalent run-scoped identifier? Is it included in every stage log entry? |
+| **ML Pipeline** | Does each training or inference run generate a run ID? Is it included in every stage and artifact log? |
+| **AI / LLM App** | Does each LLM call generate a `trace_id`? Is it included in the LLM call log entry and all related tool call logs? |
+| **CLI Tool** | Does each command invocation generate or accept a `trace_id` / session ID when the command spans multiple steps? |
+| **Background Job** | Does each job execution generate a `trace_id` at start? Is it included in all log entries for that execution? |
+
+If `trace_id` is generated but not propagated into log data fields: **Medium.**
+If no `trace_id` is generated at all at the entry point: **Medium.**
+
+Not applicable to: Library / SDK.
+
+---
+
+### LLM call structured log (AI / LLM Application only)
+
+Every code path that calls an LLM must emit one structured log entry per call with at minimum:
+
+- `trace_id`
+- `prompt_version`
+- `model`
+- `input_tokens`
+- `output_tokens`
+- `latency_ms`
+- `cost_usd`
+
+Optional fields (include when applicable):
+- `retrieved_chunks` — number of RAG chunks injected
+- `tool_calls` — list of tool names triggered
+- `judge_score` — included only when an eval run is performed
+
+If any required field is missing from the LLM call log: **Medium.**
+If no structured LLM call log exists at all: **Medium.**
+
+---
+
+### Pipeline stage row count logging (Data Pipeline / ML Pipeline only)
+
+Each stage that reads and transforms data must log:
+- Row count received (input)
+- Row count produced (output)
+- Row count rejected or skipped (if any filtering occurs)
+
+These three numbers make it possible to diagnose data loss without re-running the pipeline.
+
+If a stage applies filtering or aggregation but logs only "success" without row counts: **Low.**
+If no row count logging exists anywhere in the pipeline: **Medium.**
 
 ---
 
