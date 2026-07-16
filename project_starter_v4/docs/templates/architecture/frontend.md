@@ -1,5 +1,8 @@
 # architecture/frontend.md
 
+> **Applies to:** Web App, Microservices (with a UI layer), Mobile App.
+> If your project has no frontend (CLI Tool, Library/SDK, Data Pipeline, ML Pipeline, AI/LLM App script), **skip this file entirely** — delete it from your project's docs/architecture/ folder.
+
 Purpose:
 Describe frontend structure — what stack is used, how pages and components are organized,
 and how data fetching is handled.

@@ -6,14 +6,24 @@
   Do not scan the entire repository.
 
   Type must be: Package / Custom
-  Layer must be: DB / BE / FE / MOD / JOB
+  Layer must be one of: DB / BE / FE / MOD / JOB / STAGE / CLI / LIB
 
   Layer definitions:
-    DB   — schema files, migrations, seed scripts
-    BE   — backend application code (controller, service, repository, middleware, etc.)
-    FE   — frontend application code (page, component, hook, store, etc.)
-    MOD  — cross-layer shared logic (state machine, data mapper, shared utility used by multiple layers)
-    JOB  — background jobs, queue consumers, scheduled tasks, event handlers (not part of request/response cycle)
+    DB    — schema files, migrations, seed scripts
+    BE    — backend application code (controller, service, repository, middleware, etc.)
+    FE    — frontend application code (page, component, hook, store, etc.)
+    MOD   — cross-layer shared logic (state machine, data mapper, shared utility used by multiple layers)
+    JOB   — background jobs, queue consumers, scheduled tasks, event handlers (not part of request/response cycle)
+    STAGE — pipeline stage (Data Pipeline / ML Pipeline: extract, transform, load, train, evaluate, etc.)
+    CLI   — CLI entry point, command parser, flag definitions (CLI Tool)
+    LIB   — public API surface, exported functions/classes (Library / SDK)
+
+  Use only the layers that apply to your project type.
+  Web App / Microservices: DB, BE, FE, MOD, JOB
+  Data / ML Pipeline:      DB, STAGE, MOD, JOB
+  CLI Tool:                CLI, MOD
+  Library / SDK:           LIB, MOD
+  AI / LLM App:            BE, MOD, JOB (or STAGE if pipeline-structured)
 
   Custom code should only appear in the following contexts
   (per the Package First principle in AGENTS.md):
@@ -102,7 +112,7 @@ Feature --> API : calls
 │   ├── [jobs]/            ✅         ← [background jobs, queue consumers]
 │   └── [lib]/             —          ← [shared utilities, no flow file needed]
 │
-├── [prisma/ or migrations/]          ← database schema and migrations
+├── [migrations/ or schema/]          ← database schema and migrations (omit for CLI/Library/LLM script)
 ├── [docker-compose.yml]              ← local infrastructure services
 ├── [package.json / go.mod / etc.]    ← dependency manifest
 └── ...
@@ -137,9 +147,9 @@ Feature --> API : calls
 |---|---|---|---|
 | `[file path]` | DB | Custom | [e.g., Order schema migration] |
 | `[file path]` | BE | Custom | [e.g., Order business logic] |
-| `[file path]` | BE | Package | [e.g., Express router] |
+| `[file path]` | BE | Package | [e.g., framework router / CLI parser / DAG task wrapper] |
 | `[file path]` | FE | Custom | [e.g., Order list page component] |
-| `[file path]` | FE | Package | [e.g., React Query data fetching] |
+| `[file path]` | FE | Package | [e.g., data fetching / state management library] |
 | `[file path]` | MOD | Custom | [e.g., Cross-layer order state machine] |
 
 ---

@@ -74,6 +74,6 @@
 |---|---|---|---|
 | [e.g., Primary database] | [e.g., PostgreSQL] | [e.g., 16] | [persistent storage] |
 | [e.g., Message queue] | [e.g., RabbitMQ / Kafka] | [e.g., 3.12] | [async job processing] |
-| [e.g., Cache] | [e.g., Redis] | [e.g., 7] | [session storage, query cache] |
+| [e.g., Cache] | [e.g., Redis] | [e.g., 7] | [distributed cache, pub/sub, rate limiting] |
 | [e.g., Vector store] | [e.g., Chroma / Pinecone] | [e.g., 0.5] | [RAG retrieval — AI/LLM App] |
 | [Component] | [Technology] | [Version] | [Purpose] |

@@ -1,7 +1,11 @@
 # architecture/backend.md
 
+> **Applies to:** Web App, Microservices, CLI Tool (if layered), AI/LLM App (server component).
+> Data Pipelines and ML Pipelines document their processing layers in `pipeline-contract.md`.
+> Libraries/SDKs document their public API surface in `public-api.md`.
+
 Purpose:
-Describe backend structure — what stack is used, how it is layered, and how modules are organized.
+Describe backend / processing structure — what stack is used, how it is layered, and how modules are organized.
 
 Include:
 - Stack
@@ -18,12 +22,22 @@ Avoid:
 
 ## Stack
 
-[List the runtime, framework, ORM/query layer, and database. e.g.:
-  Node.js 22 / Express / Prisma / PostgreSQL
-  Python 3.12 / FastAPI / SQLAlchemy / PostgreSQL
-  Go 1.22 / Gin / sqlx / MySQL
-  Java 21 / Spring Boot / JPA / PostgreSQL
-  Ruby 3 / Rails / ActiveRecord / PostgreSQL]
+[List the runtime, framework, data access layer, and storage. Examples by type:
+
+  Web App / Microservices:
+    Node.js 22 / Express / Prisma / PostgreSQL
+    Python 3.12 / FastAPI / SQLAlchemy / PostgreSQL
+    Go 1.22 / Gin / sqlx / MySQL
+    Java 21 / Spring Boot / JPA / PostgreSQL
+    Ruby 3 / Rails / ActiveRecord / PostgreSQL
+
+  CLI Tool:
+    Python 3.12 / Click / — / (no DB, or SQLite for local state)
+    Go 1.22 / cobra / — / (no DB)
+    Node.js 22 / commander / — / (no DB)
+
+  AI / LLM App (server component):
+    Python 3.12 / FastAPI / LangChain or LlamaIndex / Chroma + PostgreSQL]
 
 ---
 

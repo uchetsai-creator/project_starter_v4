@@ -4,26 +4,29 @@
   Describes the full specification for every API endpoint.
   Each endpoint corresponds to a functional requirement in project-requirements.md.
 
-  Protocol note:
-  This template assumes REST over HTTP as the primary protocol.
-  If your project uses additional or different protocols, add sections for each:
+  Which contract file to use — pick the one that matches your project type:
 
-    GraphQL   — document each Query and Mutation: input types, return types, errors
-    gRPC      — document each RPC method: request message, response message, error codes
-    WebSocket — see the WebSocket Events section template at the bottom of this file
-    CLI       — document each command: flags, arguments, output format, exit codes
+  | Project type                    | Contract file                                      |
+  |---------------------------------|----------------------------------------------------|
+  | Web App / Microservices (HTTP)  | api-contract.md (this file)                        |
+  | CLI Tool                        | cli-contract.md                                    |
+  | Library / SDK                   | public-api.md                                      |
+  | Data Pipeline / ML Pipeline     | pipeline-contract.md                               |
+  | AI / LLM App                    | llm-contract.md  +  rag-contract.md (if RAG)       |
 
-  Mixed protocol projects (e.g. REST + WebSocket, REST + gRPC) should have one section
-  per protocol. Do not omit a protocol because it was not in the original template —
-  if the codebase emits or receives real-time events, document them here.
+  Mixed-protocol projects (e.g. REST + WebSocket, REST + gRPC) should have one section
+  per protocol inside this file. Do not omit a protocol because it was not in the
+  original template — if the codebase emits or receives real-time events, document them.
 
   The sections below (Overview table, per-endpoint blocks, Error Response Format,
-  Error Code Catalogue) are for REST. Keep, replace, or supplement them based on
-  what protocols your project actually uses.
+  Error Code Catalogue) are REST / HTTP specific.
+  Add or replace sections for GraphQL, gRPC, WebSocket as needed (templates at bottom).
 -->
 
+> **Applies to:** Web App, Microservices. For other project types see the routing table above.
+
 **Base URL:** `[e.g., /api/v1]`
-**Authentication:** Bearer Token (JWT)
+**Authentication:** `[e.g., Bearer Token (JWT) / API Key / mTLS / None]`
 **Content-Type:** `application/json`
 
 ---

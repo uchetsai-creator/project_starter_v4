@@ -20,16 +20,31 @@ Avoid:
 
 <!--
   List every service that needs to be running for the system to work.
-  Port is optional — omit if not applicable (e.g. serverless, managed services).
+  Port is optional — omit if not applicable (e.g. serverless, managed services, CLI/Library with no infra).
 
-  Examples:
-    frontend    React / Vite          5173   serves the UI
-    backend     Express / Node.js     4000   REST API
-    database    PostgreSQL 16         5432   primary data store
-    cache       Redis 7               6379   session and query cache
-    queue       RabbitMQ              5672   async job queue
-    worker      BullMQ worker         —      processes background jobs
-    storage     MinIO (S3-compatible) 9000   file uploads (local only; S3 in prod)
+  Examples by project type:
+
+  Web App / Microservices:
+    frontend    React / Vite / Next.js  5173   serves the UI
+    backend     FastAPI / Express        4000   REST API
+    database    PostgreSQL 16           5432   primary data store
+    cache       Redis 7                 6379   distributed cache
+    queue       RabbitMQ / Kafka        5672   async job queue
+    worker      Celery / BullMQ         —      background job processor
+    storage     MinIO (S3-compatible)   9000   file uploads (local only; S3 in prod)
+
+  Data Pipeline / ML Pipeline:
+    database    PostgreSQL / DuckDB     5432   source or target data store
+    orchestrator Airflow / Prefect      8080   DAG scheduling UI
+    object store MinIO (S3-compatible) 9000   raw and processed file storage
+    vector store Chroma                 8000   embeddings store (if ML/RAG)
+
+  AI / LLM App:
+    (none for script-only apps — external API under External Services in dependencies.md)
+    vector store Chroma / Weaviate      8000   RAG retrieval (if applicable)
+
+  CLI Tool / Library / SDK:
+    (typically no local services — list nothing or a test DB if integration tests need one)
 -->
 
 | Service | Technology | Port | Description |
@@ -42,8 +57,15 @@ Avoid:
 
 <!--
   List every environment variable the system reads.
-  Remove DATABASE_URL and JWT_SECRET if your project does not use them —
-  these are examples, not requirements.
+  The variables your project needs depend on its type — examples:
+
+  Web App / Microservices: DATABASE_URL, JWT_SECRET (or SESSION_SECRET), PORT, CORS_ORIGIN
+  Data / ML Pipeline:      DATABASE_URL, S3_BUCKET, AWS_REGION, AIRFLOW_HOME
+  AI / LLM App:            OPENAI_API_KEY (or equivalent), LLM_MODEL, VECTOR_STORE_URL
+  CLI Tool:                CONFIG_PATH, LOG_LEVEL (if configurable via env)
+  Library / SDK:           (usually none — configured by the caller, not env vars)
+
+  Remove variables that do not apply to your project type.
   Add all variables your project actually uses.
 -->
 
@@ -229,37 +251,54 @@ How to confirm the system is running correctly after startup.
   and how they communicate (HTTP, TCP, internal network, etc.)
 -->
 
+<!--
+  Draw the topology that matches your project type.
+  Remove node types that don't apply — e.g., no Frontend node for a CLI or Pipeline.
+
+  Per-type starter shapes:
+
+  Web App / Microservices:
+    node "[Frontend Host]" { component "[Frontend]" as FE }
+    node "[Backend Host]"  { component "[Backend API]" as BE }
+    node "[DB Host]"       { database "[Database]" as DB }
+    FE -down-> BE : HTTPS ; BE -down-> DB : TCP
+
+  Data / ML Pipeline:
+    node "[Orchestrator Host]" { component "[Airflow / Prefect]" as Orch }
+    node "[Worker Host]"       { component "[Pipeline Worker]" as Worker }
+    node "[Storage]"           { database "[Object Store / DB]" as Store }
+    Orch -down-> Worker : trigger ; Worker -down-> Store : read/write
+
+  AI / LLM App:
+    node "[App Host]"         { component "[LLM App]" as App }
+    node "[Vector Store Host]"{ database "[Vector Store]" as VS }
+    cloud "[LLM Provider API]" as LLM
+    App -right-> LLM : HTTPS ; App -down-> VS : TCP
+
+  CLI Tool / Library / SDK:
+    (no deployment diagram needed — delete this section)
+-->
+
 ```plantuml
 @startuml
 ' Deployment Topology Diagram
 ' Shows which service runs where and how they connect at runtime.
 ' Use node for hosts/platforms, component for services.
+' Adapt the blocks below to your project type (see comment above).
 ' WARNING: component names must not contain parentheses () — use aliases instead.
 '   ❌ component "myFunc() handler"
 '   ✅ component "myFunc handler" as MyFunc
 
-
 skinparam componentStyle rectangle
 
-node "[Frontend Host — e.g., Vercel / Nginx / CDN]" as FEHost {
-  component "[Frontend]" as FE
+node "[Host A — e.g., Docker / Railway / EC2]" as HostA {
+  component "[Service A]" as SvcA
 }
 
-node "[Backend Host — e.g., Docker / Railway / EC2]" as BEHost {
-  component "[Backend API]" as BE
+node "[Host B — e.g., RDS / Supabase / managed]" as HostB {
+  database "[Service B]" as SvcB
 }
 
-node "[Database Host — e.g., RDS / Supabase]" as DBHost {
-  database "[Database]" as DB
-}
-
-node "[Cache Host — e.g., Redis Cloud]" as CacheHost {
-  component "[Cache]" as Cache
-}
-
-FE    -down-> BE    : HTTPS
-BE    -down-> DB    : TCP
-BE    -right-> Cache : TCP
-@enduml
+SvcA -down-> SvcB : [protocol — e.g., TCP / HTTPS / internal]
 @enduml
 ```

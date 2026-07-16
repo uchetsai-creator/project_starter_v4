@@ -1,21 +1,25 @@
 # Permissions
 
 <!--
-  Describes roles, permission definitions, and access control for every API endpoint.
-  Corresponds to every endpoint in api-contract.md.
+  Describes roles, permission definitions, and access control rules for this project.
+
+  Which project types need this file:
+    Web App / Microservices — full RBAC / ABAC / ACL model; document every endpoint
+    CLI Tool                — document which commands require elevated privileges or config
+    AI / LLM App            — document who can invoke the app and any output restrictions
+    Data Pipeline           — document who can trigger runs and access output data
+    Library / SDK           — usually no permissions (caller controls access); skip if so
 
   Access control model: fill in the actual model used in this project.
   Common models:
-    RBAC  — Role-Based Access Control (roles assigned to users, permissions assigned to roles)
-    ABAC  — Attribute-Based Access Control (permissions based on user/resource attributes)
-    ACL   — Access Control List (per-resource permission entries)
-    Ownership-only — no roles, each user can only access their own resources
+    RBAC       — Role-Based Access Control (roles → permissions → endpoints)
+    ABAC       — Attribute-Based Access Control (user/resource attributes drive rules)
+    ACL        — Access Control List (per-resource entries)
+    API Key    — key-based access, no user roles (common for libraries and LLM apps)
+    Ownership  — no roles; each user can only access their own resources
 
-  The Role Definitions, Permission Definitions, and RBAC Matrix sections below
-  assume RBAC. If the project uses a different model, replace those sections
-  with whatever structure best describes the actual access control design.
-
-  After writing, run: Edit the ```plantuml block in the file, then rebuild PDF
+  The sections below assume RBAC / HTTP API. Replace or skip sections that don't apply.
+  After writing: edit the ```plantuml block in the file, then rebuild PDF
 -->
 
 **Access Control Model:** [RBAC / ABAC / ACL / Ownership-only / other]
@@ -118,22 +122,37 @@
 
 ## Enforcement Layers
 
-| Layer | Responsibility |
-|---|---|
-| API Gateway | JWT validation, role extraction |
-| Middleware | Role-permission check, reject unauthorized (403) |
-| Service Layer | Ownership check — `owner_id = current_user.id` |
+<!--
+  Describe where access control is enforced.
+  Use the rows that match your project type — remove inapplicable rows.
+-->
+
+| Layer | Responsibility | Applies to |
+|---|---|---|
+| API Gateway | Token validation, role extraction | Web App / Microservices |
+| Middleware / Route Guard | Role-permission check, reject unauthorized | Web App / Microservices |
+| Service Layer | Ownership check — `owner_id = current_user.id` | Web App |
+| CLI Flag / Config | Require elevated flag or config key for privileged commands | CLI Tool |
+| API Key Header | Validate key before processing any request | AI/LLM App / Library |
+| Pipeline Trigger Auth | Verify caller identity before allowing pipeline run | Data Pipeline |
 
 ---
 
 ## Edge Cases
 
+<!--
+  List access control edge cases relevant to your project type.
+  Remove HTTP-specific rows if your project is not a Web App / Microservices.
+-->
+
 | Edge Case | Design | Response |
 |---|---|---|
-| Unauthenticated access to protected resource | API Gateway JWT check fails | `401 AUTH_TOKEN_MISSING` |
-| Low-privilege role attempts high-privilege action | Middleware role check | `403 AUTH_PERMISSION_DENIED` |
-| User accesses another user's resource | Service Layer ownership check | `403 AUTH_RESOURCE_NOT_OWNED` |
-| Expired token | API Gateway JWT check fails | `401 AUTH_TOKEN_EXPIRED` |
+| Unauthenticated access to protected resource | Token / key check at entry point fails | Reject with auth error (HTTP 401 / non-zero exit / exception) |
+| Low-privilege role attempts high-privilege action | Role-permission check | Reject (HTTP 403 / permission denied error) |
+| User accesses another user's resource | Ownership check in service layer | Reject (HTTP 403 / access denied) |
+| Expired / revoked token or API key | Token validation fails | Reject with auth error |
+| Privileged CLI command run without required flag | Arg parser check | Exit with usage error |
+| Pipeline triggered by unauthorized caller | Trigger auth check | Reject run request |
 
 ---
 

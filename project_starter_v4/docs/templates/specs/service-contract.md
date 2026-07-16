@@ -9,7 +9,20 @@
   See service-catalog.md for the full list of services and their dependencies.
 -->
 
+<!--
+  Use whichever section(s) match how your services actually communicate.
+  Services that communicate via HTTP/REST → use REST / HTTP Contracts below.
+  Services that communicate via a message broker → use Event / Message Contracts below.
+  Many Microservices architectures use both — keep both sections.
+  Delete the section that does not apply.
+-->
+
 ## REST / HTTP Contracts
+
+<!--
+  Use this section when one service calls another synchronously over HTTP.
+  Delete if all inter-service communication is event/queue-based.
+-->
 
 Repeat this block for each service-to-service REST call.
 
