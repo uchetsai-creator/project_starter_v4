@@ -21,11 +21,15 @@ PDF section order:
   7. Project Status
 
 Usage:
-  python3 docs/script/build_pdf.py [docs_dir] [-o output.pdf] [--lang en|zh] [--clean]
+  python3 docs/script/build_pdf.py [docs_dir] [-o output.pdf] [--lang en|zh] [--project-type TYPE] [--clean]
 
-  --lang en   Section labels and UI text in English (default)
-  --lang zh   Section labels and UI text in Traditional Chinese
-  --clean     Delete the diagram cache before building (use after changing plantuml.cfg)
+  --lang en              Section labels and UI text in English (default)
+  --lang zh              Section labels and UI text in Traditional Chinese
+  --project-type TYPE    Filter PDF to only include documents relevant to this project type.
+                         Valid values: web-app, cli-tool, library, data-pipeline,
+                                       ml-pipeline, microservices, llm-app
+                         Omit to include all files that exist (backward-compatible default).
+  --clean                Delete the diagram cache before building (use after changing plantuml.cfg)
 
 To add a file to the PDF: add it to PDF_ALLOWLIST below. Do not change the discovery logic.
 
@@ -44,7 +48,7 @@ except ImportError:
 # PDF_ALLOWLIST is maintained in pdf_allowlist.py — edit that file, not this one.
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _script_dir)
-from pdf_allowlist import PDF_ALLOWLIST, PDF_SECTION_FILTER
+from pdf_allowlist import PDF_ALLOWLIST, PDF_SECTION_FILTER, AUTO_SCAN_TYPES
 
 # ── PlantUML configuration ────────────────────────────────────────────────────
 # Set PLANTUML_JAR to the path of your plantuml.jar file.
@@ -175,66 +179,83 @@ CSS_FONT_EN = "'Segoe UI', Arial, sans-serif"
 CSS_FONT_ZH = "'Noto Sans CJK TC', 'Noto Sans TC', 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif"
 
 
-def find_allowed_files(docs_dir, strings):
-    """Return (rel, abs_path, section_label) for every allowlisted file that exists.
-    Also auto-includes any flows/*-flow.md files (individual module flow files created
-    during development). log-*.md files are intentionally excluded — they contain
-    low-level implementation details not suitable for the PDF audience."""
+def find_allowed_files(docs_dir, strings, project_type=None):
+    """Return (rel, abs_path, section_label) for every allowlisted file that exists
+    and applies to the given project_type. log-*.md files are intentionally excluded.
+
+    project_type: one of the type strings defined in pdf_allowlist.py, or None to
+                  include all entries regardless of type (backward-compatible default).
+    """
     result = []
     seen = set()
 
-    for section_key, rel in PDF_ALLOWLIST:
+    for section_key, rel, types in PDF_ALLOWLIST:
+        if project_type is not None and project_type not in types:
+            continue
         abs_path = os.path.join(docs_dir, rel)
         section_label = strings["sections"][section_key]
         if os.path.exists(abs_path):
             result.append((rel, abs_path, section_label))
             seen.add(rel)
         else:
-            print(f"Warning: allowlisted file not found, skipping: {rel}")
+            if project_type is not None:
+                # Only warn for files that are expected for this project type
+                from pdf_allowlist import ALL
+                required = types - {"llm-app"} if project_type != "llm-app" else types
+                print(f"Warning: expected file not found for {project_type}, skipping: {rel}")
+            # silently skip files that don't exist when no project type is set
+
+    def _should_scan(pattern):
+        if project_type is None:
+            return True
+        return project_type in AUTO_SCAN_TYPES.get(pattern, set())
 
     flows_label = strings["sections"]["build"]
-    for path in sorted(glob.glob(os.path.join(docs_dir, "modules", "*", "*-module-data-flow.md"))):
-        rel = os.path.relpath(path, docs_dir)
-        if rel not in seen:
-            result.append((rel, path, flows_label))
+    if _should_scan("modules/*/*-module-data-flow.md"):
+        for path in sorted(glob.glob(os.path.join(docs_dir, "modules", "*", "*-module-data-flow.md"))):
+            rel = os.path.relpath(path, docs_dir)
+            if rel not in seen:
+                result.append((rel, path, flows_label))
+                seen.add(rel)
 
-    # Also auto-include *-flow.md files directly under modules/ (e.g. order-flow.md)
-    for path in sorted(glob.glob(os.path.join(docs_dir, "modules", "*", "*-flow.md"))):
-        rel = os.path.relpath(path, docs_dir)
-        if rel not in seen:
-            result.append((rel, path, flows_label))
+    if _should_scan("modules/*/*-flow.md"):
+        for path in sorted(glob.glob(os.path.join(docs_dir, "modules", "*", "*-flow.md"))):
+            rel = os.path.relpath(path, docs_dir)
+            if rel not in seen:
+                result.append((rel, path, flows_label))
+                seen.add(rel)
 
-    # Auto-include *-process.md files under business/ (one file per business process)
     business_label = strings["sections"]["introduction"]
-    for path in sorted(glob.glob(os.path.join(docs_dir, "business", "*-process.md"))):
-        rel = os.path.relpath(path, docs_dir)
-        if rel not in seen:
-            for idx, (r, _, _) in enumerate(result):
-                if r == "business/business-process.md":
-                    result.insert(idx + 1, (rel, path, business_label))
-                    seen.add(rel)
-                    break
+    if _should_scan("business/*-process.md"):
+        for path in sorted(glob.glob(os.path.join(docs_dir, "business", "*-process.md"))):
+            rel = os.path.relpath(path, docs_dir)
+            if rel not in seen:
+                for idx, (r, _, _) in enumerate(result):
+                    if r == "business/business-process.md":
+                        result.insert(idx + 1, (rel, path, business_label))
+                        seen.add(rel)
+                        break
 
-    # Auto-include *-object.md files under business/ (one file per business object)
-    for path in sorted(glob.glob(os.path.join(docs_dir, "business", "*-object.md"))):
-        rel = os.path.relpath(path, docs_dir)
-        if rel not in seen:
-            for idx, (r, _, _) in enumerate(result):
-                if r == "business/business-objects.md":
-                    result.insert(idx + 1, (rel, path, business_label))
-                    seen.add(rel)
-                    break
+    if _should_scan("business/*-object.md"):
+        for path in sorted(glob.glob(os.path.join(docs_dir, "business", "*-object.md"))):
+            rel = os.path.relpath(path, docs_dir)
+            if rel not in seen:
+                for idx, (r, _, _) in enumerate(result):
+                    if r == "business/business-objects.md":
+                        result.insert(idx + 1, (rel, path, business_label))
+                        seen.add(rel)
+                        break
 
-    # Auto-include *-prompt.md files under specs/prompts/ (AI / LLM App — one file per prompt)
     design_label = strings["sections"]["design"]
-    for path in sorted(glob.glob(os.path.join(docs_dir, "specs", "prompts", "*-prompt.md"))):
-        rel = os.path.relpath(path, docs_dir)
-        if rel not in seen:
-            for idx, (r, _, _) in enumerate(result):
-                if r == "specs/prompt-library.md":
-                    result.insert(idx + 1, (rel, path, design_label))
-                    seen.add(rel)
-                    break
+    if _should_scan("specs/prompts/*-prompt.md"):
+        for path in sorted(glob.glob(os.path.join(docs_dir, "specs", "prompts", "*-prompt.md"))):
+            rel = os.path.relpath(path, docs_dir)
+            if rel not in seen:
+                for idx, (r, _, _) in enumerate(result):
+                    if r == "specs/prompt-library.md":
+                        result.insert(idx + 1, (rel, path, design_label))
+                        seen.add(rel)
+                        break
 
     return result
 
@@ -298,7 +319,7 @@ def extract_plantuml_from_file(md_path, svg_cache_dir):
     return pairs
 
 
-def find_plantuml_diagrams(docs_dir, png_cache_dir):
+def find_plantuml_diagrams(docs_dir, png_cache_dir, project_type=None):
     """Scan all allowlisted markdown files for ```plantuml blocks.
     Renders each block to SVG (with mtime-based caching).
     Returns dict: {diagram_key: {svg, md}}"""
@@ -306,16 +327,18 @@ def find_plantuml_diagrams(docs_dir, png_cache_dir):
     os.makedirs(svg_cache_dir, exist_ok=True)
 
     all_pairs = {}
-    # Collect md files from allowlist + auto-scanned modules
+    # Collect md files from allowlist + auto-scanned patterns
     md_files = set()
-    for _, rel in PDF_ALLOWLIST:
+    for _, rel, types in PDF_ALLOWLIST:
+        if project_type is not None and project_type not in types:
+            continue
         abs_path = os.path.join(docs_dir, rel)
         if os.path.exists(abs_path):
             md_files.add(abs_path)
     # Also scan auto-included files not in the static allowlist
-    for pattern in ['business/*-process.md', 'business/*-object.md',
-                    'modules/*/*-module-data-flow.md', 'modules/*/*-flow.md',
-                    'specs/prompts/*-prompt.md']:
+    for pattern, types in AUTO_SCAN_TYPES.items():
+        if project_type is not None and project_type not in types:
+            continue
         for p in glob.glob(os.path.join(docs_dir, pattern)):
             md_files.add(p)
 
@@ -598,8 +621,8 @@ def clean_for_pdf(md_text):
     return md_text
 
 
-def build_merged_markdown(docs_dir, html_svg_pairs, png_cache_dir, strings):
-    files = find_allowed_files(docs_dir, strings)
+def build_merged_markdown(docs_dir, html_svg_pairs, png_cache_dir, strings, project_type=None):
+    files = find_allowed_files(docs_dir, strings, project_type)
     if not files:
         print("No files to include — check PDF_ALLOWLIST in build_pdf.py")
         sys.exit(1)
@@ -723,12 +746,18 @@ a {{ color: #3182CE; text-decoration: none; }}
 """
 
 
+VALID_PROJECT_TYPES = {
+    "web-app", "cli-tool", "library", "data-pipeline",
+    "ml-pipeline", "microservices", "llm-app",
+}
+
 def parse_args():
     args = sys.argv[1:]
     docs_dir = "docs"
     output_path = None
     lang = "en"
     clean = False
+    project_type = None
 
     i = 0
     while i < len(args):
@@ -738,6 +767,9 @@ def parse_args():
             i += 2
         elif a == "--lang" and i + 1 < len(args):
             lang = args[i + 1]
+            i += 2
+        elif a == "--project-type" and i + 1 < len(args):
+            project_type = args[i + 1]
             i += 2
         elif a == "--clean":
             clean = True
@@ -752,14 +784,19 @@ def parse_args():
         print(f"Unsupported language '{lang}'. Available: {', '.join(STRINGS)}")
         sys.exit(1)
 
+    if project_type is not None and project_type not in VALID_PROJECT_TYPES:
+        print(f"Unsupported project type '{project_type}'.")
+        print(f"Available: {', '.join(sorted(VALID_PROJECT_TYPES))}")
+        sys.exit(1)
+
     if not output_path:
         output_path = os.path.join(docs_dir, f"project-documentation-{lang}.pdf")
 
-    return docs_dir, output_path, lang, clean
+    return docs_dir, output_path, lang, clean, project_type
 
 
 def main():
-    docs_dir, output_path, lang, clean = parse_args()
+    docs_dir, output_path, lang, clean, project_type = parse_args()
     strings = STRINGS[lang]
 
     if not os.path.isdir(docs_dir):
@@ -773,15 +810,19 @@ def main():
         print("Cleared diagram cache.")
     os.makedirs(png_cache_dir, exist_ok=True)
 
+    if project_type:
+        print(f"Project type: {project_type}")
+
     # Legacy: find manually-generated SVG/HTML pairs (e.g. schema ERD)
     html_svg_pairs = find_html_svg_pairs(docs_dir)
     # New: extract and render all ```plantuml blocks from markdown files
-    plantuml_pairs = find_plantuml_diagrams(docs_dir, png_cache_dir)
+    plantuml_pairs = find_plantuml_diagrams(docs_dir, png_cache_dir, project_type)
     html_svg_pairs.update(plantuml_pairs)
     print(f"Found {len(html_svg_pairs)} diagram(s): {list(html_svg_pairs.keys())}")
     print(f"Language: {lang}")
 
-    merged_md = build_merged_markdown(docs_dir, html_svg_pairs, png_cache_dir, strings)
+    merged_md = build_merged_markdown(docs_dir, html_svg_pairs, png_cache_dir, strings,
+                                      project_type=project_type)
 
     md_html = markdown.markdown(
         merged_md,
