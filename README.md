@@ -44,7 +44,9 @@ project_starter/                     ← this repo (template only)
     │   ├── data-pipeline.md
     │   ├── ml-pipeline.md
     │   ├── microservices.md
-    │   └── llm-app.md
+    │   ├── llm-app.md
+    │   ├── document-matrix.md       ← Required/Optional/N/A table per project type (load only when initializing)
+    │   └── retrofit.md              ← Step-by-step retrofit procedure for existing codebases
     │
     ├── specs/
     │   │                              ── Universal (all project types) ──
@@ -107,9 +109,8 @@ project_starter/                     ← this repo (template only)
     └── script/
         ├── plantuml.jar             ← PlantUML renderer (download separately, see below)
         ├── schema_to_html.py        ← Prisma/SQL schema → ERD (interactive HTML + static SVG)
-        ├── build_pdf.py             ← auto-renders all ```plantuml blocks via PlantUML + generates PDF
+        ├── build_pdf.py             ← renders all ```plantuml blocks via PlantUML + merges docs/ into PDF
         ├── scan_codebase.py         ← scans src/ and reports which modules are undocumented
-        ├── build_pdf.py             ← merges all of docs/ into one PDF, with diagrams embedded
         └── pdf_allowlist.py         ← single source of truth for which files appear in the PDF
 ```
 
@@ -126,7 +127,7 @@ When a new project starts, `templates/` is copied in and becomes `docs/` — see
 ## Project Initialization
 
 A new project does **not** keep `templates/` — it copies only the files its project type needs
-into `docs/`, filling in the placeholders as it goes. The document matrix in `AGENTS.md` defines
+into `docs/`, filling in the placeholders as it goes. The document matrix in `templates/init/document-matrix.md` defines
 which files are required, optional, or N/A for each type.
 
 The root files are the same for every type:
@@ -206,7 +207,7 @@ docs/modules/
 ```
 docs/specs/
 ├── research.md  quickstart.md  pipeline-contract.md
-├── data-model.md  logging-spec.md
+├── data-model.md  logging-spec.md  pipeline-debug.md
 docs/architecture/
 └── architecture.md  backend.md  database.md  deployment.md
 docs/modules/
@@ -220,7 +221,7 @@ docs/modules/
 ```
 docs/specs/
 ├── research.md  quickstart.md  pipeline-contract.md
-├── data-model.md  model-contract.md  experiment-log.md  logging-spec.md
+├── data-model.md  model-contract.md  experiment-log.md  logging-spec.md  pipeline-debug.md
 docs/architecture/
 └── architecture.md  backend.md  database.md  deployment.md
 docs/modules/
@@ -247,7 +248,8 @@ docs/architecture/
 
 ```
 docs/specs/
-├── research.md  quickstart.md  llm-contract.md
+├── research.md  quickstart.md  llm-contract.md  logging-spec.md
+├── llm-debug.md
 ├── prompt-library.md                                       ← index only
 ├── prompts/
 │   └── [prompt-id]-prompt.md                              ← one per prompt
@@ -295,9 +297,9 @@ The agent reads, in order:
 2. `docs/current-state.md` — the active task
 3. Only the docs the current task actually needs (it does **not** scan the whole repo)
 
-After finishing a task, it works through a mandatory checklist (see `AGENTS.md` →
-`Document Update Checklist`) — checking whether each spec/architecture/business doc needs
-updating based on what just changed.
+After finishing a task, it applies the filtered `Doc Checklist` in `docs/current-state.md`
+(pre-filled at task setup using the quick-filter guide). At sprint end, it loads `sprint-sync.md`
+and runs the full Document Update Checklist across all docs.
 
 When a task finishes **all** work for a module, three more things happen automatically:
 
@@ -310,8 +312,8 @@ When a task finishes **all** work for a module, three more things happen automat
 
 ## Retrofitting an existing project
 
-If a project already has code but no documentation, use the retrofit flow in `AGENTS.md`
-(`If retrofitting an existing project`). The flow has five steps:
+If a project already has code but no documentation, use the retrofit flow in `templates/init/retrofit.md`.
+The flow has five steps:
 
 1. **Read the codebase** — entry point, schema, one complete module
 2. **Run the module inventory scan** — `scan_codebase.py` lists every source folder and flags which

@@ -658,6 +658,28 @@ Files: `init/web-app.md`, `init/cli-tool.md`, `init/library.md`, `init/data-pipe
 Load when: project is being initialized for the first time. Never needed for day-to-day tasks.
 Update when: a new required document is added or removed for that project type.
 
+### init/document-matrix.md
+**Applies to: All project types**
+
+Purpose:
+Required / Optional / N/A table for every document, by project type. The single source of
+truth for which files to create when initializing or retrofitting a project.
+Extracted from AGENTS.md to keep AGENTS.md lean — agents load this only when initializing
+or retrofitting, never during normal task work.
+
+Load when: project is being initialized or retrofitted. Never needed for day-to-day tasks.
+Update when: a new document template is added and its applicability per type needs recording.
+
+### init/retrofit.md
+**Applies to: All project types**
+
+Purpose:
+Step-by-step retrofit procedure (Steps 1–5) for applying this framework to an existing
+codebase that has no prior documentation. Extracted from AGENTS.md to keep AGENTS.md lean.
+
+Load when: retrofitting an existing project for the first time. Never needed otherwise.
+Update when: the retrofit procedure changes.
+
 ### sprint-sync.md
 **Applies to: All project types**
 
@@ -685,7 +707,7 @@ Contains:
 - Doc Checklist (filtered per-task list of documents to check at completion)
 
 Update when:
-* Task starts — fill in Current Task, Required Context, Steps, Next Task; filter AGENTS.md → Document Update Checklist into Doc Checklist (this is the only time AGENTS.md is opened during normal task work)
+* Task starts — fill in Current Task, Required Context, Steps, Next Task; use the inline quick-filter guide in the current-state.md template to populate Doc Checklist (no other file needed for standard task types; load sprint-sync.md only for edge cases not covered by the guide)
 * Task completes — apply Doc Checklist items, set Status to "Complete — Pending Sprint Doc Sync", mark steps [x], promote Next Task to Current Task, set Status to "In Progress" for new task
 
 ### changelog.md
@@ -790,7 +812,7 @@ Run with `--update docs/codebase-map.md` to write the tree and coverage table in
 
 | Script | Input format | Output suffix | Embedded in |
 |---|---|---|---|
-| `PlantUML (via build_pdf.py)` | yaml block in architecture.md | `.html` / `.svg` | `architecture/architecture.md` |
+| `PlantUML (via build_pdf.py)` | plantuml block in architecture.md | `.html` / `.svg` | `architecture/architecture.md` |
 | `schema_to_html.py` | Prisma / SQL file | `.html` / `.svg` | `specs/data-model.md` |
 | `PlantUML (via build_pdf.py)` | state block in any .md | `-state.html` / `.svg` | `specs/data-model.md`, `business/*-object.md` |
 | `PlantUML (via build_pdf.py)` | usecase block in any .md | `-usecase.html` / `.svg` | `specs/permissions.md` |
