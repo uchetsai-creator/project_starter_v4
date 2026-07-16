@@ -15,24 +15,28 @@
 
 ## Testing Strategy
 
-| Type | Tool | Scope | Coverage target |
-|---|---|---|---|
-| Unit | [e.g., Jest / pytest / go test] | [e.g., service layer, utility functions] | [e.g., ≥ 80%] |
-| Integration | [e.g., Supertest / httpx / pytest] | [scope — see per-type notes below] | [e.g., all critical paths] |
-| E2E / System | [e.g., Playwright / shell scripts / dbt test] | [scope — see per-type notes below] | [e.g., happy paths only] |
-| Performance | [e.g., k6 / timeit / benchmark] | [scope — see per-type notes below] | [e.g., see per-type notes below] |
+Five test levels — include only the levels that apply to your project type (see per-type table below).
 
-**Per-type interpretation — adapt to whichever applies:**
-
-| Project type | Integration means | E2E / System means | Performance target |
+| Level | What it tests | External deps | Tool examples |
 |---|---|---|---|
-| **Web App** | API endpoints + DB queries | Critical user flows (Playwright/Cypress) | p95 < 200ms under load |
-| **CLI Tool** | Subcommand execution against real files/config | Full command sequence with real inputs | Execution time < N seconds per invocation |
-| **Library / SDK** | Public API functions with real inputs (no mocks) | Consumer-side integration: import and use the library as a caller would | Function call latency; memory allocation |
-| **Data Pipeline** | Stage-to-stage data contract: input → output schema matches | Full pipeline run on a fixture dataset; output matches expected | Throughput (rows/sec); total run time |
-| **ML Pipeline** | Model inference on a test batch | Train → eval → artifact export on a small dataset | Inference latency; memory footprint |
-| **Microservices** | Per-service: API + DB. Cross-service: contract tests | End-to-end scenario across services | Per-service p95 latency; message queue lag |
-| **AI / LLM App** | LLM API call with a known prompt + expected output shape | Full conversation turn: prompt → response → eval score | Time to first token; tokens/second |
+| **Unit** | Single function / method in isolation | All mocked | Jest / pytest / go test |
+| **Component** | Single module / service as a unit | All mocked | pytest / Jest / Testcontainers (optional) |
+| **Integration** | Multiple modules / services with real deps | Real DB / real queue / real files | Supertest / httpx / pytest |
+| **Contract / Service** | Interface contract between two components | Mocked provider OR real stub | Pact / Dredd / pytest / dbt test |
+| **E2E / System** | Full system from user / trigger perspective | All real | Playwright / shell script / pipeline run |
+| **Performance** | Throughput or latency under load | Real or staging | k6 / Artillery / timeit / benchmark |
+
+**Per-type guide — which levels to include and what they mean:**
+
+| Project type | Unit | Component | Integration | Contract / Service | E2E / System | Performance |
+|---|---|---|---|---|---|---|
+| **Web App** | Functions, utils | Single controller/service with DB mocked | API endpoint + real DB | API schema matches client expectation | Critical user flows (Playwright) | p95 < Xms under load |
+| **Microservices** | Per-service functions | Single service with other services mocked | Service + real DB/queue | Inter-service event/REST contracts (Pact) | Cross-service scenario | Per-service latency; queue lag |
+| **CLI Tool** | Flag parsing, business logic | Single command with file system mocked | Full command with real files/config | ❌ | Full command sequence, real inputs | Execution time per invocation |
+| **Library / SDK** | Individual functions | Module with I/O mocked | Public API with real inputs | Public API contract stability across versions | Import and use as a caller would | Call latency; memory allocation |
+| **Data Pipeline** | Transform functions | Single stage with input/output mocked | Stage → real DB / real file read-write | Stage input/output schema contract | Full pipeline run on fixture dataset | Throughput (rows/sec); total run time |
+| **ML Pipeline** | Feature functions | Single stage with data mocked | Stage with real data batch | Model input/output schema contract | Train → eval → artifact export | Inference latency; memory footprint |
+| **AI / LLM App** | Prompt builder, parser | Full prompt round-trip with LLM mocked | Real LLM API call with known prompt | LLM output format matches downstream expectation | Full conversation turn + eval score | Time to first token; tokens/sec |
 
 ---
 
@@ -40,10 +44,10 @@
 
 ### In Scope
 
-| Module / Feature | Test types | Notes |
+| Module / Feature | Levels | Notes |
 |---|---|---|
-| [e.g., Auth] | Unit, Integration | [e.g., focus on token validation and expiry] |
-| [Module] | [Types] | [Notes] |
+| [e.g., Auth] | Unit, Component, Integration | [e.g., focus on token validation and expiry] |
+| [Module] | [Levels] | [Notes] |
 
 ### Out of Scope
 
@@ -58,25 +62,31 @@
 | Environment | Purpose | Data |
 |---|---|---|
 | Local | Developer testing | [e.g., seed script / fixture files / test API keys] |
-| CI | Automated tests on every PR | [e.g., isolated DB reset between runs / fixture dataset / mock LLM responses] |
-| Staging | Pre-release manual or exploratory testing | [e.g., anonymised production-like data / staging API keys] |
+| CI | Automated on every PR | [e.g., isolated DB reset / fixture dataset / mock LLM responses] |
+| Staging | Pre-release exploratory | [e.g., anonymised production-like data / staging API keys] |
 
 > **Note:** Not all project types require all three environments.
-> CLI Tools and Libraries may only need Local + CI.
-> AI / LLM Applications may replace Staging with a prompt eval run against a fixed test case set.
+> CLI Tools and Libraries typically only need Local + CI.
+> AI / LLM Applications may replace Staging with a prompt eval run against the fixed test case set in `eval-spec.md`.
 
 ---
 
 ## CI Integration
 
 ```bash
-# Run all tests
-[e.g., npm test / pytest / go test ./... / dbt test]
+# Run unit + component tests
+[e.g., npm test / pytest tests/unit tests/component / go test ./...]
 
 # Run with coverage
 [e.g., npm run test:coverage / pytest --cov]
 
-# Run system / E2E tests
+# Run integration tests
+[e.g., pytest tests/integration / npm run test:integration]
+
+# Run contract tests
+[e.g., npx pact-provider-verifier / pytest tests/contract / dbt test]
+
+# Run E2E / system tests
 [e.g., npx playwright test / bash tests/e2e.sh / python scripts/run_eval.py]
 ```
 
@@ -88,10 +98,11 @@ CI must pass before merging to main. Failing tests block deployment.
 
 | Data type | Source | Reset strategy |
 |---|---|---|
-| [e.g., Seed / fixture data] | [e.g., tests/fixtures/ / seed script / fixture CSV files] | [e.g., reset before each test suite / re-generated per run] |
+| [e.g., Seed / fixture data] | [e.g., tests/fixtures/ / seed script / fixture CSV] | [e.g., reset before each suite / re-generated per run] |
 | [e.g., Mocks / stubs] | [e.g., pytest-mock / MSW / recorded LLM responses] | [e.g., per-test setup and teardown] |
+| [e.g., Contract stubs] | [e.g., Pact broker / static JSON stubs] | [e.g., versioned with the consumer repo] |
 | [e.g., Snapshot data] | [e.g., data/test-snapshots/] | [e.g., static files committed to repo] |
 
-> **Note:** Persistent database seeds (e.g., `prisma/seed.ts`) apply to Web App and Microservices.
+> **Note:** Persistent DB seeds apply to Web App and Microservices.
 > Data Pipelines use fixture CSV/Parquet files. AI / LLM Applications use recorded prompt-response pairs.
 > CLI Tools and Libraries typically use in-memory fixtures or temp files.

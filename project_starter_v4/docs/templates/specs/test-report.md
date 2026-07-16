@@ -19,11 +19,19 @@
 
 ## Summary
 
+<!--
+  Include only the rows that apply to your project type.
+  See test-plan.md per-type guide for which levels each type uses.
+-->
+
 | Type | Total | Passed | Failed | Skipped | Coverage |
 |---|---|---|---|---|---|
 | Unit | [N] | [N] | [N] | [N] | [N%] |
+| Component | [N] | [N] | [N] | [N] | — |
 | Integration | [N] | [N] | [N] | [N] | — |
-| E2E | [N] | [N] | [N] | [N] | — |
+| Contract / Service | [N] | [N] | [N] | [N] | — |
+| E2E / System | [N] | [N] | [N] | [N] | — |
+| Performance | [N] | [N] | [N] | [N] | — |
 
 **Overall status:** ✅ Pass / ❌ Fail
 
@@ -31,10 +39,15 @@
 
 ## Results by Module
 
-| Module | Unit | Integration | E2E | Notes |
-|---|---|---|---|---|
-| [e.g., Auth] | ✅ 24/24 | ✅ 8/8 | ✅ 3/3 | — |
-| [Module] | [result] | [result] | [result] | [notes] |
+<!--
+  Include only the columns that apply to your project type.
+  Remove Component / Contract / Performance columns if your type doesn't use them.
+-->
+
+| Module | Unit | Component | Integration | Contract / Service | E2E / System | Notes |
+|---|---|---|---|---|---|---|
+| [e.g., Auth] | ✅ 24/24 | ✅ 6/6 | ✅ 8/8 | ✅ 4/4 | ✅ 3/3 | — |
+| [Module] | [result] | [result] | [result] | [result] | [result] | [notes] |
 
 ---
 
