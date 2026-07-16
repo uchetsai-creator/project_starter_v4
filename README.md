@@ -31,10 +31,20 @@ project_starter/                     ← this repo (template only)
     ├── project-requirements.md      ← project scope, goals, edge cases, acceptance criteria
     ├── project-plan.md              ← sprint/task breakdown per feature
     ├── current-state.md             ← the active task
+    ├── sprint-sync.md               ← sprint-end Document Update Checklist (load only at sprint end)
     ├── changelog.md                 ← completed task history
     ├── task-log.md                  ← task verification log (AI writes one row per completed task)
     ├── sprint-change-log.md         ← implementation changes this sprint (doc sync deferred to sprint end)
     ├── codebase-map.md              ← package vs. custom code, by layer; includes project tree
+    │
+    ├── init/                        ← per-type project initialization sequences (load only the one that matches)
+    │   ├── web-app.md
+    │   ├── cli-tool.md
+    │   ├── library.md
+    │   ├── data-pipeline.md
+    │   ├── ml-pipeline.md
+    │   ├── microservices.md
+    │   └── llm-app.md
     │
     ├── specs/
     │   │                              ── Universal (all project types) ──
@@ -271,8 +281,9 @@ Common combinations and what the second type adds:
 | ML Pipeline + Web App | `api-contract.md`, `permissions.md` (serving endpoint) |
 | AI / LLM App + Web App | `api-contract.md`, `frontend.md`, `deployment.md` |
 
-`AGENTS.md` drives initialization automatically — declare the project type at the top of your
-project's `AGENTS.md` and the agent will create each file in the correct order for that type.
+`AGENTS.md` drives initialization — declare the project type at the top, then load only the matching
+`templates/init/[type].md` file. Each init file contains the full step-by-step sequence for that type.
+For hybrid types, load each relevant init file and union the step lists (skip duplicates).
 
 ---
 

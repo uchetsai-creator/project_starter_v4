@@ -94,164 +94,20 @@ The second type's documents simply join the first type's `docs/specs/` or `docs/
 
 ## Project Initialization
 
-### Web App
+Read the init file that matches your project type — it contains the full step-by-step setup sequence.
+**Load only the one file that matches your type. Do not load the others.**
 
-1. Create docs/project-requirements.md from templates/project-requirements.md.
-2. Create docs/specs/research.md from templates/specs/research.md (resolve all NEEDS CLARIFICATION).
-3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.
-4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
-5. Create docs/architecture/backend.md, frontend.md, database.md, deployment.md from templates/architecture/.
-6. Create docs/specs/data-model.md from templates/specs/data-model.md.
-7. Create docs/specs/api-contract.md from templates/specs/api-contract.md.
-8. Create docs/specs/permissions.md from templates/specs/permissions.md.
-9. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
-10. Create docs/business/business-process.md from templates/business/business-process-v2.md.
-11. Create docs/business/business-objects.md from templates/business/business-objects-v2.md.
-12. Create docs/business/business-rules.md from templates/business/business-rules.md.
-13. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-14. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
-15. Create docs/codebase-map.md from templates/codebase-map.md.
-16. Create docs/project-plan.md from templates/project-plan.md.
-17. Create docs/task-log.md from templates/task-log.md.
-18. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
-19. Create docs/current-state.md from templates/current-state.md.
+| Project type | Init file |
+|---|---|
+| Web App | `templates/init/web-app.md` |
+| CLI Tool | `templates/init/cli-tool.md` |
+| Library / SDK | `templates/init/library.md` |
+| Data Pipeline | `templates/init/data-pipeline.md` |
+| ML Pipeline | `templates/init/ml-pipeline.md` |
+| Microservices | `templates/init/microservices.md` |
+| AI / LLM Application | `templates/init/llm-app.md` |
 
-### CLI Tool
-
-1. Create docs/project-requirements.md from templates/project-requirements.md.
-2. Create docs/specs/research.md from templates/specs/research.md.
-3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.
-4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
-5. Create docs/architecture/backend.md from templates/architecture/backend.md.
-6. Create docs/architecture/distribution.md from templates/architecture/distribution.md.
-7. Create docs/specs/cli-contract.md from templates/specs/cli-contract.md.
-8. Create docs/specs/release-guide.md from templates/specs/release-guide.md.
-9. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
-10. Create docs/business/business-rules.md from templates/business/business-rules.md (CLI constraints and validation rules).
-11. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-12. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
-13. Create docs/codebase-map.md from templates/codebase-map.md.
-14. Create docs/project-plan.md from templates/project-plan.md.
-15. Create docs/task-log.md from templates/task-log.md.
-16. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
-17. Create docs/current-state.md from templates/current-state.md.
-
-### Library / SDK
-
-1. Create docs/project-requirements.md from templates/project-requirements.md.
-2. Create docs/specs/research.md from templates/specs/research.md.
-3. Create docs/specs/quickstart.md from templates/specs/quickstart.md (covers local dev setup and running tests).
-4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
-5. Create docs/architecture/distribution.md from templates/architecture/distribution.md.
-6. Create docs/specs/public-api.md from templates/specs/public-api.md.
-7. Create docs/specs/release-guide.md from templates/specs/release-guide.md.
-8. Create docs/specs/compatibility-matrix.md from templates/specs/compatibility-matrix.md.
-9. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-10. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
-11. Create docs/codebase-map.md from templates/codebase-map.md.
-12. Create docs/project-plan.md from templates/project-plan.md.
-13. Create docs/task-log.md from templates/task-log.md.
-14. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
-15. Create docs/current-state.md from templates/current-state.md.
-
-### Data Pipeline
-
-1. Create docs/project-requirements.md from templates/project-requirements.md.
-2. Create docs/specs/research.md from templates/specs/research.md.
-3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.
-4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
-5. Create docs/architecture/backend.md from templates/architecture/backend.md (pipeline stack and layering).
-6. Create docs/architecture/database.md from templates/architecture/database.md.
-7. Create docs/architecture/deployment.md from templates/architecture/deployment.md.
-8. Create docs/specs/data-model.md from templates/specs/data-model.md.
-9. Create docs/specs/pipeline-contract.md from templates/specs/pipeline-contract.md.
-10. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
-11. Create docs/business/business-rules.md from templates/business/business-rules.md (data quality rules, validation constraints).
-12. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-13. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
-14. Create docs/codebase-map.md from templates/codebase-map.md.
-15. Create docs/project-plan.md from templates/project-plan.md.
-16. Create docs/task-log.md from templates/task-log.md.
-17. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
-18. Create docs/current-state.md from templates/current-state.md.
-
-### ML Pipeline
-
-1. Create docs/project-requirements.md from templates/project-requirements.md.
-2. Create docs/specs/research.md from templates/specs/research.md.
-3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.
-4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
-5. Create docs/architecture/backend.md from templates/architecture/backend.md.
-6. Create docs/architecture/database.md from templates/architecture/database.md.
-7. Create docs/architecture/deployment.md from templates/architecture/deployment.md.
-8. Create docs/specs/data-model.md from templates/specs/data-model.md.
-9. Create docs/specs/pipeline-contract.md from templates/specs/pipeline-contract.md.
-10. Create docs/specs/model-contract.md from templates/specs/model-contract.md.
-11. Create docs/specs/experiment-log.md from templates/specs/experiment-log.md.
-12. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
-13. Create docs/business/business-rules.md from templates/business/business-rules.md.
-14. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-15. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
-16. Create docs/codebase-map.md from templates/codebase-map.md.
-17. Create docs/project-plan.md from templates/project-plan.md.
-18. Create docs/task-log.md from templates/task-log.md.
-19. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
-20. Create docs/current-state.md from templates/current-state.md.
-
-### Microservices
-
-Each individual service follows the Web App initialization sequence above for its own `docs/` folder, with these adaptations:
-
-- `api-contract.md` — use only if the service exposes an HTTP/REST or GraphQL API externally. For internal gRPC-only services, replace with a gRPC section inside `service-contract.md`. For event-driven services with no synchronous API, omit entirely.
-- `frontend.md` — omit for backend-only services.
-- `permissions.md` — include only if the service enforces its own auth. Services that delegate auth to an API gateway may omit this.
-
-At the system (repo root) level, additionally create:
-
-1. Create docs/specs/service-catalog.md from templates/specs/service-catalog.md.
-2. Create docs/specs/service-contract.md from templates/specs/service-contract.md.
-3. Create docs/architecture/architecture.md (system-level — shows all services and their connections).
-4. Create docs/architecture/deployment.md (system-level — shows deployment topology across all services).
-
-### AI / LLM Application
-
-1. Create docs/project-requirements.md from templates/project-requirements.md.
-2. Create docs/specs/research.md from templates/specs/research.md (model selection, provider, alternatives considered).
-3. Create docs/specs/quickstart.md from templates/specs/quickstart.md (API key setup, local run, first query).
-4. Create docs/architecture/architecture.md from templates/architecture/architecture.md.
-5. Create docs/specs/llm-contract.md from templates/specs/llm-contract.md (model, system prompt, parameters, tools).
-6. Create docs/specs/prompt-library.md from templates/specs/prompt-library.md (index only — prompt content goes in per-prompt files).
-7. Create docs/specs/prompts/ folder. For each prompt, create docs/specs/prompts/[prompt-id]-prompt.md from templates/specs/prompts/prompt.md.
-8. Create docs/specs/eval-spec.md from templates/specs/eval-spec.md (judge model, criteria, test case set).
-9. Create docs/specs/eval-log.md from templates/specs/eval-log.md (append-only run log — load only during eval tasks).
-10. If using RAG: Create docs/specs/rag-contract.md from templates/specs/rag-contract.md.
-11. If using MCP servers: Create docs/specs/mcp-contract.md from templates/specs/mcp-contract.md. Add one Server Detail block per connected server. Cross-reference tool names in llm-contract.md Tool Calling section.
-12. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-12. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
-13. Create docs/codebase-map.md from templates/codebase-map.md.
-14. Create docs/project-plan.md from templates/project-plan.md.
-15. Create docs/task-log.md from templates/task-log.md.
-16. Create docs/sprint-change-log.md from templates/sprint-change-log.md.
-17. Create docs/current-state.md from templates/current-state.md.
-
-### Prompt Index Verification Rule
-
-After creating or updating any prompt file under `docs/specs/prompts/`, you MUST:
-1. Open `docs/specs/prompt-library.md`
-2. Check the Active Prompts table
-3. Verify the current prompt has a row with the correct current version
-4. If the row is missing or the version is stale, update it before moving on
-
-Do not assume the row exists. Do not rely on memory. Read the file and check.
-
-**Quick filter for AI / LLM Application — only check these on every task:**
-- `llm-contract.md` — if system prompt, model, or parameters changed
-- `prompt-library.md` + matching `prompts/[id]-prompt.md` — if a prompt was added or modified
-- `eval-spec.md` — if test cases were added or eval criteria changed
-- `eval-log.md` — append one row after every eval run (load this file only during eval tasks)
-- `rag-contract.md` — if retrieval sources, chunking, or embedding model changed
-- `mcp-contract.md` — if an MCP server is added/removed, a tool schema changes, or tool-use policy is tuned
-- `research.md` — if a new model or provider was evaluated
+For mixed / hybrid types, load each relevant init file and union the step lists (skip duplicates).
 
 ---
 
@@ -519,78 +375,10 @@ For validation / guard logic: verify that invalid input is correctly rejected.
 
 ## Sprint Documentation Sync
 
-Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulated enough Pending entries).
-
-1. Open `docs/sprint-change-log.md`
-2. For each entry with **Status: Pending documentation synchronization**:
-   - Check the Technical Impact flags
-   - Run the relevant items from the Document Update Checklist below for each affected document
-   - Update only the affected documents — do not check unaffected ones
-   - Mark the entry **Status: Documentation synchronized — [date]**
-3. Run Module Completion Check for any modules touched during the sprint
-4. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
-5. Confirm PDF renders correctly
-
----
+> **Load `templates/sprint-sync.md` now.** It contains the full sprint sync procedure and Document Update Checklist.
+> Do not load it during normal task work — only at sprint end.
 
 ### Document Update Checklist
 
-**Pre-filter before running any checklist item:**
-Only check items whose trigger condition could plausibly be true given what this task actually changed.
-Skip an item immediately if the task did not touch the relevant area — do not read the item's full detail.
-
-Quick filter guide:
-| If the task only touched… | Skip these checklist items entirely |
-|---|---|
-| Python/JS scripts only | architecture.md, backend.md, frontend.md, database.md, data-model.md, business-objects.md |
-| Frontend UI only | data-model.md, api-contract.md (unless new endpoints), backend.md, deployment.md, business-rules.md |
-| DB schema only | frontend.md, codebase-map.md page structure, business-process.md, module-flow.md |
-| Documentation only | All code-related items (data-model, api-contract, permissions, architecture, backend, frontend) |
-| Config / env vars only | All items except deployment.md and quickstart.md |
-| Pipeline stage logic only | frontend.md, api-contract.md, permissions.md, business-objects.md, business-process.md |
-| ML model / experiment only | frontend.md, api-contract.md, permissions.md, business-objects.md, business-process.md, deployment.md |
-| Library / SDK public API only | frontend.md, deployment.md, permissions.md, business-objects.md, business-process.md, data-model.md |
-| CLI subcommand only | frontend.md, deployment.md, permissions.md, business-objects.md, business-process.md, data-model.md |
-
-Apply this filter first. Then run only the remaining items.
-
-- [ ] docs/specs/research.md — did this task involve a new technology decision, or resolve a NEEDS CLARIFICATION? If yes, update. Note: research.md is excluded from the PDF by default (pdf_allowlist.py) — uncomment its entry once it has real content.
-- [ ] docs/specs/data-model.md — did the schema, entities, relationships, or indexes change? If yes, update, then:
-  - Regenerate ERD: `Edit the ```plantuml block in the file, then run build_pdf.py`
-    (output must go inside docs/ so build_pdf.py can find it)
-  - Regenerate state diagram: `# Edit the ```plantuml block in data-model.md, then rebuild PDF`
-  State Machine Consistency check: if this task touched an entity with a status lifecycle, confirm the State Machine section here matches the canonical definition in docs/business/[object-name]-object.md exactly. If they differ, update this file to match — the object file wins.
-- [ ] docs/specs/api-contract.md — (Web App / Microservices only) were endpoints added/changed, did error codes or validation rules change, or were WebSocket/Socket.IO events / GraphQL queries or mutations / gRPC methods / CLI commands added or changed? If yes, update the relevant protocol section.
-  API Endpoint Overlap check: if this task added an endpoint whose purpose overlaps with an existing one (e.g. two endpoints affecting the same state), add a **Design Note:** under each explaining why they are separate, or consolidate into one.
-- [ ] docs/specs/cli-contract.md — (CLI Tool only) were subcommands, flags, arguments, output format, or exit codes added or changed? If yes, update.
-- [ ] docs/specs/public-api.md — (Library / SDK only) were public functions, classes, types, or constants added, changed, or deprecated? If yes, update. If removing a public symbol, ensure a deprecation entry exists first.
-- [ ] docs/specs/pipeline-contract.md — (Data Pipeline / ML Pipeline only) did an inter-stage input or output format, path, naming rule, or error handling policy change? If yes, update. Then run the Cross-Stage Consistency Check table.
-- [ ] docs/specs/service-catalog.md — (Microservices only) was a service added, removed, or renamed? Did ownership, port, base URL, or key dependencies change? If yes, update.
-- [ ] docs/specs/service-contract.md — (Microservices only) did a REST contract, event schema, or resilience policy between services change? If yes, update.
-- [ ] docs/specs/model-contract.md — (ML Pipeline only) did input feature schema, output format, or production thresholds change? If yes, update.
-- [ ] docs/architecture/distribution.md — (Library / SDK / CLI Tool only) did the build process, registry, publish command, or installation instructions change? If yes, update.
-- [ ] docs/specs/release-guide.md — (Library / SDK / CLI Tool only) did the versioning policy, release checklist, publish process, or deprecation policy change? If yes, update.
-- [ ] docs/specs/compatibility-matrix.md — (Library / SDK / CLI Tool only) was a runtime version added or dropped, or was a known incompatibility discovered? If yes, update.
-- [ ] docs/specs/permissions.md — were roles, the permission matrix, or API endpoints changed? If yes, update, then regenerate use case diagram: `# Edit the ```plantuml block in permissions.md, then rebuild PDF`
-  After updating: cross-check every role listed as "Responsible role" in any `*-process.md` against the API Endpoint Access table and Page Access Matrix. If a role is responsible for an action but has no access to the required page or endpoint, check the Source column:
-  - `Hardcoded` → this is a logical contradiction — resolve it before proceeding.
-  - `Seeded default` → this may be intentional (the default simply hasn't been granted yet). Confirm with the project owner whether to update the default, then mark the row "(Default)" — do not write it into business-rules.md as a permanent rule.
-- [ ] docs/architecture/architecture.md — did components or data flows change? If yes, update, then regenerate diagram: `# Edit the ```plantuml block in architecture.md, then rebuild PDF`
-- [ ] docs/codebase-map.md Page Structure block — did the frontend page/screen structure change? If yes, update the component block, then regenerate: `# Edit the ```plantuml block in codebase-map.md, then rebuild PDF`
-- [ ] docs/architecture/backend.md — did backend layering, stack, or module pattern change? If yes, update, then regenerate component diagram: `# Edit the ```plantuml block in backend.md, then rebuild PDF`
-- [ ] docs/architecture/frontend.md — did frontend stack, page structure, or component strategy change? If yes, update, then regenerate component diagram: `# Edit the ```plantuml block in frontend.md, then rebuild PDF`
-- [ ] docs/architecture/database.md — did main entities or relationships change (conceptual level)? If yes, update.
-- [ ] docs/architecture/deployment.md — did services, env vars, build/deploy flow, or deployment topology change? If yes, update, then regenerate deployment diagram: `# Edit the ```plantuml block in deployment.md, then rebuild PDF`
-- [ ] docs/specs/quickstart.md — did setup steps, prerequisites, or verification steps change? If yes, update.
-- [ ] docs/specs/logging-spec.md Module Naming Convention table — does this task introduce a module name not yet listed? If yes, add one line (name + short description) to the table. Do not add module-specific logging detail here — that belongs in docs/modules/<module-name>/log-<module-name>.md.
-- [ ] docs/business/business-rules.md — did business constraints or policies change? If yes, update.
-- [ ] docs/business/[object-name]-object.md — were business entities added or changed? If yes, update, then regenerate state diagram: `Edit the ```plantuml block in the file, then run build_pdf.py`
-- [ ] docs/business/business-objects.md — was a new business object file created or did relationships change? If yes, update the index.
-- [ ] docs/business/[process-name]-process.md — did the business workflow, decision points, or exceptions change for this process? If yes, update, then regenerate activity diagram: `Edit the ```plantuml block in the file, then run build_pdf.py`
-- [ ] docs/business/business-process.md — was a new business process file created? If yes, add a row to the index table.
-- [ ] docs/modules/[module]/[module]-module-data-flow.md — did function names, file paths, or flow steps change for this module? If yes, update, then regenerate class diagram: `# Edit the ```plantuml block in the module data flow file, then rebuild PDF`
-- [ ] docs/modules/module-data-flow.md index table — open the file and verify the current module has a row in the Module Flow Files table. If the row is missing, add it now. Do not rely on memory — read the file.
-- [ ] docs/modules/[module]/[module]-flow.md — did cross-module service calls change for this module? If yes, update, then regenerate sequence diagram: `# Edit the ```plantuml block in the module flow file, then rebuild PDF`
-- [ ] docs/modules/module-flow.md index table — open the file and verify the current module has a row in the Flow Files table (only if a [module]-flow.md exists for this module). If the row is missing, add it now. Do not rely on memory — read the file.
-
-For the full explanation of why each document updates on these triggers, see document-purposes.md.
+> Full checklist is in `templates/sprint-sync.md` — load it now if running Sprint Documentation Sync.
+> During normal task work, use only the filtered list in `docs/current-state.md → Doc Checklist`.

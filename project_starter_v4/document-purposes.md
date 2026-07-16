@@ -617,6 +617,33 @@ Update when (if listed in current-state.md → Doc Checklist, update at task lev
 
 ## Root-level (docs/)
 
+### init/[type].md
+**Applies to: All project types (one file per type)**
+
+Purpose:
+Per-type project initialization sequence. Contains the exact ordered list of files to create
+when starting a new project of that type. Kept separate from AGENTS.md so the agent loads
+only the one relevant file (~200–300 words) instead of all 7 sequences (~1,200 words).
+
+Files: `init/web-app.md`, `init/cli-tool.md`, `init/library.md`, `init/data-pipeline.md`,
+`init/ml-pipeline.md`, `init/microservices.md`, `init/llm-app.md`
+
+Load when: project is being initialized for the first time. Never needed for day-to-day tasks.
+Update when: a new required document is added or removed for that project type.
+
+### sprint-sync.md
+**Applies to: All project types**
+
+Purpose:
+Sprint-end Document Update Checklist and Sprint Documentation Sync procedure. Kept separate
+from AGENTS.md so it is never loaded during normal task work — only at sprint end.
+Contains the full 30+ item checklist with pre-filter quick-guide, per-item trigger conditions,
+diagram regeneration commands, and consistency checks.
+
+Load when: Sprint Documentation Sync runs (sprint end or when sprint-change-log.md has enough Pending entries).
+During normal task work, use only the filtered `Doc Checklist` in `current-state.md` instead.
+Update when: a new document type is added that needs a sprint-end check.
+
 ### current-state.md
 Purpose:
 The active task and the only file an Agent reads at startup. Self-contained — reading it
