@@ -447,3 +447,21 @@ While writing concrete test-plan.md and test-report.md files for a data-pipeline
 Also during this phase: created concrete test-plan.md, test-report.md, and pipeline-contract.md for a data-pipeline POC; fixed stale DataHub version in dependencies.md (0.12.x → 0.15.0.1) and task count in quickstart.md (10/10 → 12/12); added pipeline-contract.md to pdf_allowlist.py; enhanced test-report.md template with four data-pipeline-specific sections (Contract Tests, Integration Tests, E2E System Test, Fault Injection Tests).
 
 **Bug fix (post-commit):** `docs/templates/business/business-objects-v2.md` contained stale content — an old version of the business process template (showing `# Business Process Index` with `@startuml` activity diagram syntax) instead of the business objects index and `*-object.md` file format. Web App and Microservices initializations copy this file to `docs/business/business-objects.md`, so any project that followed the framework was silently getting the wrong content. Fixed by rewriting the file with the correct Business Objects Index content, including the `plantuml` state diagram template for individual `*-object.md` files.
+
+---
+
+## Phase 16 — PDF Output Improvements ✅ Complete
+
+**Goal:** Make `build_pdf.py` output more useful and the framework more robust around PDF generation.
+
+### Done
+
+| File | Change |
+|---|---|
+| `docs/templates/script/pdf_allowlist.py` | Removed `task-log.md` and `sprint-change-log.md` from allowlist — dev-process logs, not spec content |
+| `docs/templates/script/build_pdf.py` | Added `--content spec\|full` flag — `spec` omits Plan and Test chapters, producing a clean system specification PDF for stakeholder handoff; output filename auto-derives (`project-spec-{lang}.pdf` vs `project-documentation-{lang}.pdf`) |
+| `docs/templates/script/build_pdf.py` | Fixed `VALID_PROJECT_TYPES` — `iac` and `mobile-app` were missing, causing `--project-type iac` to exit with an error |
+| `docs/templates/script/build_pdf.py` | Added `script/.gitignore` to exclude `plantuml.jar`, `__pycache__/`, `.pdf_build_cache/` |
+| `docs/templates/script/verify_framework.py` | Added **Check 9** (`build-pdf-type-sync`) — compares `build_pdf.py` VALID_PROJECT_TYPES against the canonical `PURPOSES_FILES` registry so a missing type is caught automatically |
+| `docs/.gitignore` | Added `*.pdf` — PDF files should be generated in actual project repos, not committed to the framework template repo |
+| `README.md` | Updated PDF generation section with `--content spec` usage and explanation |
