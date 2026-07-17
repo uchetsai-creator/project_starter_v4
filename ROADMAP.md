@@ -665,6 +665,18 @@ When a project's spec has quality problems, the cause is either (a) the project'
 
 **Goal:** Automatically diagnose whether a spec problem is project-level or framework-level, and for framework-level gaps, open a PR on `project_starter_v4` with a generic template fix — no project content included.
 
+### Iteration limit
+
+The self-improving loop runs **at most 2 rounds per spec quality check cycle**. After 2 rounds, remaining gaps are logged as known issues and left for manual review — preventing runaway PR creation and keeping the feedback signal focused.
+
+```
+Round 1: diagnose → open PRs for framework gaps found
+         ↓ (after merge or skip)
+Round 2: re-run spec check → open PRs for any new gaps surfaced
+         ↓
+Stop. Remaining issues → logged to logs/framework-gaps.md for manual triage.
+```
+
 ### Diagnosis logic
 
 ```
@@ -673,7 +685,7 @@ Spec quality problem found
 Does the framework template for {type} / {document}
 already include guidance on this?
     ├── Yes → project/AI execution issue → feedback to project only
-    └── No  → framework gap
+    └── No  → framework gap (max 2 rounds)
                 → auto-generate generic template improvement
                 → open PR on project_starter_v4
                 → PR contains: type + document + missing guidance
@@ -713,9 +725,9 @@ content included).
 
 | File | Change |
 |---|---|
-| `docs/templates/script/diagnose_spec.py` | New: takes spec quality check output → classifies each problem as project-level or framework-level → calls `propose_framework_fix.py` for framework gaps |
-| `docs/templates/sprint-sync.md` | Add optional sprint-end step: run `diagnose_spec.py`; review any auto-opened PRs on project_starter_v4 |
-| `README.md` | Add "Self-improving loop" section: diagram + how to run `diagnose_spec.py` |
+| `docs/templates/script/diagnose_spec.py` | New: takes spec quality check output → classifies each problem as project-level or framework-level → calls `propose_framework_fix.py` for framework gaps; accepts `--round 1\|2` flag; on round 2 writes remaining gaps to `logs/framework-gaps.md` instead of opening more PRs |
+| `docs/templates/sprint-sync.md` | Add optional sprint-end step: run `diagnose_spec.py --round 1`, merge or skip PRs, then run `--round 2`; stop after round 2 |
+| `README.md` | Add "Self-improving loop" section: diagram + iteration limit explanation + how to run `diagnose_spec.py` |
 
 **Token impact:** zero — AGENTS.md unchanged.
 
