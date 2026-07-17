@@ -220,19 +220,35 @@ def find_allowed_files(docs_dir, strings, project_type=None, content="full"):
         return bool(project_type & AUTO_SCAN_TYPES.get(pattern, frozenset()))
 
     flows_label = strings["sections"]["build"]
+
+    # Insert individual module-data-flow files RIGHT AFTER the module-data-flow.md index entry
+    # so they appear within the Build chapter, not after Deployment.
+    data_flow_idx = next(
+        (i for i, (r, _, _) in enumerate(result) if r == "modules/module-data-flow.md"),
+        len(result),
+    )
+    insert_pos = data_flow_idx + 1
     if _should_scan("modules/*/*-module-data-flow.md"):
         for path in sorted(glob.glob(os.path.join(docs_dir, "modules", "*", "*-module-data-flow.md"))):
             rel = os.path.relpath(path, docs_dir)
             if rel not in seen:
-                result.append((rel, path, flows_label))
+                result.insert(insert_pos, (rel, path, flows_label))
                 seen.add(rel)
+                insert_pos += 1
 
+    # Insert individual flow files RIGHT AFTER the module-flow.md index entry.
+    flow_idx = next(
+        (i for i, (r, _, _) in enumerate(result) if r == "modules/module-flow.md"),
+        len(result),
+    )
+    insert_pos = flow_idx + 1
     if _should_scan("modules/*/*-flow.md"):
         for path in sorted(glob.glob(os.path.join(docs_dir, "modules", "*", "*-flow.md"))):
             rel = os.path.relpath(path, docs_dir)
             if rel not in seen:
-                result.append((rel, path, flows_label))
+                result.insert(insert_pos, (rel, path, flows_label))
                 seen.add(rel)
+                insert_pos += 1
 
     business_label = strings["sections"]["introduction"]
     if _should_scan("business/*-process.md"):
@@ -265,6 +281,18 @@ def find_allowed_files(docs_dir, strings, project_type=None, content="full"):
                         result.insert(idx + 1, (rel, path, design_label))
                         seen.add(rel)
                         break
+
+    # Renumber chapters sequentially (1, 2, 3 …) based on appearance order.
+    # This prevents gaps like 1 → 3 → 4 → 6 when spec mode skips chapters.
+    seen_labels: list[str] = []
+    for _, _, lbl in result:
+        if lbl not in seen_labels:
+            seen_labels.append(lbl)
+    label_map: dict[str, str] = {}
+    for i, lbl in enumerate(seen_labels, 1):
+        base = re.sub(r"^\d+\.\s+|^[一二三四五六七八九十]+[、.]\s*", "", lbl)
+        label_map[lbl] = f"{i}. {base}"
+    result = [(rel, abs_path, label_map[lbl]) for rel, abs_path, lbl in result]
 
     return result
 
