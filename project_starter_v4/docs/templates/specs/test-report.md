@@ -22,6 +22,8 @@
 <!--
   Include only the rows that apply to your project type.
   See test-plan.md per-type guide for which levels each type uses.
+  Data Pipeline / ML Pipeline: use the pipeline-specific sections below instead of this table.
+  Web App / Microservices / CLI Tool / Library / LLM App: fill this table and remove the pipeline sections.
 -->
 
 | Type | Total | Passed | Failed | Skipped | Coverage |
@@ -42,12 +44,109 @@
 <!--
   Include only the columns that apply to your project type.
   Remove Component / Contract / Performance columns if your type doesn't use them.
+  Data Pipeline / ML Pipeline: replace this section with the pipeline-specific sections below.
 -->
 
 | Module | Unit | Component | Integration | Contract / Service | E2E / System | Notes |
 |---|---|---|---|---|---|---|
 | [e.g., Auth] | ✅ 24/24 | ✅ 6/6 | ✅ 8/8 | ✅ 4/4 | ✅ 3/3 | — |
 | [Module] | [result] | [result] | [result] | [result] | [result] | [notes] |
+
+---
+
+## [Data Pipeline / ML Pipeline] Contract Tests — Quality Gate
+
+<!--
+  For Data Pipeline and ML Pipeline projects: replace the "Results by Module" table above
+  with this section. Record per-source / per-stage validation results.
+  For other project types: delete this section and the fault-injection section below.
+-->
+
+### [Source / Stage Name] — [tool, e.g., Great Expectations checkpoint]
+
+Fixture: `[path/to/fixture.csv]` ([N] rows, [description])
+
+| Expectation | Rule | Result |
+|---|---|---|
+| [e.g., row count ≥ 1] | sanity | ✅ / ❌ pass/fail |
+| [e.g., column set matches] | sanity | ✅ / ❌ |
+| [e.g., NOT NULL: field_a, field_b] | [BR-XXX] | ✅ / ❌ |
+| [e.g., field_c between 0 and N] | [BR-XXX] | ✅ / ❌ |
+| [e.g., period matches YYYYMM] | [BR-XXX] | ✅ / ❌ |
+| [e.g., sum deviation ≤ 30%] | [BR-XXX] | ✅ skip (no baseline) / ✅ pass / ❌ fail |
+
+**Result:** success=[True/False], evaluated=[N], passed=[N], failed=[N]
+
+---
+
+## [Data Pipeline / ML Pipeline] Integration Tests — Schema / Model Tests
+
+<!--
+  Record dbt schema tests, pandera results, or equivalent model-level tests.
+  For other project types: delete this section.
+-->
+
+```bash
+# [command used, e.g.:]
+# cd dbt && dbt seed && dbt run && dbt test
+```
+
+**Result:** [N]/[N] tests PASS
+
+**Output validation:**
+
+| Check | Expected | Actual |
+|---|---|---|
+| [e.g., mart table row count] | [N] | [N] ✅ / ❌ |
+| [e.g., NOT NULL column] | all rows | ✅ / ❌ |
+
+---
+
+## [Data Pipeline / ML Pipeline] E2E System Test
+
+<!--
+  Record the full pipeline run result. For other project types: delete this section.
+-->
+
+**Run ID:** `[e.g., manual__YYYY-MM-DDT...]`
+
+**Setup:**
+```bash
+# [commands to prepare fixture data and trigger pipeline]
+```
+
+**Stage Results:**
+
+| Stage / Task | Result | Notes |
+|---|---|---|
+| [e.g., sense_sap] | ✅ / ❌ | |
+| [e.g., validate_sap] | ✅ / ❌ | [N]/[N] expectations pass |
+| [e.g., transform] | ✅ / ❌ | [N] rows output |
+| [e.g., load / archive] | ✅ / ❌ | |
+| [e.g., catalog_push] | ✅ / ❌ (non-blocking) | |
+
+**Post-run state:**
+
+| Check | Expected | Actual |
+|---|---|---|
+| [e.g., output table row count] | [N] | [N] ✅ |
+| [e.g., input files archived] | yes | ✅ / ❌ |
+
+---
+
+## [Data Pipeline / ML Pipeline] Fault Injection Tests
+
+<!--
+  Record each negative test / break-kit scenario.
+  For other project types: delete this section.
+-->
+
+| # | Scenario | Expected failed stage | Verified | Actual result |
+|---|---|---|---|---|
+| [01] | [e.g., wrong filename] | [e.g., sense_* stalls] | [YYYY-MM-DD] | ✅ / ❌ |
+| [02] | [e.g., null required field] | [e.g., validate_*] | [YYYY-MM-DD] | ✅ / ❌ |
+| [03] | [e.g., value out of range] | [e.g., validate_*] | [YYYY-MM-DD] | ✅ / ❌ |
+| [NN] | [e.g., downstream service down] | none (non-blocking) | [YYYY-MM-DD] | ✅ / ❌ |
 
 ---
 
@@ -98,6 +197,11 @@
 ---
 
 ## Coverage Report
+
+<!--
+  For unit-tested projects (Web App, CLI Tool, Library, LLM App): paste coverage summary here.
+  For Data Pipeline / ML Pipeline: replace with a note on what's covered by contract/integration tests.
+-->
 
 ```
 [Paste coverage summary output here, e.g.:]
