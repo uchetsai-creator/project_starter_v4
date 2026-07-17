@@ -35,14 +35,7 @@ The type gates which documents are required and which are N/A — do not create 
 
 ### Mixed / Hybrid Project Types
 
-Some projects genuinely span more than one type. Declare both types using `+`:
-
-```
-Project Type: Data Pipeline + Web App
-Project Type: CLI Tool + Library
-Project Type: ML Pipeline + Web App
-Project Type: AI / LLM Application + Web App
-```
+Some projects genuinely span more than one type. Declare both using `+` (e.g. `Project Type: Data Pipeline + Web App`).
 
 **Document rule for hybrid projects:** create all documents that are Required (✅) or Optional (⚠️) for ANY of the declared types. Skip only documents that are N/A (❌) for ALL declared types.
 
@@ -54,9 +47,6 @@ Project Type: AI / LLM Application + Web App
 | CLI Tool + Library | `public-api.md`, `compatibility-matrix.md` (the tool also ships as an importable package) |
 | ML Pipeline + Web App | `api-contract.md`, `permissions.md` (model served via REST endpoint) |
 | AI / LLM App + Web App | `api-contract.md`, `frontend.md`, `deployment.md` (hosted chatbot with UI) |
-
-Documents are NOT split into separate folders — all docs live in the same `docs/` folder.
-The second type's documents simply join the first type's `docs/specs/` or `docs/architecture/`.
 
 **Document matrix (Required/Optional/N/A by project type):** `templates/init/document-matrix.md`
 Load only when initializing or retrofitting — not during normal task work.
@@ -109,6 +99,19 @@ then determine the next step from project-plan.md. Do not read AGENTS.md otherwi
 Do not scan repository.
 
 For what each document is for and when it changes, read document-purposes-common.md + document-purposes-[your-type].md — reference only, not required every task. See document-purposes.md for the type-to-file lookup table.
+
+---
+
+## Writing Audience
+
+Spec PDF documents are read by external stakeholders — no internal tracking references allowed:
+- No task numbers: （Task 22）, (Task 15), etc.
+- No sprint references: Sprint 8, S9, etc.
+
+Spec-facing docs: `business/business-rules.md`, `specs/pipeline-contract.md`, `specs/research.md`,
+`architecture/*.md`, `modules/*/*-module-data-flow.md`, `specs/quickstart.md`
+
+Record WHEN a rule changed in `changelog.md` — not in spec documents.
 
 ---
 

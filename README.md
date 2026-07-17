@@ -490,6 +490,9 @@ python3 docs/templates/script/verify_framework.py --json     # machine-readable 
 | Sprint-sync coverage | Every non-exempt R/O document has a sprint-sync checklist item |
 | Purposes coverage | Every Required document appears in the matching document-purposes file |
 | Cross-reference integrity | Every `### X.md` header in document-purposes-*.md has a template file |
+| Type completeness | Every type slug in AGENTS.md's init table has a matching init file and document-purposes file |
+| Script type sync | `scan_codebase.py` and `verify_docs.py` declare the same set of project types |
+| Build-PDF type sync | `build_pdf.py` VALID_PROJECT_TYPES matches all declared project types |
 
 **Output:**
 
