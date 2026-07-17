@@ -35,7 +35,7 @@ Usage:
                            full — all six chapters (Introduction, Plan, Design, Build, Test, Deployment)
                            spec — system specification only: Introduction, Design, Build, Deployment
                                   (omits Plan and Test chapters — suitable for stakeholder handoff)
-  --clean                Delete the diagram cache before building (use after changing plantuml.cfg)
+  --clean                No-op (cache is always cleared before each build)
 
 To add a file to the PDF: add it to PDF_ALLOWLIST below. Do not change the discovery logic.
 
@@ -380,7 +380,7 @@ def find_html_svg_pairs(docs_dir):
     return pairs
 
 
-def svg_to_png(svg_path, out_path, max_width=1400, max_height=1600):
+def svg_to_png(svg_path, out_path, max_width=1400, max_height=900):
     """Convert SVG to PNG, scaling to fit within max_width x max_height."""
     import xml.etree.ElementTree as ET
     tree = ET.parse(svg_path)
@@ -826,10 +826,9 @@ def main():
         sys.exit(1)
 
     png_cache_dir = os.path.join(docs_dir, ".pdf_build_cache")
-    if clean and os.path.isdir(png_cache_dir):
+    if os.path.isdir(png_cache_dir):
         import shutil
         shutil.rmtree(png_cache_dir)
-        print("Cleared diagram cache.")
     os.makedirs(png_cache_dir, exist_ok=True)
 
     if project_type:

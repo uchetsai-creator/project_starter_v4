@@ -116,30 +116,24 @@ CompC -down-> DB    : TCP
 ```plantuml
 @startuml
 ' System Component Structure
-' Shows code-level layering of the whole system.
 ' Replace layer names with actual names from frontend.md / backend.md / database.md.
-'
-' Adapt packages to your project type:
-'   Web App / AI App  → keep Frontend + Backend + Storage as shown
-'   Data Pipeline     → Entry Layer + Processing + Storage  (delete Frontend package)
-'   ML Pipeline       → Data Prep + Training + Serving      (delete Frontend package)
-'   CLI Tool          → CLI Entry + Processing + Storage    (delete Frontend package)
-'   Remove Frontend package entirely if this project has no UI.
+' Adapt packages to your project type — remove Frontend if no UI.
 
 skinparam componentStyle uml2
+scale 0.85
 
 package "Frontend" {
-  component "[Frontend entry point]" as FE
+  component "[UI layer]" as FE
 }
 
 package "Backend" {
-  component "[Entry point — Router / Controller / Handler / Stage]" as BE1
-  component "[Application layer — Service / UseCase / Transformer]" as BE2
-  component "[Data layer — Repository / Store / Writer]"             as BE3
+  component "[Entry — Router / Handler]" as BE1
+  component "[App — Service / UseCase]"  as BE2
+  component "[Data — Repository]"        as BE3
 }
 
 package "Storage" {
-  database "[Data store — PostgreSQL / MongoDB / S3 / etc.]" as DB
+  database "[Data store]" as DB
 }
 
 FE  -down-> BE1 : HTTP / WebSocket
