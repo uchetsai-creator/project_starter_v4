@@ -450,6 +450,296 @@ Also during this phase: created concrete test-plan.md, test-report.md, and pipel
 
 ---
 
+## Phase 23 — Task / Sprint Quality Gate 🔲 Planned
+
+Every task closeout currently only checks whether Required documents exist (`verify_docs.py`). Logs and test execution have no quality gate — they can be missing, empty, or low-quality with no automated catch.
+
+**Goal:** Extend the per-task closeout check to cover three quality dimensions: documents, logs, and test execution.
+
+### Checks added
+
+| Dimension | What is checked | Tool |
+|---|---|---|
+| Docs | Required files present + sections filled (via Phase 17 `--content`) | `verify_docs.py --content` |
+| Logs | `logging-spec.md` format followed: trace_id present, structured fields, no raw print statements; per-type addenda (pipeline row count, LLM call log) | `verify_logs.py` (new) |
+| Test execution | `test-report.md` filled: test count > 0, pass/fail recorded, edge cases listed; for Data Pipeline / ML Pipeline: contract tests and fault injection sections non-empty | `verify_tests.py` (new) |
+
+### New scripts
+
+| Script | Flag | Output |
+|---|---|---|
+| `docs/templates/script/verify_logs.py` | `--project-type`, `--logs PATH` | Per-file: trace_id ✅/❌, structured format ✅/❌, per-type fields present |
+| `docs/templates/script/verify_tests.py` | `--project-type`, `--docs PATH` | test-report.md fill score, missing sections, `PASS / FAIL` |
+
+### Integration
+
+| File | Change |
+|---|---|
+| `docs/current-state.md` template | Closeout section: add three lines — `verify_docs --content`, `verify_logs`, `verify_tests` — Claude must paste output; git diff shows whether it was done |
+| `docs/templates/sprint-sync.md` | Add sprint-end step: run all three verifiers; record summary in `task-log.md` |
+| `.githooks/pre-commit` (Phase 21 template) | Add `verify_logs.py` and `verify_tests.py` to pre-commit hook chain |
+| `document-purposes-common.md` | Add entries for `verify_logs.py` and `verify_tests.py` |
+
+**Token impact:** zero — AGENTS.md unchanged.
+
+---
+
+## Phase 22 — Self-Improving Framework via Auto-Fix PR 🔲 Planned
+
+When a project's spec has quality problems, the cause is either (a) the project's content is insufficient, or (b) the framework template for that project type doesn't give enough guidance. Type (b) is a framework gap — it affects every future project of the same type, not just this one.
+
+**Goal:** Automatically diagnose whether a spec problem is project-level or framework-level, and for framework-level gaps, open a PR on `project_starter_v4` with a generic template fix — no project content included.
+
+### Diagnosis logic
+
+```
+Spec quality problem found
+    ↓
+Does the framework template for {type} / {document}
+already include guidance on this?
+    ├── Yes → project/AI execution issue → feedback to project only
+    └── No  → framework gap
+                → auto-generate generic template improvement
+                → open PR on project_starter_v4
+                → PR contains: type + document + missing guidance
+                → no project-specific content
+```
+
+### Auto-fix PR scope
+
+| Framework gap type | Auto-fix action |
+|---|---|
+| Required section missing from template | Add section with guidance comment to the template file |
+| No example for a required field | Add `<!-- Example: ... -->` block |
+| Per-type addendum missing (e.g. Data Pipeline has no Error Handling row) | Add row to per-type table in template |
+
+### New script
+
+| Script | Input | Output |
+|---|---|---|
+| `docs/templates/script/propose_framework_fix.py` | `--type`, `--document`, `--gap-description` | Creates branch on `project_starter_v4`, edits template, opens PR via `gh pr create` |
+
+### PR format (auto-generated)
+
+```
+Title: [Auto-fix] {type} / {document}: add {gap description} guidance
+
+Body:
+Detected gap: {type} projects using {document} have no template
+guidance for {gap description}.
+
+Fix: added {section/example/row} to template.
+
+Source: diagnosed from project spec quality check (no project
+content included).
+```
+
+### Integration
+
+| File | Change |
+|---|---|
+| `docs/templates/script/diagnose_spec.py` | New: takes spec quality check output → classifies each problem as project-level or framework-level → calls `propose_framework_fix.py` for framework gaps |
+| `docs/templates/sprint-sync.md` | Add optional sprint-end step: run `diagnose_spec.py`; review any auto-opened PRs on project_starter_v4 |
+| `README.md` | Add "Self-improving loop" section: diagram + how to run `diagnose_spec.py` |
+
+**Token impact:** zero — AGENTS.md unchanged.
+
+---
+
+## Phase 21 — Complete Hook Coverage 🔲 Planned
+
+Phase 20 covers the verification scripts (docs / logs / tests). Five additional AGENTS.md process rules are still instruction-only — any AI tool or developer can silently violate them with no catch. All five can be enforced at the git commit boundary, making them tool-agnostic.
+
+**Goal:** Extend `.githooks/pre-commit` to cover all five remaining process rules. No Claude Code dependency.
+
+### Checks added to pre-commit hook
+
+| What git staged files indicate | Check | Catches |
+|---|---|---|
+| Any file in `project_starter_v4/` framework dirs changed | Run `verify_framework.py --strict` | Stale pointer, matrix gap, token budget violation created mid-Phase |
+| `AGENTS.md` in staged files | Count lines; fail if > 200 | Token budget drift |
+| Any `specs/*.md` or `architecture/*.md` staged | Check if `changelog.md` is also staged; warn if not | Silent spec changes with no audit trail |
+| `current-state.md` staged | Grep Closeout section for `___` or `<!-- ` | Task "closed" without filling Closeout |
+| Any spec-facing doc staged | Grep for `Sprint \d`, `Task \d+`, `\(S\d+\)` patterns | Writing Audience violations in stakeholder docs |
+
+All checks run inside the single `.githooks/pre-commit` script from Phase 20 — no new files needed.
+
+### Tool compatibility
+
+All five checks fire on `git commit` regardless of AI tool used:
+
+| AI tool | All 5 checks fire? |
+|---|---|
+| Claude Code | ✅ |
+| Codex | ✅ |
+| Cursor | ✅ |
+| Manual | ✅ |
+
+Optional Claude Code fast-feedback: `PostToolUse` hooks in `.claude/settings.json` can surface the same warnings mid-session before commit, documented as optional in README.
+
+### Integration
+
+| File | Change |
+|---|---|
+| `.githooks/pre-commit` | Extend with 5 new check blocks; each block only runs if its trigger condition matches staged files |
+| `README.md` | Update "Verification" section: full table of all checks, trigger conditions, severity (warn vs. block) |
+| `document-purposes-common.md` | Add note: process rules in AGENTS.md are enforced by pre-commit, not by agent memory |
+
+**Token impact:** zero — AGENTS.md unchanged.
+
+---
+
+## Phase 17 — Spec Content Quality Check 🔲 Planned
+
+`verify_docs.py` currently only checks whether a file exists. A file that contains only template headers and `<!-- TODO -->` placeholders passes the audit despite having no real content. There is currently no way to tell the difference between a filled spec and an empty one.
+
+**Goal:** Add content-level checking to `verify_docs.py` so that the audit catches unfilled placeholders, missing required sections, and near-empty documents — without requiring an LLM call.
+
+### Changes
+
+| File | Change |
+|---|---|
+| `docs/templates/script/verify_docs.py` | Add `--content` flag: scan each Required document for (1) unfilled placeholders (`<!-- TODO -->`, `_TBD_`, `[placeholder]`), (2) required section headers by document type (e.g. `## Error Handling`, `## Acceptance Criteria`), (3) minimum fill length per section (≥ 3 non-empty lines) |
+| `docs/templates/script/verify_docs.py` | Output: per-document fill score (e.g. `pipeline-contract.md  72% filled  ⚠️ 2 unfilled sections`) and summary line (`Spec fill: 8/11 documents fully filled`) |
+| `docs/templates/script/verify_framework.py` | Add Check 10 (`content-check-sections`): verify that the required-section list used by `--content` is defined for every document type in the matrix |
+
+**Token impact:** zero — AGENTS.md unchanged. Script-only change.
+
+---
+
+## Phase 18 — LLM Judge Spec Review 🔲 Planned
+
+Script-based checks (Phase 17) catch structural gaps but cannot evaluate whether the content is clear, unambiguous, or testable. A spec that says "the system should respond quickly" passes every rule check but is useless for development.
+
+**Goal:** Add a prompt template that lets an LLM score a spec on a rubric and return a structured PASS/FAIL with per-criterion evidence. This is the "LLM-as-a-Judge" layer.
+
+### New templates
+
+| Template | For project type | Purpose |
+|---|---|---|
+| `specs/spec-review.md` | All types | Rubric prompt: 5 criteria × 1–5 score + evidence + overall PASS/FAIL |
+
+### Rubric criteria (all project types)
+
+| Criterion | What is checked |
+|---|---|
+| Completeness | Every requirement has an Acceptance Criterion |
+| Ambiguity | No vague terms without measurable definition ("fast", "appropriate", "sufficient") |
+| Error Coverage | Error paths, timeouts, null returns, and retry behaviour described |
+| Testability | A QA engineer can write a test case from the spec alone |
+| Consistency | No contradictions between sections or between this doc and related docs |
+
+Per-type addenda are listed inside the template (e.g. Data Pipeline adds Idempotency; AI/LLM App adds Hallucination Handling).
+
+### Integration
+
+| File | Change |
+|---|---|
+| `docs/templates/sprint-sync.md` | Add pre-closeout step: "Run spec-review.md against all Required spec documents. Resolve all FAIL items before closing sprint." |
+| `document-purposes-common.md` | Add `specs/spec-review.md` entry: purpose, when to load, what to do with FAIL output |
+| `docs/templates/init/document-matrix.md` | `spec-review.md` marked as a process template (exempt from matrix — not a project document) |
+
+**Token impact:** zero — AGENTS.md unchanged. Template is load-on-demand at sprint end.
+
+---
+
+## Phase 19 — Spec Challenge (QA Simulation) 🔲 Planned
+
+LLM Judge (Phase 18) scores what is written. Spec Challenge finds what is missing. Instead of asking "how good is this spec?", it asks "what does this spec not answer?" — then iterates until no significant holes remain.
+
+**Goal:** Add a prompt template that instructs an LLM to act as the most demanding QA + architect, generate a list of unanswered questions, and repeat until two consecutive rounds produce no new critical questions.
+
+### New templates
+
+| Template | For project type | Purpose |
+|---|---|---|
+| `specs/spec-challenge.md` | All types | QA simulation prompt: generate Unresolved Questions list; do not rewrite spec; iterate until dry |
+
+### Challenge question categories (per-type)
+
+| Category | Example questions |
+|---|---|
+| Failure paths | If the API times out? If the DB returns null? If the queue is full? |
+| Concurrency | If two users submit simultaneously? If Airflow retries mid-run? |
+| Data integrity | If the source sends a duplicate? If a required field is missing? |
+| Permission edge cases | If the user's token expires mid-session? If the role changes during a transaction? |
+| Type-specific (Data Pipeline) | If a stage produces zero rows? If upstream schema changes? |
+| Type-specific (AI/LLM App) | If the model returns an empty response? If the retriever returns no results? |
+
+### Process
+
+1. Load `specs/spec-challenge.md` with the target spec pasted in.
+2. LLM outputs an **Unresolved Questions** list — no rewrites, no scores.
+3. Author answers each question by updating the spec.
+4. Repeat until the LLM's new question list has zero Critical items.
+5. Record final round count in `docs/specs/test-report.md → Spec Challenge` section.
+
+### Integration
+
+| File | Change |
+|---|---|
+| `docs/templates/sprint-sync.md` | Add step after spec-review.md: "Run spec-challenge.md. Iterate until no Critical questions remain." |
+| `document-purposes-common.md` | Add `specs/spec-challenge.md` entry |
+| `docs/templates/specs/test-report.md` | Add `## Spec Challenge` section: rounds run, final unresolved count, sign-off |
+
+**Token impact:** zero — AGENTS.md unchanged. Template is load-on-demand.
+
+---
+
+## Phase 20 — Verification Trigger Layer 🔲 Planned
+
+Phases 17–19 add three verification layers, but all three still depend on the developer (or AI agent) remembering to run them. The trigger mechanism must work regardless of which AI tool is being used — Claude Code, Codex, Cursor, or none.
+
+**Goal:** Make verification automatic at the git commit boundary, with AI-tool-specific fast-feedback as an optional layer on top. Scripts are the stable core; triggers are just entry points.
+
+### Trigger architecture
+
+```
+Any AI tool (Claude / Codex / Cursor / manual)
+        ↓
+      edit files
+        ↓
+   git commit
+        ↓
+ .githooks/pre-commit   ← PRIMARY: tool-agnostic, always fires
+        ↓
+ verify_docs.py --content
+ verify_logs.py
+ verify_tests.py
+        ↓
+ PASS → commit proceeds
+ FAIL → commit blocked, output shown
+
+Optional fast-feedback layer (Claude Code only):
+   Claude stop → .claude/settings.json Stop hook → same scripts
+   → logs/verify-{timestamp}.json
+```
+
+### Changes
+
+| File | Change |
+|---|---|
+| `.githooks/pre-commit` | New shell script: reads `.project-starter.yml` for project type, runs `verify_docs.py --content`, `verify_logs.py`, `verify_tests.py`; blocks commit on failure |
+| `.project-starter.yml` | New config file created at project init: `project_type: data-pipeline` / `docs_path: docs/` — single source of truth for all scripts and hooks |
+| `docs/templates/init/web-app.md` (and all 8 other init files) | Add setup step: "Run `cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit`"; create `.project-starter.yml` |
+| `.claude/settings.json` (optional, Claude Code only) | Stop hook: same scripts → `logs/verify-{timestamp}.json`; documented as optional fast-feedback, not required |
+| `docs/current-state.md` template | Closeout section: `Verify: run pre-commit hook or paste verify_docs output — Required: __ / __ present` |
+| `document-purposes-common.md` | Add `.githooks/pre-commit` and `.project-starter.yml` entries |
+| `README.md` | Add "Verification" section: architecture diagram, setup instructions, note that Claude Code hook is optional |
+
+### Tool compatibility
+
+| AI tool | Pre-commit hook fires? | Claude Code Stop hook fires? |
+|---|---|---|
+| Claude Code | ✅ on git commit | ✅ optional fast-feedback |
+| Codex | ✅ on git commit | ❌ not applicable |
+| Cursor | ✅ on git commit | ❌ not applicable |
+| Manual (no AI) | ✅ on git commit | ❌ not applicable |
+
+**Token impact:** zero — AGENTS.md unchanged.
+
+---
+
 ## Phase 16 — PDF Output Improvements ✅ Complete
 
 **Goal:** Make `build_pdf.py` output more useful and the framework more robust around PDF generation.
