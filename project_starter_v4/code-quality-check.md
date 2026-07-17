@@ -675,6 +675,127 @@ Severity: **Medium** if `trace_id` is not propagated to outbound calls (cross-se
 
 ---
 
+### AI / LLM App
+
+**Prompt injection guard**
+
+User-controlled input embedded in a prompt must be structurally isolated (delimiters, JSON encoding, separate message role) from the system instructions. Unguarded input lets a user override the system prompt or inject instructions that alter the model's behavior.
+
+Check:
+- Does every prompt template clearly separate system instructions from user-supplied content (e.g., separate `system` / `user` message roles, explicit delimiters)?
+- Is user input passed through sanitization or structural isolation before being embedded?
+- Are there code paths where raw user input can reach the system prompt section?
+
+Severity: **High** if user input can reach the system prompt section without structural isolation — prompt injection can bypass content policies and exfiltrate data.
+
+---
+
+**LLM output validation before downstream use**
+
+Code that acts on LLM output (DB writes, API calls, file writes, tool invocations) must parse and validate the output structure before use. Blindly passing LLM output downstream is a reliability and security risk.
+
+Check:
+- Is there a parsing / validation step between the LLM response and any downstream action?
+- If the expected output is structured (JSON, YAML), is parse failure handled explicitly — not just a bare `json.loads()` / `JSON.parse()` with no error handling?
+- Can a malformed or unexpected LLM response cause an unhandled exception or silent data corruption?
+
+Severity: **High** if LLM output reaches a DB write or code execution path without validation. **Medium** if structured output is parsed without error handling (silent failures on malformed responses).
+
+---
+
+**Eval coverage for prompt changes**
+
+Every prompt added or modified in this sprint must have a corresponding test case in `eval-spec.md`. Prompt changes without eval coverage make regressions invisible until production.
+
+Check:
+- For each prompt added or modified this sprint: does `eval-spec.md` have at least one test case that exercises the new or changed behavior?
+- Does `eval-log.md` contain an entry from a run after the change was made?
+
+Severity: **Medium** if a modified prompt has no covering test case in `eval-spec.md`. **High** if a prompt was changed with no eval run performed after the change.
+
+---
+
+### IaC / DevOps
+
+**No credentials in code or config**
+
+No API keys, passwords, tokens, or account numbers may appear in `.tf` files, Helm values, YAML config, or CI pipeline definitions. All secrets must be resolved from a secrets manager at apply time.
+
+Check:
+- Do any `.tf`, `.yaml`, or values files contain string literals in `password`, `secret`, `token`, or `key` fields?
+- Are sensitive variables passed via `var.xxx` referencing a secrets manager data source, rather than hardcoded in `terraform.tfvars` or CI env vars?
+- Does `git log` for this sprint contain any diff that added a secret literal (even if since removed)?
+
+Severity: **High** — hardcoded credentials are a critical security finding regardless of repository visibility or whether the value appears to be a placeholder.
+
+---
+
+**Destroy protection on critical resources**
+
+Resources that cannot be recovered from backup (state buckets, primary databases, identity providers) must have `prevent_destroy = true` in their lifecycle block, or equivalent protection in the cloud provider.
+
+Check:
+- Do storage resources holding Terraform state or backups have `prevent_destroy = true`?
+- Do primary database resources have `prevent_destroy = true`?
+- Is there a documented justification in `topology.md` for any critical resource that intentionally omits this protection?
+
+Severity: **High** if a critical resource lacks destroy protection — a `terraform destroy` or mistaken plan run could permanently delete non-recoverable data.
+
+---
+
+**Drift detection coverage**
+
+Every resource in the inventory (`topology.md`) must be covered by the drift detection mechanism documented in `drift-policy.md`. Resources outside detection scope can silently diverge from declared state.
+
+Check:
+- Is each resource type in `topology.md` included in the drift detection scope?
+- Are exempt resources listed in `drift-policy.md → Exempt Resources` with a justification?
+- Does the detection cadence in `drift-policy.md` match what the CI/CD job or scheduled run actually executes?
+
+Severity: **Medium** if a resource is in the inventory but not in the detection scope. **High** if a new resource was added this sprint and drift detection coverage was not updated to include it.
+
+---
+
+### Mobile App
+
+**Permission declaration completeness**
+
+Every OS permission used in code must be declared in the manifest (`AndroidManifest.xml` / `Info.plist`) and documented in `mobile-contract.md`. An undeclared permission crashes the app at runtime; an undocumented one causes App Store rejection.
+
+Check:
+- For each API call that requires a permission (camera, location, notifications, contacts, etc.): is the permission declared in the manifest?
+- Is each declared permission listed in `mobile-contract.md → OS Permission Declarations` with its purpose string?
+- Are there manifest declarations with no matching code path (orphan declarations)?
+
+Severity: **High** if a used permission is not declared in the manifest — runtime crash on the first use. **Medium** if a used permission is declared in code but not documented in `mobile-contract.md`.
+
+---
+
+**Navigation graph conformance**
+
+Every screen reachable via app navigation must be listed in `mobile-contract.md`. Screens absent from the contract are either undocumented (documentation gap) or unreachable (dead code).
+
+Check:
+- Does the navigation stack or router include any screens not listed in `mobile-contract.md → Screen Inventory`?
+- Are there screens in `mobile-contract.md` with no corresponding component or view in the codebase (stale entries)?
+- Do all deep-link routes listed in `mobile-contract.md` have a matching route handler in code?
+
+Severity: **Medium** if a reachable screen is absent from `mobile-contract.md`. **High** if a deep-link route in `mobile-contract.md` has no handler in code — navigation crash on activation.
+
+---
+
+**Deep link parameter validation**
+
+Deep link parameters are user-controlled input (URL query strings, path segments). They must be validated before use in API calls, DB queries, or navigation decisions.
+
+Check:
+- Are deep link parameters validated (type-checked, range-checked, or allow-listed) before being passed to an API call or navigation action?
+- Can a crafted deep link URL cause an unhandled exception, navigate to an unexpected screen, or reach a network call with unvalidated input?
+
+Severity: **High** if deep link parameters reach an API call or data operation without validation. **Medium** if validation exists but is incomplete (e.g., no length limit on a string field used in a downstream query).
+
+---
+
 # Rules During Fixes
 
 Follow AGENTS.md principles:
