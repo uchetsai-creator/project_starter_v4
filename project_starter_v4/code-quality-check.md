@@ -164,6 +164,8 @@ The layer names and rules depend on the project type — use the row that matche
 | **Data Pipeline** | Stage entry: input contract validation only | Transform / Enrich: data logic | Writer / Sink: output contract only — no data logic |
 | **ML Pipeline** | Stage entry: schema + quality checks | Model / Transform: inference or feature logic | Artifact writer: serialisation only |
 | **AI / LLM App** | Request handler: prompt assembly only | LLM caller: API call + retry logic | Response parser: output extraction only |
+| **Mobile App** | View / Screen: UI rendering and user event handling only — no API calls or business logic | ViewModel / Presenter / BLoC: state management and business logic | Repository / Service: API calls and local storage only — no UI logic |
+| **IaC / DevOps** | Not applicable — IaC is declarative; check that module input validation is isolated and resource definitions contain no embedded scripting that belongs in a separate module | — | — |
 
 Business logic in the entry layer is always a finding, regardless of project type.
 
@@ -253,11 +255,13 @@ Apply only the rows that match the project type(s) declared in this project.
 | **AI / LLM App** | Does each LLM call generate a `trace_id`? Is it included in the LLM call log entry and all related tool call logs? |
 | **CLI Tool** | Does each command invocation generate or accept a `trace_id` / session ID when the command spans multiple steps? |
 | **Background Job** | Does each job execution generate a `trace_id` at start? Is it included in all log entries for that execution? |
+| **Mobile App** | Does each API call from the app include a correlation / session ID in the request (e.g., `X-Session-Id` header)? Is it included in local log entries for that request? |
+| **IaC / DevOps** | Not applicable — `terraform apply` / `plan` output is captured by the CI/CD runner natively; no application-level `trace_id` is needed. |
 
 If `trace_id` is generated but not propagated into log data fields: **Medium.**
 If no `trace_id` is generated at all at the entry point: **Medium.**
 
-Not applicable to: Library / SDK.
+Not applicable to: Library / SDK, IaC / DevOps.
 
 ---
 
@@ -364,6 +368,8 @@ Find interfaces (endpoints, commands, functions, pipeline stages) that operate o
 | **Data Pipeline** | Two stages that read the same source or write to the same destination without a clear handoff contract |
 | **ML Pipeline** | Two preprocessing steps that apply the same transformation on the same feature |
 | **AI / LLM App** | Two prompt templates that perform the same task (e.g., two "summarise" prompts targeting the same content type) |
+| **IaC / DevOps** | Two Terraform resource blocks or modules that manage the same underlying cloud resource (e.g., two `aws_security_group_rule` blocks with identical port/protocol) |
+| **Mobile App** | Two screens that display and allow editing of the same data without a documented reason (e.g., two "Edit Profile" paths reachable via different navigation flows) |
 
 If overlap exists without a documented reason: **Medium severity.**
 
@@ -403,6 +409,8 @@ An external interface is any contract between two components:
 | **ML Pipeline** | Feature schema ↔ training input contract ↔ model artifact format ↔ serving schema |
 | **Microservices** | Event schema published by service A ↔ event schema consumed by service B |
 | **AI / LLM App** | Prompt variable name ↔ value injected at runtime ↔ expected output format in eval rubric; MCP tool input schema ↔ actual args the LLM sends ↔ tool output format the response parser expects |
+| **IaC / DevOps** | Terraform variable name ↔ secrets manager key name ↔ env var referenced in application code; module output name ↔ consuming module input name |
+| **Mobile App** | Screen route name ↔ deep link path segment ↔ `mobile-contract.md` navigation graph entry; API request field name ↔ backend contract ↔ UI display field |
 
 For each interface touched in this task:
 
