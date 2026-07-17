@@ -465,7 +465,7 @@ Also during this phase: created concrete test-plan.md, test-report.md, and pipel
 | `docs/templates/script/verify_framework.py` | Added **Check 9** (`build-pdf-type-sync`) — compares `build_pdf.py` VALID_PROJECT_TYPES against the canonical `PURPOSES_FILES` registry so a missing type is caught automatically |
 | `docs/.gitignore` | Added `*.pdf` — PDF files should be generated in actual project repos, not committed to the framework template repo |
 | `README.md` | Updated PDF generation section with `--content spec` usage and explanation |
-## Phase 17 — Spec Content Quality Check 🔲 Planned
+## Phase 17 — Spec Content Quality Check ✅ Complete
 
 `verify_docs.py` currently only checks whether a file exists. A file that contains only template headers and `<!-- TODO -->` placeholders passes the audit despite having no real content. There is currently no way to tell the difference between a filled spec and an empty one.
 
@@ -483,7 +483,7 @@ Also during this phase: created concrete test-plan.md, test-report.md, and pipel
 
 ---
 
-## Phase 18 — LLM Judge Spec Review 🔲 Planned
+## Phase 18 — LLM Judge Spec Review ✅ Complete
 
 Script-based checks (Phase 17) catch structural gaps but cannot evaluate whether the content is clear, unambiguous, or testable. A spec that says "the system should respond quickly" passes every rule check but is useless for development.
 

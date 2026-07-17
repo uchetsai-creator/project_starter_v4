@@ -356,12 +356,38 @@ python3 docs/script/verify_docs.py --project-type web-app
 python3 docs/script/verify_docs.py --project-type data-pipeline+web-app
 python3 docs/script/verify_docs.py --project-type web-app --strict   # exits 1 if Required missing
 python3 docs/script/verify_docs.py --project-type web-app --json     # machine-readable output
+python3 docs/script/verify_docs.py --project-type web-app --content  # also check fill quality
 ```
 
 Output statuses: ✅ Present · ❌ Missing Required · ⚠️ Missing Optional · — N/A · 🔍 Orphan
 
+`--content` adds per-document fill score: placeholder detection, required section presence,
+fill ratio (non-placeholder content lines / total content lines). Summary line: "Spec fill: N / M
+documents fully filled". Use at sprint end before spec-review.md to identify which documents
+need the LLM Judge rubric.
+
 Update when: a new document is added to the framework and its Required/Optional/N/A status
 per project type is defined — update the MATRIX dict in the script to match document-matrix.md.
+
+### spec-review.md
+**Applies to: All project types**
+
+Purpose:
+Prompt template for LLM-as-a-Judge spec quality review. Load at sprint end for any Required
+spec document that was updated during the sprint (especially those with ⚠️ or ❌ from
+`verify_docs.py --content`). Scores the spec on five criteria (1–5 each) and returns a
+structured PASS/FAIL verdict with evidence.
+
+Criteria: Completeness · Ambiguity · Error Coverage · Testability · Consistency.
+Per-type addenda: Data Pipeline/ML Pipeline (idempotency, schema contract, row-count expectation),
+AI/LLM App (hallucination handling, retrieval failure, latency ceiling),
+Microservices (service boundary, async contract, circuit breaker),
+Mobile App (offline behaviour, OS permissions, deep link edge cases).
+
+PASS requires all criteria ≥ 4. Any criterion below 4 → FAIL.
+Record result in `docs/specs/test-report.md → Spec Review` section.
+
+Do not include in PDF output — this is a process template, not a project document.
 
 ### scan_codebase.py
 Purpose:

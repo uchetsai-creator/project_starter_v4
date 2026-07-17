@@ -15,8 +15,13 @@ Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulat
    - Update only the affected documents — do not check unaffected ones
    - Mark the entry **Status: Documentation synchronized — [date]**
 3. Run Module Completion Check for any modules touched during the sprint
-4. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
-5. Confirm PDF renders correctly
+4. **Spec quality review** — for each Required spec document updated this sprint:
+   a. Run content audit: `python3 docs/script/verify_docs.py --project-type TYPE --content`
+   b. For any document with ⚠️ or ❌ fill result: load `templates/specs/spec-review.md`, paste the document, run the LLM Judge rubric.
+   c. Resolve all FAIL items (score < 4 on any criterion) before proceeding.
+   d. Record result in `docs/specs/test-report.md → Spec Review` section: document name, date, overall score, PASS/FAIL.
+5. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
+6. Confirm PDF renders correctly
 
 ---
 
