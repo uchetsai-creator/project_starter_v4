@@ -47,8 +47,6 @@ PDF_ALLOWLIST = [
     # ── Chapter 2: Plan ──────────────────────────────────────────────────────
     ("plan",         "project-plan.md",                  ALL9),
     ("plan",         "changelog.md",                     ALL9),
-    ("plan",         "task-log.md",                      ALL9),
-    ("plan",         "sprint-change-log.md",             ALL9),
 
     # ── Chapter 3: Design ────────────────────────────────────────────────────
     ("design",       "architecture/architecture.md",     ALL | MOBILE),  # IaC uses topology.md instead
