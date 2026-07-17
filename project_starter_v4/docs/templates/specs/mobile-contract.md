@@ -34,25 +34,39 @@
 ## Navigation Graph
 
 <!--
-  Show the screen transition structure.
+  Show the screen transition structure using a state diagram.
   Stack = push/pop (back button). Tab = peer screens. Modal = overlays top of stack.
-  Use the pattern actual used in this project (StackNavigator, TabNavigator, etc.).
+  Use the navigator types actually used in this project (StackNavigator, TabNavigator, etc.).
+  Add or remove state blocks to match your actual screen hierarchy.
 -->
 
-```
-Root Navigator (Stack)
-├── Auth Stack (Stack)
-│   ├── LoginScreen
-│   └── SignupScreen
-└── App Stack (Tab)
-    ├── HomeTab (Stack)
-    │   ├── HomeScreen
-    │   └── DetailScreen
-    ├── SearchTab (Stack)
-    │   └── SearchScreen
-    └── ProfileTab (Stack)
-        ├── ProfileScreen
-        └── SettingsScreen
+```plantuml
+@startuml
+!theme plain
+hide empty description
+
+state "Auth Stack (Stack)" as Auth {
+  [*] --> LoginScreen
+  LoginScreen --> SignupScreen
+}
+
+state "App Stack (Tab)" as App {
+  state "HomeTab (Stack)" as HomeTab {
+    [*] --> HomeScreen
+    HomeScreen --> DetailScreen
+  }
+  state "SearchTab (Stack)" as SearchTab {
+    [*] --> SearchScreen
+  }
+  state "ProfileTab (Stack)" as ProfileTab {
+    [*] --> ProfileScreen
+    ProfileScreen --> SettingsScreen
+  }
+}
+
+[*] --> Auth
+Auth --> App : authenticated
+@enduml
 ```
 
 ---

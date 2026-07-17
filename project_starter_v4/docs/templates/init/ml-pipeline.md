@@ -20,8 +20,8 @@
 12. Create docs/specs/experiment-log.md from templates/specs/experiment-log.md.
 13. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
 14. Create docs/business/business-rules.md from templates/business/business-rules.md.
-15. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-16. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+15. Create docs/modules/module-data-flow.md from templates/flows/module-data-flow-v2.md.
+16. Create docs/modules/module-flow.md from templates/flows/module-flow-v2.md.
 17. Create docs/codebase-map.md from templates/codebase-map.md.
 18. Create docs/project-plan.md from templates/project-plan.md.
 19. Create docs/task-log.md from templates/task-log.md.

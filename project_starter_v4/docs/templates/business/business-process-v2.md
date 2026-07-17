@@ -13,8 +13,9 @@
     docs/business/inventory-restock-process.md
 
   Files matching *-process.md are automatically included in the PDF.
-  After writing a new process file, run:
-  python3 docs/script/activity_to_html.py docs/business/[process-name]-process.md
+  Activity diagrams are rendered automatically by build_pdf.py — no separate step needed.
+  To regenerate the PDF after writing a new process file, run:
+  python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf
 -->
 
 ---
@@ -38,7 +39,7 @@
 * Every process file must include an activity block.
 * The activity block describes business steps and decision branches only.
 * Do not reference specific services, repositories, or technical implementation in the diagram.
-* After writing, run: `python3 docs/script/activity_to_html.py docs/business/[process-name]-process.md`
+* Activity diagrams are rendered by `build_pdf.py` — no separate script needed.
 
 ---
 

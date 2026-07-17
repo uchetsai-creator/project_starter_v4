@@ -21,8 +21,8 @@
 13. Create docs/business/business-process.md from templates/business/business-process-v2.md.
 14. Create docs/business/business-objects.md from templates/business/business-objects-v2.md.
 15. Create docs/business/business-rules.md from templates/business/business-rules.md.
-16. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-17. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+16. Create docs/modules/module-data-flow.md from templates/flows/module-data-flow-v2.md.
+17. Create docs/modules/module-flow.md from templates/flows/module-flow-v2.md.
 18. Create docs/codebase-map.md from templates/codebase-map.md.
 19. Create docs/project-plan.md from templates/project-plan.md.
 20. Create docs/task-log.md from templates/task-log.md.

@@ -110,9 +110,9 @@ project_starter/                     ← this repo (template only)
     │   ├── business-objects.md      ← index + rules for business object files (per object)
     │   └── business-rules.md        ← approval/validation/notification/audit rules
     │
-    ├── modules/
-    │   ├── module-data-flow.md      ← index + rules for module flow files (Feature / Background Job / Shared Utility)
-    │   └── module-flow.md           ← index + rules for cross-module sequence files (per module)
+    ├── flows/
+    │   ├── module-data-flow-v2.md   ← index + rules for module flow files (Feature / Background Job / Shared Utility)
+    │   └── module-flow-v2.md        ← index + rules for cross-module sequence files (per module)
     │
     └── script/
         ├── plantuml.jar             ← PlantUML renderer (download separately, see below)
@@ -363,18 +363,16 @@ The flow format does not prescribe layer names. Use whatever names your architec
 
 ## Diagrams
 
-Eight scripts turn structured Markdown blocks into diagrams — each outputs both an **interactive HTML**
-(drag, zoom, click) and a **static SVG** (for PDF embedding). All UML scripts automatically
-append a type suffix to the output filename to avoid collisions (e.g. `data-model-state.html`).
+Two tools generate diagrams from Markdown — each outputs both an **interactive HTML**
+(drag, zoom, click) and a **static SVG** (for PDF embedding). `build_pdf.py` automatically
+appends a type suffix to output filenames to avoid collisions (e.g. `data-model-state.html`).
 
-| Script | Input | Diagram type | Where it's embedded |
+| Tool | Input | Diagram type | Where it's embedded |
 |---|---|---|---|
-| Tool | Input | Diagram type | Where it appears |
-|---|---|---|---|
-| PlantUML (via `build_pdf.py`) | Any ` ```plantuml ` block in any `.md` | All UML types | Wherever the block appears in the PDF |
+| `build_pdf.py` (via PlantUML) | Any ` ```plantuml ` block in any `.md` | All UML types | Wherever the block appears in the PDF |
 | `schema_to_html.py` | Prisma / SQL file | ERD | `specs/data-model.md` |
 
-> **Multiple blocks per file:** all six UML scripts support multiple diagram blocks in a
+> **Multiple blocks per file:** `build_pdf.py` supports multiple diagram blocks in a
 > single `.md` file. Each block generates its own HTML + SVG pair, named by its `title:`
 > slug (e.g. `data-model-workorder-status-state.html`). A file with a single block keeps
 > the original naming behaviour.
@@ -466,7 +464,7 @@ python3 docs/script/verify_docs.py --project-type web-app --docs path/to/docs
 | — N/A | File is not applicable for this type |
 | 🔍 Orphan | File exists but is N/A for this type, or is not in the document matrix |
 
-Valid `--project-type` values: `web-app`, `cli-tool`, `library`, `data-pipeline`, `ml-pipeline`, `microservices`, `llm-app`, `iac`
+Valid `--project-type` values: `web-app`, `cli-tool`, `library`, `data-pipeline`, `ml-pipeline`, `microservices`, `llm-app`, `iac`, `mobile-app`
 
 ---
 
@@ -546,7 +544,7 @@ python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en
 python3 docs/script/build_pdf.py docs-zh --lang zh --project-type data-pipeline -o docs/project-documentation-zh.pdf
 ```
 
-Valid `--project-type` values: `web-app`, `cli-tool`, `library`, `data-pipeline`, `ml-pipeline`, `microservices`, `llm-app`
+Valid `--project-type` values: `web-app`, `cli-tool`, `library`, `data-pipeline`, `ml-pipeline`, `microservices`, `llm-app`, `iac`, `mobile-app`
 
 Google Translate (free, no API key needed), preserving code blocks, inline code, HTML comments,
 and table structure. It mirrors the translated files into `docs-zh/`, which `build_pdf.py` then

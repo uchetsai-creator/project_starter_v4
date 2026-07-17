@@ -19,8 +19,8 @@
 11. Create docs/specs/logging-spec.md from templates/specs/logging-spec.md.
 12. Create docs/business/business-rules.md from templates/business/business-rules.md (data quality rules, validation constraints).
 13. If business workflows need to be documented (e.g. approval flows, SLA processes): Create docs/business/business-process.md from templates/business/business-process-v2.md.
-14. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-15. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+14. Create docs/modules/module-data-flow.md from templates/flows/module-data-flow-v2.md.
+15. Create docs/modules/module-flow.md from templates/flows/module-flow-v2.md.
 16. Create docs/codebase-map.md from templates/codebase-map.md.
 17. Create docs/project-plan.md from templates/project-plan.md.
 18. Create docs/task-log.md from templates/task-log.md.

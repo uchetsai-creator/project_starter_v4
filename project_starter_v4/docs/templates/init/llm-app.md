@@ -25,8 +25,8 @@
 17. If this app exposes an external API: Create docs/specs/api-contract.md from templates/specs/api-contract.md.
 18. If this app has multiple users with different roles: Create docs/specs/permissions.md from templates/specs/permissions.md.
 19. If this app enforces domain-specific rules (e.g. content policy, output constraints): Create docs/business/business-rules.md from templates/business/business-rules.md.
-20. Create docs/modules/module-data-flow.md from templates/modules/module-data-flow-v2.md.
-21. Create docs/modules/module-flow.md from templates/modules/module-flow-v2.md.
+20. Create docs/modules/module-data-flow.md from templates/flows/module-data-flow-v2.md.
+21. Create docs/modules/module-flow.md from templates/flows/module-flow-v2.md.
 22. Create docs/codebase-map.md from templates/codebase-map.md.
 23. Create docs/project-plan.md from templates/project-plan.md.
 24. Create docs/task-log.md from templates/task-log.md.
