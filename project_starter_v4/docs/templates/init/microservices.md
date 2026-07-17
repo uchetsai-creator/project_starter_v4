@@ -1,11 +1,5 @@
 # Project Initialization — Microservices
 
-<!--
-  Read this file ONCE when starting a new Microservices project.
-  After initialization is complete, this file is no longer needed for day-to-day tasks.
-  Workflow rules, task completion, and sprint sync live in AGENTS.md.
--->
-
 ## Per-Service Setup
 
 For each individual service, load `templates/init/web-app.md` and follow its initialization sequence in that service's own `docs/` folder, with these adaptations:

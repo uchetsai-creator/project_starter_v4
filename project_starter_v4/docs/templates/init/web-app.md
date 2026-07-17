@@ -1,11 +1,5 @@
 # Project Initialization — Web App
 
-<!--
-  Read this file ONCE when starting a new Web App project.
-  After initialization is complete, this file is no longer needed for day-to-day tasks.
-  Workflow rules, task completion, and sprint sync live in AGENTS.md.
--->
-
 1. Create docs/project-requirements.md from templates/project-requirements.md.
 2. Create docs/specs/research.md from templates/specs/research.md (resolve all NEEDS CLARIFICATION).
 3. Create docs/specs/quickstart.md from templates/specs/quickstart.md.

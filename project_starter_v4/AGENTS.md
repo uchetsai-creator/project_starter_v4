@@ -193,8 +193,3 @@ current-state.md is a state machine with two fields:
 
 > **Load `templates/sprint-sync.md` now.** It contains the full sprint sync procedure and Document Update Checklist.
 > Do not load it during normal task work — only at sprint end.
-
-### Document Update Checklist
-
-> Full checklist is in `templates/sprint-sync.md` — load it now if running Sprint Documentation Sync.
-> During normal task work, use only the filtered list in `docs/current-state.md → Doc Checklist`.

@@ -1,10 +1,5 @@
 # Retrofitting an Existing Project
 
-<!--
-  Load this file ONCE at the start of a retrofit.
-  Not needed during normal task work on an established project.
--->
-
 The goal is to describe what already exists — not to redesign it. Read the codebase first, then fill in the documents to reflect reality.
 
 Do not scan the entire repository at once. Work module by module.

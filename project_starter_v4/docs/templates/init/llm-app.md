@@ -1,11 +1,5 @@
 # Project Initialization — AI / LLM Application
 
-<!--
-  Read this file ONCE when starting a new AI / LLM Application project.
-  After initialization is complete, this file is no longer needed for day-to-day tasks.
-  Workflow rules, task completion, and sprint sync live in AGENTS.md.
--->
-
 1. Create docs/project-requirements.md from templates/project-requirements.md.
 2. Create docs/specs/research.md from templates/specs/research.md (model selection, provider, alternatives considered).
 3. Create docs/specs/quickstart.md from templates/specs/quickstart.md (API key setup, local run, first query).

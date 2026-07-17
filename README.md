@@ -284,18 +284,9 @@ of their required documents — everything goes in the same `docs/` folder.
 Project Type: Data Pipeline + Web App
 ```
 
-Common combinations and what the second type adds:
-
-| Combination | Extra docs from second type |
-|---|---|
-| Data Pipeline + Web App | `api-contract.md`, `permissions.md`, `frontend.md` (dashboard) |
-| CLI Tool + Library | `public-api.md`, `compatibility-matrix.md` |
-| ML Pipeline + Web App | `api-contract.md`, `permissions.md` (serving endpoint) |
-| AI / LLM App + Web App | `api-contract.md`, `frontend.md`, `deployment.md` |
-
 `AGENTS.md` drives initialization — declare the project type at the top, then load only the matching
 `templates/init/[type].md` file. Each init file contains the full step-by-step sequence for that type.
-For hybrid types, load each relevant init file and union the step lists (skip duplicates).
+For hybrid types and common combinations, see `AGENTS.md § Mixed / Hybrid Project Types`.
 
 ---
 
@@ -549,8 +540,6 @@ python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en
 # Chinese PDF (manual, only when needed)
 python3 docs/script/build_pdf.py docs-zh --lang zh --project-type data-pipeline -o docs/project-documentation-zh.pdf
 ```
-
-Valid `--project-type` values: `web-app`, `cli-tool`, `library`, `data-pipeline`, `ml-pipeline`, `microservices`, `llm-app`, `iac`, `mobile-app`
 
 `--content spec` omits Plan (project-plan, changelog) and Test (test-plan, test-report) chapters — use this when handing off the spec to stakeholders or clients. Default (`full`) includes all six chapters.
 

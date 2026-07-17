@@ -1,11 +1,5 @@
 # Project Initialization — IaC / DevOps
 
-<!--
-  Read this file ONCE when starting a new IaC / DevOps project.
-  After initialization is complete, this file is no longer needed for day-to-day tasks.
-  Workflow rules, task completion, and sprint sync live in AGENTS.md.
--->
-
 ## What applies to IaC / DevOps projects
 
 IaC / DevOps projects have almost no overlap with the standard document set.
