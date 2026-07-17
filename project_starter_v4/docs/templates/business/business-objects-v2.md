@@ -1,139 +1,116 @@
-# Business Process Index
+# Business Objects Index
 
 <!--
-  This file is the index and rule definition for all business process documents.
-  Each business process has its own dedicated file under docs/business/.
-  Each process file must follow the rules and format defined in this document.
+  This file is the index and rule definition for all business object documents.
+  Each business entity has its own dedicated file under docs/business/.
+  Each object file must follow the rules and format defined in this document.
 
-  Naming convention: [process-name]-process.md
-  Location: docs/business/[process-name]-process.md
+  Naming convention: [object-name]-object.md
+  Location: docs/business/[object-name]-object.md
   Examples:
-    docs/business/order-create-process.md
-    docs/business/order-cancel-process.md
-    docs/business/inventory-restock-process.md
+    docs/business/order-object.md
+    docs/business/customer-object.md
+    docs/business/product-object.md
 
-  Files matching *-process.md are automatically included in the PDF.
-  After writing a new process file, run:
-  Edit the ```plantuml block in the file, then rebuild PDF
+  Files matching *-object.md are automatically included in the PDF.
+  State diagrams are rendered automatically by build_pdf.py — no separate step needed.
+  To regenerate the PDF after writing a new object file, run:
+  python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf
 -->
 
 ---
 
 ## Rules
 
-* This file acts as the index and rule definition.
-* Do not put process content in this file.
-* Each business process must have its own file.
-* Each process file must follow the rules and format defined in this document.
+* This file acts as the index.
+* Do not put object content here — each business entity must have its own file.
+* Each object file must follow the rules and format defined in this document.
 
 ### Content Rules
 
-* Focus on WHAT happens from a business perspective.
-* Do not describe which service or code handles each step.
-* Do not describe validation logic or database actions.
-* Technical cross-module calls belong in docs/modules/[module]/[module]-flow.md — not here.
+* Focus on the entity's lifecycle and domain relationships — not which service handles each transition.
+* Technical implementation (column names, query patterns) belongs in `docs/specs/data-model.md`.
+* State transitions in `*-object.md` are the canonical source of truth — keep `data-model.md` state section in sync with this file, not the other way around.
 
-### Activity Diagram Rules
+### State Diagram Rules
 
-* Every process file must include an activity block.
-* The activity block describes business steps and decision branches only.
-* Do not reference specific services, repositories, or technical implementation in the diagram.
-* After writing, run: `Edit the ```plantuml block in the file, then rebuild PDF`
+* Every object file must include a `plantuml` state diagram block.
+* The diagram shows business states and transition conditions only.
+* Do not reference database columns, services, or code in the diagram.
+* State diagrams are rendered by `build_pdf.py` — no separate script needed.
 
 ---
 
-## Process Files
+## Relationships
 
-| Process | File | Owner |
+<!--
+  Include this section when 3+ objects have non-trivial relationships.
+  Remove for simple projects with only 1-2 objects.
+-->
+
+| Object | Relates to | Relationship |
 |---|---|---|
-| [e.g., Create Order] | `docs/business/order-create-process.md` | [e.g., Customer] |
-| [process name] | `docs/business/[process-name]-process.md` | [owner] |
+| [e.g., Order] | [e.g., Customer] | [e.g., N:1 — each order belongs to one customer] |
+| [e.g., Order] | [e.g., Product] | [e.g., N:M — each order contains multiple products via line items] |
 
 ---
 
-## Process File Format
+## Object Files
 
-Each process file must follow this format exactly:
+| Object | File | Status field | States |
+|---|---|---|---|
+| [e.g., Order] | `docs/business/order-object.md` | `status` | [e.g., PENDING → CONFIRMED → SHIPPED → DELIVERED / CANCELLED] |
+| [object name] | `docs/business/[object-name]-object.md` | [field] | [states] |
+
+---
+
+## Object File Format
+
+Each object file must follow this format exactly:
 
 ```markdown
-# [Process Name]
+# [Object Name]
 
-## Business Goal
-[What is the purpose of this business process? 1-3 sentences.]
+## Business Purpose
+[What business entity does this represent? 1–2 sentences describing its role in the domain.]
 
-## Process Overview
+## Lifecycle States
 
-Focus on:
-- Major business stages
-- Process sequence
-- Process ownership
+| State | Meaning | Who sets it |
+|---|---|---|
+| `[STATUS_A]` | [What this state means in business terms] | [e.g., Customer / System / Ops] |
+| `[STATUS_B]` | [What this state means] | [e.g., System after payment confirmation] |
+| `[STATUS_C]` | [Terminal state] | [e.g., System] |
+| `[STATUS_D]` | [Terminal state — cancelled] | [e.g., Customer or Ops] |
 
-Do not describe:
-- Which service handles each step
-- Validation logic
-- Database actions
-
-\`\`\`
-Start → [Stage 1] → [Stage 2] → [Stage 3] → End
-\`\`\`
-
-## Process Steps
-
-| Step | Owner | Input | Action | Output | Next step |
-|---|---|---|---|---|---|
-| [Step name] | [Owner] | [Input] | [What happens] | [Output] | [Next step] |
-
-## Activity Diagram
+## State Diagram
 
 \`\`\`plantuml
 @startuml
-' PlantUML Activity Diagram with swim lanes.
-' |LaneName| declares a new lane. Remove if single actor.
-title [Process Name]
+hide empty description
+title [Object Name] Lifecycle
 
-|[Actor A]|
-start
-:[Step 1];
-:[Step 2];
-if ([Decision Point]?) then (yes)
-  |[Actor B]|
-  :[Step 3a];
-  if ([Another Decision]?) then (yes)
-    :[Step 4a];
-  else (no)
-    |[Actor A]|
-    :[Step 4b];
-  endif
-else (no)
-  |[Actor A]|
-  :[Step 3b];
-endif
-:[Final Step];
-stop
+[*]         --> STATUS_A : [Trigger: e.g., created]
+STATUS_A    --> STATUS_B : [Condition: e.g., payment confirmed]
+STATUS_A    --> STATUS_D : [Condition: e.g., customer cancels]
+STATUS_B    --> STATUS_C : [Condition: e.g., delivered]
+STATUS_B    --> STATUS_D : [Condition: e.g., ops cancels]
+STATUS_C    --> [*]
+STATUS_D    --> [*]
 @enduml
 \`\`\`
 
-## Decision Points
+## Relationships
 
-| Decision | Decision maker | Input | Possible outcomes |
-|---|---|---|---|
-| [e.g., Stock available?] | [System] | [Order items] | Yes → Reserve / No → Notify out of stock |
-
-## Exceptions
-
-| Exception | Cause | Handling method | Responsible role |
-|---|---|---|---|
-| [e.g., Payment timeout] | [External API unreachable] | [Retry 3x, then notify ops] | [System / Ops] |
-
-## Pain Points
-
-| Current problem | Impact | Current workaround |
+| Related object | Relationship | Notes |
 |---|---|---|
-| [Problem] | [Impact on business] | [What people do today] |
+| [e.g., Customer] | N:1 — each [object] belongs to one customer | [e.g., FK: customer_id] |
+| [e.g., Product] | N:M — each [object] may reference multiple products | [e.g., via order_items join table] |
 
-## Future Improvement Ideas
+## Associated Business Rules
 
-| Improvement | Expected benefit |
+| Rule ID | Description |
 |---|---|
-| [Idea] | [What it would improve] |
+| [BR-XXX] | [e.g., An order may only be cancelled if status is STATUS_A or STATUS_B] |
+| [BR-XXX] | [e.g., A cancelled order cannot be reactivated] |
 ```
