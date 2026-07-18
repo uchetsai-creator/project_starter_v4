@@ -519,7 +519,7 @@ Per-type addenda are listed inside the template (e.g. Data Pipeline adds Idempot
 
 ---
 
-## Phase 19 — Spec Challenge (QA Simulation) 🔲 Planned
+## Phase 19 — Spec Challenge (QA Simulation) ✅ Complete
 
 LLM Judge (Phase 18) scores what is written. Spec Challenge finds what is missing. Instead of asking "how good is this spec?", it asks "what does this spec not answer?" — then iterates until no significant holes remain.
 
