@@ -170,6 +170,7 @@ current-state.md is a state machine with two fields:
   For task types not covered by the quick filter, load `templates/sprint-sync.md → Document Update Checklist`.
 - Write the filtered list into `docs/current-state.md → Doc Checklist`.
 - Do not re-open AGENTS.md at task closeout — the filtered list in current-state.md is sufficient.
+- If the task adds or removes files, add any ASCII file-tree diagrams in README.md (or equivalent docs) to the Doc Checklist — update the tree to reflect the new layout.
 - If the task goal involves debugging a failure or investigating unexpected output, add the relevant debug guide to Required Context:
   - Pipeline stage failure / wrong row count / data quality issue → `docs/specs/pipeline-debug.md`
   - LLM wrong answer / low eval score / tool call failure / retrieval issue → `docs/specs/llm-debug.md`
