@@ -767,70 +767,170 @@ Every task closeout currently only checks whether Required documents exist (`ver
 
 ---
 
-## Phase 24 — Module Flow Coverage & Quality Check ✅ Complete
+## Phase 24 — Full Document Content Quality Gate 🔲 In Progress
 
-`verify_docs.py` audits top-level spec files. `docs/modules/` has no equivalent: scan_codebase.py may surface 5 pipeline stages, but 2 may have no flow file, and the 3 that exist may have empty Input/Output contracts. No tool catches either gap today.
+`verify_docs.py` checks whether required documents *exist*. `verify_docs.py --content` scans for generic placeholder patterns. Neither knows what *specific sections* each document must contain, nor which sections apply to which project type. An agent can leave `pipeline-contract.md` with empty stage rows, `api-contract.md` with no endpoint entries, or `architecture.md` with no diagram — and no tool will catch it today.
 
-**Goal:** Add `verify_module_docs.py` — cross-reference the module list from scan_codebase.py against `docs/modules/`, then verify each flow file's required sections contain real content, gated by module type × project type.
+**Goal:** Add `verify_content.py` — for every Required document in the project's declared type, verify that each document's required sections contain real content, gated by document type × project type.
 
-### New script
+### What was already implemented (partial Phase 24)
 
-```
-docs/templates/script/verify_module_docs.py
+`verify_module_docs.py` was shipped and covers module flow files only:
 
-Usage:
-  python3 docs/script/verify_module_docs.py --project-type TYPE
-  python3 docs/script/verify_module_docs.py --project-type TYPE --src PATH --docs PATH
-  python3 docs/script/verify_module_docs.py --project-type TYPE --strict
-  python3 docs/script/verify_module_docs.py --project-type TYPE --json
-```
-
-**Coverage check** — for every module returned by scan_codebase.py, confirm `docs/modules/[module]/[module]-module-data-flow.md` exists.
-
-**Content quality check — required sections by module type:**
+- **Coverage check** — for every module in scan_codebase.py output, confirms `docs/modules/[module]/[module]-module-data-flow.md` exists
+- **Module type quality** — section-level checks per module type:
 
 | Module type | Required content |
 |---|---|
-| **Pipeline Stage** | `Input` block: Source, Format, Schema non-empty; `Output` block: Destination, Format non-empty; `Error Handling` section: transient + missing-input entries (≥ 3 lines each) |
-| **Feature** | At least one operation block with real `Function:` + `File:` values (not placeholder); every declared operation either filled or explicitly marked `Not Supported` |
-| **Background Job** | `Trigger:` non-empty; success path (`→ acknowledge / commit`) present; `Error Handling` section: transient + permanent entries (≥ 3 lines each) |
-| **Shared Utility** | `plantuml` class block present and non-empty; at least one method with real signature (not placeholder `[method]`); `Used by` table has ≥ 1 row with real module name and purpose |
+| **Pipeline Stage** | `Input` block: Source, Format, Schema non-empty; `Output` block: Destination, Format non-empty; `Error Handling`: transient + missing-input cases, ≥ 3 lines |
+| **Feature** | ≥ 1 real `Function:` + `File:` pair (not placeholder); operations filled or explicitly `Not Supported` |
+| **Background Job** | `Trigger:` non-empty; success path (`→ acknowledge / commit`) present; `Error Handling`: transient + permanent cases, ≥ 3 lines |
+| **Shared Utility** | `plantuml` class block non-empty; ≥ 1 real method signature; `Used by` table ≥ 1 real row |
 
-**Project type → expected primary module type:**
+This partial work is correct and stays. `verify_content.py` either absorbs it or calls it.
 
-| Project type | Primary module type |
-|---|---|
-| Data Pipeline, ML Pipeline | Pipeline Stage |
-| Web App, LLM App | Feature, Background Job |
-| CLI Tool | Feature (subcommand) |
-| Microservices | Feature (per-service entry point) |
-| Library / SDK | Shared Utility |
+---
 
-**Output format:**
+### Remaining work — `verify_content.py`
 
 ```
-Module Flow Coverage & Quality — data-pipeline
-────────────────────────────────────────────────────────
-Module            Type             Flow file    Quality
-ge-validation     Pipeline Stage   ✅ Present   ⚠️  Missing Output contract
-dbt-transform     Pipeline Stage   ✅ Present   ✅  Fully filled
-datahub-ingest    Pipeline Stage   ✅ Present   ⚠️  Error Handling < 3 lines
-model-training    Pipeline Stage   ❌ Missing   —
+templates/script/verify_content.py
 
-Coverage : 3 / 4 modules documented
-Quality  : 1 / 3 existing flow files fully filled
+Usage:
+  python3 docs/script/verify_content.py --project-type TYPE
+  python3 docs/script/verify_content.py --project-type TYPE --docs PATH
+  python3 docs/script/verify_content.py --project-type TYPE --strict
+  python3 docs/script/verify_content.py --project-type TYPE --json
+```
+
+Runs all document-level checkers that apply to the declared project type. Each checker is a `check_[docname]()` function with its own section-level rules.
+
+---
+
+### Content quality rules — Universal (all project types)
+
+| Document | Required content |
+|---|---|
+| `architecture.md` | `plantuml` component block present and non-empty; ≥ 1 component defined (not placeholder `[Component]`) |
+| `quickstart.md` | Prerequisites section ≥ 1 real item; ≥ 1 numbered setup step with real command or instruction; Verification step present |
+| `research.md` | ≥ 1 decision entry with non-placeholder Rationale; Decision field not blank |
+| `test-plan.md` | Testing Strategy section ≥ 3 lines; ≥ 1 test level defined (unit / integration / e2e) with real scope |
+| `test-report.md` | *(already covered by `verify_tests.py` — skip in verify_content.py)* |
+| `logging-spec.md` | *(already covered by `verify_logs.py` — skip in verify_content.py)* |
+
+---
+
+### Content quality rules — by project type
+
+#### Web App · Microservices
+
+| Document | Required content |
+|---|---|
+| `api-contract.md` | ≥ 1 endpoint row with real Method + Path (not `[METHOD]`/`[/path]`); Response schema non-placeholder |
+| `permissions.md` | Role table ≥ 2 rows (header + ≥ 1 real role); ≥ 1 permission matrix entry |
+| `data-model.md` | ≥ 1 entity/table defined; `plantuml` ER block non-empty |
+| `backend.md` | Stack section ≥ 1 real technology; Layer pattern described (non-placeholder) |
+
+#### Data Pipeline · ML Pipeline
+
+| Document | Required content |
+|---|---|
+| `pipeline-contract.md` | Cross-stage table ≥ 1 data row; each row has non-placeholder Input format + Output format |
+| `pipeline-debug.md` | ≥ 1 debug scenario with Symptom + Root cause non-empty |
+| `data-model.md` | ≥ 1 schema/table defined |
+| `backend.md` | Stack section non-empty |
+
+#### ML Pipeline (additional)
+
+| Document | Required content |
+|---|---|
+| `model-contract.md` | Input schema ≥ 1 real field; Output format non-placeholder; ≥ 1 production threshold defined |
+| `experiment-log.md` | ≥ 1 experiment entry with Hypothesis + Result non-empty |
+
+#### CLI Tool
+
+| Document | Required content |
+|---|---|
+| `cli-contract.md` | ≥ 1 subcommand defined with non-placeholder description; ≥ 1 flag or argument |
+| `release-guide.md` | Versioning policy non-empty; ≥ 1 publish step |
+
+#### Library / SDK
+
+| Document | Required content |
+|---|---|
+| `public-api.md` | ≥ 1 public function or class documented with real signature (not `[FunctionName]`) |
+| `release-guide.md` | Same as CLI Tool |
+| `compatibility-matrix.md` | ≥ 1 runtime version row with Support status |
+
+#### Microservices (additional)
+
+| Document | Required content |
+|---|---|
+| `service-catalog.md` | ≥ 1 service row with real name, port, owner |
+| `service-contract.md` | ≥ 1 inter-service endpoint or event documented |
+
+#### AI / LLM Application
+
+| Document | Required content |
+|---|---|
+| `llm-contract.md` | Model name non-placeholder; System prompt ≥ 1 line of real content; ≥ 1 parameter defined |
+| `eval-spec.md` | ≥ 1 evaluation criterion with scoring rubric non-empty; ≥ 1 test case |
+| `prompt-library.md` | ≥ 1 prompt entry (name + file reference) |
+
+#### IaC / DevOps
+
+| Document | Required content |
+|---|---|
+| `topology.md` | `plantuml` block non-empty; ≥ 1 resource defined |
+| `runbook.md` | ≥ 1 runbook entry with Steps non-empty |
+| `drift-policy.md` | Detection cadence non-placeholder; Remediation SLA defined |
+
+#### Mobile App
+
+| Document | Required content |
+|---|---|
+| `mobile-contract.md` | ≥ 1 screen defined with non-placeholder title; Navigation structure described |
+| `architecture.md` | Same as universal rule + ≥ 1 screen component in diagram |
+
+---
+
+### Module flow files (delegated to `verify_module_docs.py`)
+
+`verify_content.py` calls `verify_module_docs.py` internally (or re-runs its logic) for `docs/modules/`. No duplication — module flow rules stay in `verify_module_docs.py`.
+
+---
+
+### Output format
+
+```
+Document Content Quality — data-pipeline
+────────────────────────────────────────────────────────────────────
+Document                    Required   Quality
+architecture.md             ✅         ✅  Fully filled
+pipeline-contract.md        ✅         ⚠️  Cross-stage table empty
+pipeline-debug.md           ✅         ⚠️  No debug scenarios documented
+data-model.md               ✅         ✅  Fully filled
+quickstart.md               ✅         ✅  Fully filled
+research.md                 ✅         ⚠️  Rationale placeholder in 2 decisions
+test-plan.md                ✅         ⚠️  No test levels defined
+modules/ge-validation       ✅         ✅  Fully filled  (Pipeline Stage)
+modules/dbt-transform       ✅         ⚠️  Missing Output contract  (Pipeline Stage)
+modules/model-training      ❌ Missing  —
+
+Documents  : 8 / 9 present
+Quality    : 3 / 8 existing documents fully filled
 ```
 
 ### Integration
 
 | File | Change |
 |---|---|
-| `docs/templates/sprint-sync.md` | Add checklist item `[Types: All]`: "Run verify_module_docs.py — all modules covered + quality PASS" |
-| `document-purposes-common.md` | Add `verify_module_docs.py` entry: purpose, when to run, output interpretation |
-| `docs/templates/script/verify_framework.py` | Add Check: per-type section rules in `verify_module_docs.py` cover all 9 project types and all 4 module types |
-| Phase 20 / 21 `.githooks/pre-commit` (already planned) | Note: add `verify_module_docs.py` to hook chain once this Phase ships |
+| `.githooks/pre-commit` | Replace `verify_module_docs.py` call with `verify_content.py` call (subsumes it) |
+| `templates/sprint-sync.md` | Update Step 4 quality gate to use `verify_content.py` |
+| `guidance/document-purposes-common.md` | Add `verify_content.py` entry; mark `verify_module_docs.py` as internal |
+| `templates/script/verify_framework.py` | Update Check 10 to validate `verify_content.py` covers all 9 types and all document checkers |
 
-**Token impact:** zero — AGENTS.md unchanged. Script is not referenced at startup; entry in document-purposes-common.md is load-on-demand.
+**Token impact:** zero — AGENTS.md unchanged.
 
 ---
 
