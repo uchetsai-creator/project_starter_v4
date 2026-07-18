@@ -24,14 +24,16 @@ project_starter/                     ← this repo (template only)
 ├── code-quality-check.md            ← code review checklist for retrofitting existing projects
 ├── guidance/
 │   ├── document-purposes.md         ← index: type → per-type file lookup
-│   ├── document-purposes-common.md  ← document purposes for entries that apply to all types
-│   ├── document-purposes-web-app.md ← document purposes for Web App projects
+│   ├── document-purposes-common.md  ← applies to all project types
+│   ├── document-purposes-web-app.md
 │   ├── document-purposes-cli-tool.md
 │   ├── document-purposes-library.md
 │   ├── document-purposes-data-pipeline.md
 │   ├── document-purposes-ml-pipeline.md
 │   ├── document-purposes-microservices.md
-│   └── document-purposes-llm-app.md ← (and iac, mobile-app)
+│   ├── document-purposes-llm-app.md
+│   ├── document-purposes-iac.md
+│   └── document-purposes-mobile-app.md
 └── templates/
     ├── project-requirements.md      ← project scope, goals, edge cases, acceptance criteria
     ├── project-plan.md              ← sprint/task breakdown per feature
@@ -50,6 +52,8 @@ project_starter/                     ← this repo (template only)
     │   ├── ml-pipeline.md
     │   ├── microservices.md
     │   ├── llm-app.md
+    │   ├── iac.md
+    │   ├── mobile-app.md
     │   ├── document-matrix.md       ← Required/Optional/N/A table per project type (load only when initializing)
     │   └── retrofit.md              ← Step-by-step retrofit procedure for existing codebases
     │
@@ -108,15 +112,23 @@ project_starter/                     ← this repo (template only)
     │   └── business-rules.md        ← approval/validation/notification/audit rules
     │
     ├── flows/
-    │   ├── module-data-flow-v2.md   ← index + rules for module flow files (Feature / Background Job / Shared Utility)
+    │   ├── module-data-flow-v2.md   ← index + rules for module flow files (Feature / Background Job / Pipeline Stage / Shared Utility)
     │   └── module-flow-v2.md        ← index + rules for cross-module sequence files (per module)
     │
     └── script/
-        ├── plantuml.jar             ← PlantUML renderer (download separately, see below)
-        ├── schema_to_html.py        ← Prisma/SQL schema → ERD (interactive HTML + static SVG)
+        ├── plantuml.jar             ← download separately (see Setting up PlantUML)
+        ├── plantuml.cfg             ← PlantUML renderer configuration
         ├── build_pdf.py             ← renders all ```plantuml blocks via PlantUML + merges docs/ into PDF
-        ├── scan_codebase.py         ← scans src/ and reports which modules are undocumented; use --project-type to classify by type
-        └── pdf_allowlist.py         ← single source of truth for which files appear in the PDF
+        ├── pdf_allowlist.py         ← single source of truth for which files appear in the PDF
+        ├── schema_to_html.py        ← Prisma/SQL schema → ERD (interactive HTML + static SVG)
+        ├── scan_codebase.py         ← scans src/ and reports which modules are undocumented
+        ├── verify_docs.py           ← document completeness + fill quality audit
+        ├── verify_logs.py           ← log format + trace_id documentation audit
+        ├── verify_tests.py          ← test-report.md fill quality audit
+        ├── verify_module_docs.py    ← module flow coverage + quality audit
+        ├── verify_framework.py      ← framework internal consistency audit (run in framework repo)
+        ├── diagnose_spec.py         ← classifies spec fill gaps; triggers framework fix PRs
+        └── propose_framework_fix.py ← opens a PR on project_starter_v4 to add a missing template section
 ```
 
 When a new project starts, `templates/` is copied in and becomes `docs/` — see
@@ -292,9 +304,10 @@ For hybrid types and common combinations, see `AGENTS.md § Mixed / Hybrid Proje
 
 The agent reads, in order:
 
-1. `AGENTS.md`
-2. `docs/current-state.md` — the active task
-3. Only the docs the current task actually needs (it does **not** scan the whole repo)
+1. `docs/current-state.md` — the active task (the only mandatory read at startup)
+2. Only the docs the current task actually needs (it does **not** scan the whole repo)
+
+`AGENTS.md` is read only when `docs/current-state.md` is missing or empty — not on every startup.
 
 After finishing a task, it applies the filtered `Doc Checklist` in `docs/current-state.md`
 (pre-filled at task setup using the quick-filter guide). At sprint end, it loads `sprint-sync.md`
@@ -312,7 +325,7 @@ When a task finishes **all** work for a module, three more things happen automat
 ## Retrofitting an existing project
 
 If a project already has code but no documentation, use the retrofit flow in `templates/init/retrofit.md`.
-The flow has five steps:
+The flow has six steps:
 
 1. **Read the codebase** — entry point, schema, one complete module
 2. **Run the module inventory scan** — `scan_codebase.py` lists every source folder and flags which
