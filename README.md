@@ -569,7 +569,7 @@ Spec-facing documents (Writing Audience check): `business-rules.md`, `pipeline-c
 | Manual (no AI) | ✅ on `git commit` | ✅ | ❌ not applicable |
 
 
-## Self-improving loop
+## Self-improving loop *(Phase 22)*
 
 When a spec has fill-quality issues, the root cause is either:
 - **Project-level** — the template has the section, but the project didn't fill it in.
