@@ -1,9 +1,5 @@
 # Project Starter
 
-> **Repo structure note:** This repo should be cloned so that `AGENTS.md` sits at the
-> root — i.e. `project_starter/AGENTS.md`, not `project_starter/project_starter/AGENTS.md`.
-> If you see a doubled folder after cloning, move the contents up one level.
-
 A documentation-first template for AI-assisted development. Define what you're building before
 an AI agent (Claude Code, etc.) starts writing code — then keep every doc in sync automatically
 as work progresses.
@@ -398,7 +394,7 @@ python3 docs/script/scan_codebase.py src
 python3 docs/script/scan_codebase.py src --project-type data-pipeline
 python3 docs/script/scan_codebase.py src --project-type web-app
 python3 docs/script/scan_codebase.py src --project-type cli-tool
-# Valid values: web-app | cli-tool | library | data-pipeline | ml-pipeline | microservices | llm-app
+# Valid values: web-app | cli-tool | library | data-pipeline | ml-pipeline | microservices | llm-app | iac | mobile-app
 
 # Scan N levels deep — for monorepos or Microservices with per-service src/ folders
 python3 docs/script/scan_codebase.py services --project-type microservices --depth 2
@@ -463,9 +459,7 @@ Valid `--project-type` values: `web-app`, `cli-tool`, `library`, `data-pipeline`
 
 ## Framework maintenance
 
-`verify_framework.py` audits the framework's own internal consistency. Run it after each Phase
-completes, or any time you modify AGENTS.md, document-matrix.md, sprint-sync.md, or any
-document-purposes file.
+`verify_framework.py` audits the framework's own internal consistency. Run it after any framework update, or any time you modify AGENTS.md, document-matrix.md, sprint-sync.md, or any document-purposes file.
 
 ```bash
 python3 templates/script/verify_framework.py
@@ -486,6 +480,7 @@ python3 templates/script/verify_framework.py --json     # machine-readable outpu
 | Type completeness | Every type slug in AGENTS.md's init table has a matching init file and document-purposes file |
 | Script type sync | `scan_codebase.py` and `verify_docs.py` declare the same set of project types |
 | Build-PDF type sync | `build_pdf.py` VALID_PROJECT_TYPES matches all declared project types |
+| Module docs coverage | `verify_module_docs.py` covers all 9 project types and all 4 module types |
 
 **Output:**
 
@@ -663,19 +658,9 @@ python3 docs/script/build_pdf.py docs --lang en --project-type data-pipeline,web
 
 # No type filter — include all files that exist (backward-compatible)
 python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf
-
-# Chinese PDF (manual, only when needed)
-python3 docs/script/build_pdf.py docs-zh --lang zh --project-type data-pipeline -o docs/project-documentation-zh.pdf
 ```
 
 `--content spec` omits Plan (project-plan, changelog) and Test (test-plan, test-report) chapters — use this when handing off the spec to stakeholders or clients. Default (`full`) includes all six chapters.
-
-Google Translate (free, no API key needed), preserving code blocks, inline code, HTML comments,
-and table structure. It mirrors the translated files into `docs-zh/`, which `build_pdf.py` then
-reads exactly like `docs/`.
-
-> Translation quality is good for headings and short sentences. Technical jargon and proper nouns
-> may need manual review after translation.
 
 To add a new document to the PDF, add it to **`docs/script/pdf_allowlist.py`** only —
 `build_pdf.py` imports from it automatically. Note that
@@ -694,7 +679,7 @@ and `specs/prompts/*-prompt.md` are auto-scanned and do not need to be added man
 - **Module inventory before documentation**: the retrofit flow requires running `scan_codebase.py`
   (with `--project-type` for correct vocabulary) and getting user confirmation before any
   documentation is written — so undocumented modules are caught at the start, not discovered at the end.
-- **Six module types**: Feature (request-driven), Background Job (event/schedule-driven),
+- **Seven module types**: Feature (request-driven), Background Job (event/schedule-driven),
   Pipeline Stage (data-contract-driven, Data Pipeline / ML Pipeline), Command (CLI Tool),
   Namespace (Library / SDK), Service (Microservices), and Shared Utility (no entry point).
   Each has its own flow format in `module-data-flow.md`. `scan_codebase.py --project-type`
