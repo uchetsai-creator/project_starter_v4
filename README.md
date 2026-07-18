@@ -22,6 +22,10 @@ project_starter/                     ← this repo (template only)
 ├── AGENTS.md
 ├── debug-instrumentation-rules.md
 ├── code-quality-check.md            ← code review checklist for retrofitting existing projects
+├── docs/                            ← framework design documents (not copied to projects)
+│   ├── architecture-analysis.md    ← current coupling problems + responsibility boundaries
+│   ├── refactoring-plan.md         ← 3-phase migration plan (registry → context builder → orchestrator)
+│   └── context-builder-design.md   ← build-context.py design: inputs, outputs, algorithm
 ├── guidance/
 │   ├── document-purposes.md         ← index: type → per-type file lookup
 │   ├── document-purposes-common.md  ← applies to all project types
