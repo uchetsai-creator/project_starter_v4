@@ -767,3 +767,70 @@ Every task closeout currently only checks whether Required documents exist (`ver
 
 ---
 
+## Phase 24 — Module Flow Coverage & Quality Check 🔲 Planned
+
+`verify_docs.py` audits top-level spec files. `docs/modules/` has no equivalent: scan_codebase.py may surface 5 pipeline stages, but 2 may have no flow file, and the 3 that exist may have empty Input/Output contracts. No tool catches either gap today.
+
+**Goal:** Add `verify_module_docs.py` — cross-reference the module list from scan_codebase.py against `docs/modules/`, then verify each flow file's required sections contain real content, gated by module type × project type.
+
+### New script
+
+```
+docs/templates/script/verify_module_docs.py
+
+Usage:
+  python3 docs/script/verify_module_docs.py --project-type TYPE
+  python3 docs/script/verify_module_docs.py --project-type TYPE --src PATH --docs PATH
+  python3 docs/script/verify_module_docs.py --project-type TYPE --strict
+  python3 docs/script/verify_module_docs.py --project-type TYPE --json
+```
+
+**Coverage check** — for every module returned by scan_codebase.py, confirm `docs/modules/[module]/[module]-module-data-flow.md` exists.
+
+**Content quality check — required sections by module type:**
+
+| Module type | Required content |
+|---|---|
+| **Pipeline Stage** | `Input` block: Source, Format, Schema non-empty; `Output` block: Destination, Format non-empty; `Error Handling` section: transient + missing-input entries (≥ 3 lines each) |
+| **Feature** | At least one operation block with real `Function:` + `File:` values (not placeholder); every declared operation either filled or explicitly marked `Not Supported` |
+| **Background Job** | `Trigger:` non-empty; success path (`→ acknowledge / commit`) present; `Error Handling` section: transient + permanent entries (≥ 3 lines each) |
+| **Shared Utility** | `plantuml` class block present and non-empty; at least one method with real signature (not placeholder `[method]`); `Used by` table has ≥ 1 row with real module name and purpose |
+
+**Project type → expected primary module type:**
+
+| Project type | Primary module type |
+|---|---|
+| Data Pipeline, ML Pipeline | Pipeline Stage |
+| Web App, LLM App | Feature, Background Job |
+| CLI Tool | Feature (subcommand) |
+| Microservices | Feature (per-service entry point) |
+| Library / SDK | Shared Utility |
+
+**Output format:**
+
+```
+Module Flow Coverage & Quality — data-pipeline
+────────────────────────────────────────────────────────
+Module            Type             Flow file    Quality
+ge-validation     Pipeline Stage   ✅ Present   ⚠️  Missing Output contract
+dbt-transform     Pipeline Stage   ✅ Present   ✅  Fully filled
+datahub-ingest    Pipeline Stage   ✅ Present   ⚠️  Error Handling < 3 lines
+model-training    Pipeline Stage   ❌ Missing   —
+
+Coverage : 3 / 4 modules documented
+Quality  : 1 / 3 existing flow files fully filled
+```
+
+### Integration
+
+| File | Change |
+|---|---|
+| `docs/templates/sprint-sync.md` | Add checklist item `[Types: All]`: "Run verify_module_docs.py — all modules covered + quality PASS" |
+| `document-purposes-common.md` | Add `verify_module_docs.py` entry: purpose, when to run, output interpretation |
+| `docs/templates/script/verify_framework.py` | Add Check: per-type section rules in `verify_module_docs.py` cover all 9 project types and all 4 module types |
+| Phase 20 / 21 `.githooks/pre-commit` (already planned) | Note: add `verify_module_docs.py` to hook chain once this Phase ships |
+
+**Token impact:** zero — AGENTS.md unchanged. Script is not referenced at startup; entry in document-purposes-common.md is load-on-demand.
+
+---
+
