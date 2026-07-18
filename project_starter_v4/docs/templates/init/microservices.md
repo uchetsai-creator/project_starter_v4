@@ -22,3 +22,13 @@ At the system (repo root) level, additionally create:
    - Note in service-contract.md that async schemas are canonical in event-catalog.md.
 6. Create docs/specs/test-plan.md from templates/specs/test-plan.md (system-level — cross-service integration and contract tests).
 7. Create docs/specs/test-report.md from templates/specs/test-report.md (system-level — fill in after first test run).
+
+8. Install the verification hook — copy `.githooks/pre-commit` to `.git/hooks/` so `verify_docs.py --content` runs automatically on every `git commit`:
+    ```bash
+    cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+    ```
+9. Create `.project-starter.yml` at the project root (used by the hook and all verify scripts):
+    ```yaml
+    project_type: [your-type]   # e.g., web-app
+    docs_path: docs/
+    ```
