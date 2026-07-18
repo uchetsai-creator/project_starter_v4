@@ -516,6 +516,7 @@ Any AI tool (Claude / Codex / Cursor / manual)
  verify_docs.py --content              ← Phase 17: doc completeness + fill quality (block)
  verify_logs.py                        ← Phase 23: log format + trace_id (when present, block)
  verify_tests.py                       ← Phase 23: test-report.md fill quality (when present, block)
+ verify_module_docs.py                 ← Phase 24: module flow coverage + quality (when present, block)
         ↓
  [AGENTS.md staged]      line count ≤ 200            ← Phase 21: token budget (block)
  [specs/*.md staged]     changelog.md also staged?   ← Phase 21: audit trail (warn)
@@ -536,6 +537,7 @@ Optional fast-feedback (Claude Code only):
 | Doc completeness + content quality | Every commit (with `project_type` set) | ❌ Block | 17 |
 | Log format + trace_id | `docs/script/verify_logs.py` present | ❌ Block | 23 |
 | Test-report fill quality | `docs/script/verify_tests.py` present | ❌ Block | 23 |
+| Module flow coverage + quality | `docs/script/verify_module_docs.py` present | ❌ Block | 24 |
 | Framework integrity (`verify_framework.py --strict`) | Framework repo detected (`templates/script/verify_framework.py` present) | ❌ Block | 21 |
 | AGENTS.md token budget (> 200 lines) | `AGENTS.md` staged | ❌ Block | 21 |
 | Spec/arch changed without changelog entry | Any `specs/*.md` or `architecture/*.md` staged | ⚠️ Warn | 21 |
