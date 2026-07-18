@@ -484,9 +484,9 @@ Six checks performed:
 6. **Cross-reference integrity** — every `### X.md` header in document-purposes-*.md has a template file
 
 ```bash
-python3 docs/templates/script/verify_framework.py
-python3 docs/templates/script/verify_framework.py --strict   # exits 1 if any check fails or warns
-python3 docs/templates/script/verify_framework.py --json     # machine-readable output
+python3 templates/script/verify_framework.py
+python3 templates/script/verify_framework.py --strict   # exits 1 if any check fails or warns
+python3 templates/script/verify_framework.py --json     # machine-readable output
 ```
 
 Output statuses: ✅ Pass · ❌ Fail · ⚠️ Warning

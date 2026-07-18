@@ -30,13 +30,13 @@ Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulat
    a. **Round 1** — diagnose and open framework fix PRs:
       ```bash
       python3 docs/script/verify_docs.py --project-type TYPE --content --json \
-        | python3 docs/templates/script/diagnose_spec.py --project-type TYPE
+        | python3 templates/script/diagnose_spec.py --project-type TYPE
       ```
       Review each PR opened on `project_starter_v4`; merge those that look correct; skip others.
    b. **Round 2** — re-diagnose; log any remaining gaps for manual triage:
       ```bash
       python3 docs/script/verify_docs.py --project-type TYPE --content --json \
-        | python3 docs/templates/script/diagnose_spec.py --project-type TYPE --round 2
+        | python3 templates/script/diagnose_spec.py --project-type TYPE --round 2
       ```
       Check `logs/framework-gaps.md` for remaining gaps that need manual attention.
    ⏹ **Stop after round 2.** Do not run further rounds — remaining gaps are in the log.
@@ -145,4 +145,4 @@ Apply this filter first. Then run only the remaining items.
 - [ ] docs/specs/drift-policy.md `[Types: IaC / DevOps]` — did detection cadence, remediation SLA, exempt resources, or approval gate process change? If yes, update.
 - [ ] docs/specs/mobile-contract.md `[Types: Mobile App]` — was a screen added or removed, did navigation structure change, was a new OS permission added, or did a push notification payload schema change? If yes, update.
 
-For the full explanation of why each document updates on these triggers, see document-purposes-common.md + document-purposes-[your-type].md.
+For the full explanation of why each document updates on these triggers, see guidance/document-purposes-common.md + guidance/document-purposes-[your-type].md.

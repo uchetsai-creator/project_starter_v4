@@ -16,18 +16,18 @@ opening more PRs, enforcing the 2-round iteration limit.
 Usage:
   # Pipe verify_docs.py output directly:
   python3 docs/script/verify_docs.py --project-type web-app --content --json \\
-    | python3 docs/templates/script/diagnose_spec.py --project-type web-app
+    | python3 templates/script/diagnose_spec.py --project-type web-app
 
   # Or from a saved file:
-  python3 docs/templates/script/diagnose_spec.py \\
+  python3 templates/script/diagnose_spec.py \\
       --project-type web-app --input verify-output.json
 
   # Round 2 (after merging round-1 PRs):
   python3 docs/script/verify_docs.py --project-type web-app --content --json \\
-    | python3 docs/templates/script/diagnose_spec.py --project-type web-app --round 2
+    | python3 templates/script/diagnose_spec.py --project-type web-app --round 2
 
   # Dry-run (no PRs opened, no files written):
-  ... | python3 docs/templates/script/diagnose_spec.py --project-type web-app --dry-run
+  ... | python3 templates/script/diagnose_spec.py --project-type web-app --dry-run
 """
 
 import argparse
@@ -156,7 +156,7 @@ def main() -> int:
     parser.add_argument(
         "--templates-dir",
         help="Path to the templates directory to check for sections "
-             "(default: docs/templates/ if present, else docs/)"
+             "(default: templates/ if present, else docs/)"
     )
     parser.add_argument(
         "--framework-repo", default=DEFAULT_FRAMEWORK_REPO,
@@ -187,10 +187,12 @@ def main() -> int:
         templates_dir = Path(args.templates_dir)
     else:
         cwd = Path.cwd()
-        if (cwd / "docs" / "templates").exists():
-            templates_dir = cwd / "docs" / "templates"
+        if (cwd / "templates").exists():
+            templates_dir = cwd / "templates"          # framework repo (new structure)
+        elif (cwd / "docs" / "templates").exists():
+            templates_dir = cwd / "docs" / "templates"  # legacy
         elif (cwd / "docs").exists():
-            templates_dir = cwd / "docs"
+            templates_dir = cwd / "docs"               # user project
         else:
             templates_dir = cwd
 

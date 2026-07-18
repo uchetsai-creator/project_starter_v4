@@ -7,12 +7,12 @@ via `gh pr create`. The PR contains no project-specific content — a human revi
 merging.
 
 Usage:
-  python3 docs/templates/script/propose_framework_fix.py \\
+  python3 templates/script/propose_framework_fix.py \\
       --type web-app \\
       --document specs/research.md \\
       --gap-description "Error Handling"
 
-  python3 docs/templates/script/propose_framework_fix.py \\
+  python3 templates/script/propose_framework_fix.py \\
       --type data-pipeline \\
       --document specs/pipeline-contract.md \\
       --gap-description "Stage Contracts" \\
@@ -28,7 +28,7 @@ from pathlib import Path
 
 DEFAULT_FRAMEWORK_REPO = "uchetsai-creator/project_starter_v4"
 # Path inside the framework repo where templates live
-TEMPLATES_SUBPATH = "project_starter_v4/docs/templates"
+TEMPLATES_SUBPATH = "templates"
 
 
 def slugify(text: str, max_len: int = 40) -> str:

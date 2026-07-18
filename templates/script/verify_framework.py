@@ -8,9 +8,9 @@ synchronization are all in sync.
 Run after each Phase before merging.
 
 Usage:
-  python3 docs/templates/script/verify_framework.py
-  python3 docs/templates/script/verify_framework.py --strict
-  python3 docs/templates/script/verify_framework.py --json
+  python3 templates/script/verify_framework.py
+  python3 templates/script/verify_framework.py --strict
+  python3 templates/script/verify_framework.py --json
 """
 
 import argparse
@@ -19,14 +19,14 @@ import re
 import sys
 from pathlib import Path
 
-# Script lives at <root>/docs/templates/script/ — framework root is 4 levels up.
-FRAMEWORK_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+# Script lives at <root>/templates/script/ — framework root is 3 levels up.
+FRAMEWORK_ROOT = Path(__file__).resolve().parent.parent.parent
 
 AGENTS_MD       = FRAMEWORK_ROOT / "AGENTS.md"
-DOCUMENT_MATRIX = FRAMEWORK_ROOT / "docs/templates/init/document-matrix.md"
-SPRINT_SYNC     = FRAMEWORK_ROOT / "docs/templates/sprint-sync.md"
-TEMPLATES_DIR   = FRAMEWORK_ROOT / "docs/templates"
-PURPOSES_DIR    = FRAMEWORK_ROOT
+DOCUMENT_MATRIX = FRAMEWORK_ROOT / "templates/init/document-matrix.md"
+SPRINT_SYNC     = FRAMEWORK_ROOT / "templates/sprint-sync.md"
+TEMPLATES_DIR   = FRAMEWORK_ROOT / "templates"
+PURPOSES_DIR    = FRAMEWORK_ROOT / "guidance"
 
 AGENTS_LINE_BUDGET = 200
 
@@ -141,15 +141,15 @@ def resolve_agent_pointer(path_str: str) -> Path:
     """Resolve an AGENTS.md file reference to its actual location in the framework.
 
     AGENTS.md paths are written for the user's project, where:
-      - `templates/init/web-app.md` means docs/templates/init/web-app.md
-      - `docs/current-state.md` means docs/templates/current-state.md (template copy)
-      - `docs/specs/X.md` means docs/templates/specs/X.md (template copy)
+      - `templates/init/web-app.md` → templates/init/web-app.md (framework root)
+      - `docs/current-state.md` → templates/current-state.md (template copy)
+      - `docs/specs/X.md` → templates/specs/X.md (template copy)
     """
     if path_str.startswith("templates/"):
-        return FRAMEWORK_ROOT / "docs" / path_str
+        return FRAMEWORK_ROOT / path_str
     elif path_str.startswith("docs/"):
         rest = path_str[len("docs/"):]
-        return FRAMEWORK_ROOT / "docs" / "templates" / rest
+        return FRAMEWORK_ROOT / "templates" / rest
     return FRAMEWORK_ROOT / path_str
 
 
@@ -343,7 +343,7 @@ def check_cross_references(matrix: dict) -> list[dict]:
 
 def check_type_completeness() -> list[dict]:
     """Check 7: For every type slug in AGENTS.md's init table:
-    - docs/templates/init/[slug].md exists
+    - templates/init/[slug].md exists
     - document-purposes-[slug].md exists
     - type is registered in PURPOSES_FILES (so purposes-coverage check covers it)
     """
@@ -361,11 +361,11 @@ def check_type_completeness() -> list[dict]:
 
         if not init_path.exists():
             issues.append(_issue("type-completeness", "fail",
-                                 f"`{slug}`: init file missing — docs/templates/init/{slug}.md"))
+                                 f"`{slug}`: init file missing — templates/init/{slug}.md"))
 
         if not purposes_path.exists():
             issues.append(_issue("type-completeness", "fail",
-                                 f"`{slug}`: purposes file missing — document-purposes-{slug}.md"))
+                                 f"`{slug}`: purposes file missing — guidance/document-purposes-{slug}.md"))
 
         if slug not in PURPOSES_FILES:
             issues.append(_issue("type-completeness", "warn",

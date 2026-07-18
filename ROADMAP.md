@@ -626,7 +626,7 @@ Phase 20 covers the verification scripts (docs / logs / tests). Five additional 
 
 | What git staged files indicate | Check | Catches |
 |---|---|---|
-| Any file in `project_starter_v4/` framework dirs changed | Run `verify_framework.py --strict` | Stale pointer, matrix gap, token budget violation created mid-Phase |
+| Running in framework repo (`templates/script/verify_framework.py` present) | Run `verify_framework.py --strict` | Stale pointer, matrix gap, token budget violation created mid-Phase |
 | `AGENTS.md` in staged files | Count lines; fail if > 200 | Token budget drift |
 | Any `specs/*.md` or `architecture/*.md` staged | Check if `changelog.md` is also staged; warn if not | Silent spec changes with no audit trail |
 | `current-state.md` staged | Grep Closeout section for `___` or `<!-- ` | Task "closed" without filling Closeout |
@@ -704,7 +704,7 @@ already include guidance on this?
 
 | Script | Input | Output |
 |---|---|---|
-| `docs/templates/script/propose_framework_fix.py` | `--type`, `--document`, `--gap-description` | Creates branch on `project_starter_v4`, edits template, opens PR via `gh pr create` |
+| `templates/script/propose_framework_fix.py` | `--type`, `--document`, `--gap-description` | Creates branch on `project_starter_v4`, edits template, opens PR via `gh pr create` |
 
 ### PR format (auto-generated)
 
@@ -725,8 +725,8 @@ content included).
 
 | File | Change |
 |---|---|
-| `docs/templates/script/diagnose_spec.py` | New: takes spec quality check output → classifies each problem as project-level or framework-level → calls `propose_framework_fix.py` for framework gaps; accepts `--round 1\|2` flag; on round 2 writes remaining gaps to `logs/framework-gaps.md` instead of opening more PRs |
-| `docs/templates/sprint-sync.md` | Add optional sprint-end step: run `diagnose_spec.py --round 1`, merge or skip PRs, then run `--round 2`; stop after round 2 |
+| `templates/script/diagnose_spec.py` | New: takes spec quality check output → classifies each problem as project-level or framework-level → calls `propose_framework_fix.py` for framework gaps; accepts `--round 1\|2` flag; on round 2 writes remaining gaps to `logs/framework-gaps.md` instead of opening more PRs |
+| `templates/sprint-sync.md` | Add optional sprint-end step: run `diagnose_spec.py --round 1`, merge or skip PRs, then run `--round 2`; stop after round 2 |
 | `README.md` | Add "Self-improving loop" section: diagram + iteration limit explanation + how to run `diagnose_spec.py` |
 
 **Token impact:** zero — AGENTS.md unchanged.

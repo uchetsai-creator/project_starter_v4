@@ -15,13 +15,11 @@ set -euo pipefail
 STAGED=$(git diff --cached --name-only 2>/dev/null || true)
 
 # ── Phase 21 Check 1: Framework integrity ─────────────────────────────────────
-# Trigger: any file under project_starter_v4/ staged
+# Trigger: running inside the project_starter_v4 framework repo (templates/script/ present)
 # Catches: stale pointer, matrix gap, or token budget violation created mid-Phase
-FRAMEWORK_STAGED=$(printf '%s\n' "$STAGED" | grep -E '^project_starter_v4/' || true)
-if [ -n "$FRAMEWORK_STAGED" ] && command -v python3 &>/dev/null \
-        && [ -f "docs/templates/script/verify_framework.py" ]; then
-    echo "  → verify_framework.py --strict (framework files changed) ..."
-    python3 "docs/templates/script/verify_framework.py" --strict 2>&1 || {
+if command -v python3 &>/dev/null && [ -f "templates/script/verify_framework.py" ]; then
+    echo "  → verify_framework.py --strict ..."
+    python3 "templates/script/verify_framework.py" --strict 2>&1 || {
         echo "❌  pre-commit: framework integrity check failed — commit blocked."
         exit 1
     }

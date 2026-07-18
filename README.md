@@ -26,15 +26,16 @@ project_starter/                     ← this repo (template only)
 ├── AGENTS.md
 ├── debug-instrumentation-rules.md
 ├── code-quality-check.md            ← code review checklist for retrofitting existing projects
-├── document-purposes.md             ← index: type → per-type file lookup
-├── document-purposes-common.md      ← document purposes for entries that apply to all types
-├── document-purposes-web-app.md     ← document purposes for Web App projects
-├── document-purposes-cli-tool.md    ← document purposes for CLI Tool projects
-├── document-purposes-library.md     ← document purposes for Library / SDK projects
-├── document-purposes-data-pipeline.md ← document purposes for Data Pipeline projects
-├── document-purposes-ml-pipeline.md ← document purposes for ML Pipeline projects
-├── document-purposes-microservices.md ← document purposes for Microservices projects
-├── document-purposes-llm-app.md     ← document purposes for AI / LLM App projects
+├── guidance/
+│   ├── document-purposes.md         ← index: type → per-type file lookup
+│   ├── document-purposes-common.md  ← document purposes for entries that apply to all types
+│   ├── document-purposes-web-app.md ← document purposes for Web App projects
+│   ├── document-purposes-cli-tool.md
+│   ├── document-purposes-library.md
+│   ├── document-purposes-data-pipeline.md
+│   ├── document-purposes-ml-pipeline.md
+│   ├── document-purposes-microservices.md
+│   └── document-purposes-llm-app.md ← (and iac, mobile-app)
 └── templates/
     ├── project-requirements.md      ← project scope, goals, edge cases, acceptance criteria
     ├── project-plan.md              ← sprint/task breakdown per feature
@@ -145,9 +146,10 @@ new_project/
 ├── AGENTS.md                        ← declare Project Type at the top
 ├── debug-instrumentation-rules.md
 ├── code-quality-check.md
-├── document-purposes.md             ← index: maps project type → per-type file
-├── document-purposes-common.md      ← loaded by all types
-├── document-purposes-<type>.md      ← loaded for your declared type (e.g. document-purposes-web-app.md)
+├── guidance/
+│   ├── document-purposes.md         ← index: maps project type → per-type file
+│   ├── document-purposes-common.md  ← loaded by all types
+│   └── document-purposes-<type>.md  ← loaded for your declared type (e.g. document-purposes-web-app.md)
 └── docs/
     ├── project-requirements.md
     ├── project-plan.md
@@ -466,9 +468,9 @@ completes, or any time you modify AGENTS.md, document-matrix.md, sprint-sync.md,
 document-purposes file.
 
 ```bash
-python3 docs/templates/script/verify_framework.py
-python3 docs/templates/script/verify_framework.py --strict   # exits 1 if any check warns or fails
-python3 docs/templates/script/verify_framework.py --json     # machine-readable output
+python3 templates/script/verify_framework.py
+python3 templates/script/verify_framework.py --strict   # exits 1 if any check warns or fails
+python3 templates/script/verify_framework.py --json     # machine-readable output
 ```
 
 **Checks performed:**
@@ -508,7 +510,7 @@ Any AI tool (Claude / Codex / Cursor / manual)
         ↓
  .githooks/pre-commit                  ← PRIMARY: tool-agnostic, always fires
         ↓
- [project_starter_v4/ files staged]
+ [running in framework repo (templates/script/verify_framework.py present)]
  verify_framework.py --strict          ← Phase 21: framework integrity (block)
         ↓
  verify_docs.py --content              ← Phase 17: doc completeness + fill quality (block)
@@ -534,7 +536,7 @@ Optional fast-feedback (Claude Code only):
 | Doc completeness + content quality | Every commit (with `project_type` set) | ❌ Block | 17 |
 | Log format + trace_id | `docs/script/verify_logs.py` present | ❌ Block | 23 |
 | Test-report fill quality | `docs/script/verify_tests.py` present | ❌ Block | 23 |
-| Framework integrity (`verify_framework.py --strict`) | Any `project_starter_v4/` file staged | ❌ Block | 21 |
+| Framework integrity (`verify_framework.py --strict`) | Framework repo detected (`templates/script/verify_framework.py` present) | ❌ Block | 21 |
 | AGENTS.md token budget (> 200 lines) | `AGENTS.md` staged | ❌ Block | 21 |
 | Spec/arch changed without changelog entry | Any `specs/*.md` or `architecture/*.md` staged | ⚠️ Warn | 21 |
 | Closeout unfilled on task completion | `current-state.md` staged with `Status: Complete` | ❌ Block | 21 |
@@ -605,16 +607,16 @@ diagnose_spec.py --round 2
 ```bash
 # Round 1 — diagnose and open PRs
 python3 docs/script/verify_docs.py --project-type TYPE --content --json \
-  | python3 docs/templates/script/diagnose_spec.py --project-type TYPE
+  | python3 templates/script/diagnose_spec.py --project-type TYPE
 
 # After reviewing and merging/skipping round-1 PRs:
 
 # Round 2 — re-diagnose; remaining gaps go to logs/framework-gaps.md
 python3 docs/script/verify_docs.py --project-type TYPE --content --json \
-  | python3 docs/templates/script/diagnose_spec.py --project-type TYPE --round 2
+  | python3 templates/script/diagnose_spec.py --project-type TYPE --round 2
 
 # Dry-run mode (no PRs, no files written):
-... | python3 docs/templates/script/diagnose_spec.py --project-type TYPE --dry-run
+... | python3 templates/script/diagnose_spec.py --project-type TYPE --dry-run
 ```
 
 ### PR format (auto-generated by `propose_framework_fix.py`)
