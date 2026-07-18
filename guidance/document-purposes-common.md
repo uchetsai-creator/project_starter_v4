@@ -345,8 +345,8 @@ Update when: the post-task procedure changes.
 
 Purpose:
 Shell script that enforces process rules on every `git commit` — no AI tool dependency.
-Runs three quality verifiers (Phase 17 + Phase 23): `verify_docs.py --content`,
-`verify_logs.py`, and `verify_tests.py`. Also enforces five process checks (Phase 21):
+Runs four quality verifiers (Phase 17 + Phase 23 + Phase 24): `verify_docs.py --content`,
+`verify_logs.py`, `verify_tests.py`, and `verify_content.py`. Also enforces five process checks (Phase 21):
 framework integrity, AGENTS.md token budget, changelog audit trail, closeout completeness,
 and Writing Audience violations in spec-facing documents.
 Blocks the commit and shows output on failure. Works with Claude Code, Codex, Cursor, or manual commits.
@@ -577,7 +577,7 @@ and documentation coverage icons.
 Pass `--project-type <type>` to use project-appropriate vocabulary in labels and coverage output
 (e.g. "Pipeline Stage" for data-pipeline / ml-pipeline, "Command" for cli-tool,
 "Namespace" for library, "Service" for microservices, "Feature" for web-app / llm-app).
-Valid values: `web-app` | `cli-tool` | `library` | `data-pipeline` | `ml-pipeline` | `microservices` | `llm-app`.
+Valid values: `web-app` | `cli-tool` | `library` | `data-pipeline` | `ml-pipeline` | `microservices` | `llm-app` | `iac` | `mobile-app`.
 Without `--project-type`, the script falls back to heuristic folder-name detection.
 
 **Flags:**

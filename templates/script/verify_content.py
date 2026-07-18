@@ -133,8 +133,10 @@ def _section_body(text: str, header_re: str) -> str | None:
     m = re.search(header_re, text, re.IGNORECASE | re.MULTILINE)
     if not m:
         return None
+    hashes = re.match(r'^(#+)', m.group(0))
+    level = len(hashes.group(1)) if hashes else 1
     after = text[m.end():]
-    boundary = re.search(r'(?m)^#+', after)
+    boundary = re.search(r'(?m)^#{1,' + str(level) + r'}\s', after)
     return after[:boundary.start()] if boundary else after
 
 
@@ -416,7 +418,7 @@ def check_cli_contract(lines: list[str]) -> list[str]:
         # Try table format: | subcommand | description |
         rows = re.findall(r'(?m)^\|\s*(\w[\w-]*)\s*\|\s*([^\|\n]+)', text)
         real = [r for r in rows
-                if r[0].lower() not in ('subcommand', 'command', 'name', 'command')
+                if r[0].lower() not in ('subcommand', 'command', 'name')
                 and not _is_placeholder(r[0])
                 and not _is_placeholder(r[1])
                 and r[1].strip()]
@@ -1025,7 +1027,7 @@ def audit(
             'issues': issues,
         })
 
-    module_results = run_module_docs(project_types[0], docs_dir, script_dir)
+    module_results = run_module_docs('+'.join(project_types), docs_dir, script_dir)
     return doc_results, module_results
 
 

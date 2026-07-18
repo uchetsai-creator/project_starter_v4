@@ -126,6 +126,7 @@ project_starter/                     ← this repo (template only)
         ├── verify_logs.py           ← log format + trace_id documentation audit
         ├── verify_tests.py          ← test-report.md fill quality audit
         ├── verify_module_docs.py    ← module flow coverage + quality audit
+        ├── verify_content.py        ← full document content quality gate (all Required docs × project type)
         ├── verify_framework.py      ← framework internal consistency audit (run in framework repo)
         ├── diagnose_spec.py         ← classifies spec fill gaps; triggers framework fix PRs
         └── propose_framework_fix.py ← opens a PR on project_starter_v4 to add a missing template section
@@ -493,7 +494,7 @@ python3 templates/script/verify_framework.py --json     # machine-readable outpu
 | Type completeness | Every type slug in AGENTS.md's init table has a matching init file and document-purposes file |
 | Script type sync | `scan_codebase.py` and `verify_docs.py` declare the same set of project types |
 | Build-PDF type sync | `build_pdf.py` VALID_PROJECT_TYPES matches all declared project types |
-| Module docs coverage | `verify_module_docs.py` covers all 9 project types and all 4 module types |
+| Content coverage | `verify_content.py` covers 32 document checkers × 9 project types |
 
 **Output:**
 
@@ -522,7 +523,8 @@ Any AI tool (Claude / Codex / Cursor / manual)
  verify_docs.py --content              ← doc completeness + fill quality (block)
  verify_logs.py                        ← log format + trace_id (when present, block)
  verify_tests.py                       ← test-report.md fill quality (when present, block)
- verify_module_docs.py                 ← module flow coverage + quality (when present, block)
+ verify_content.py                     ← document content quality gate (when present, block)
+         [verify_module_docs.py called internally by verify_content.py]
         ↓
  [AGENTS.md staged]      line count ≤ 200            ← token budget (block)
  [specs/*.md staged]     changelog.md also staged?   ← audit trail (warn)

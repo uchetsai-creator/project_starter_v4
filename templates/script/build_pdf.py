@@ -29,7 +29,7 @@ Usage:
                          Comma-separate multiple types for hybrid projects:
                            --project-type data-pipeline,web-app
                          Valid values: web-app, cli-tool, library, data-pipeline,
-                                       ml-pipeline, microservices, llm-app
+                                       ml-pipeline, microservices, llm-app, iac, mobile-app
                          Omit to include all files that exist (backward-compatible default).
   --content spec|full    Control which chapters are included (default: full).
                            full — all six chapters (Introduction, Plan, Design, Build, Test, Deployment)

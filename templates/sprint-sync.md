@@ -22,7 +22,7 @@ Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulat
    python3 docs/script/verify_tests.py --project-type TYPE
    python3 docs/script/verify_content.py --project-type TYPE
    ```
-   Optional — cross-reference module coverage against source code:
+   Optional — source-code coverage check only (`verify_content.py` already audits quality of existing flow files internally):
    ```bash
    python3 docs/script/verify_module_docs.py --project-type TYPE --src <src-dir>
    ```
