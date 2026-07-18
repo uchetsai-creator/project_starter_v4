@@ -20,8 +20,14 @@ Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulat
    b. For any document with ⚠️ or ❌ fill result: load `templates/specs/spec-review.md`, paste the document, run the LLM Judge rubric.
    c. Resolve all FAIL items (score < 4 on any criterion) before proceeding.
    d. Record result in `docs/specs/test-report.md → Spec Review` section: document name, date, overall score, PASS/FAIL.
-5. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
-6. Confirm PDF renders correctly
+5. **Spec challenge** — for each Required spec document that passed Spec Review this sprint:
+   a. Load `templates/specs/spec-challenge.md`, paste the document.
+   b. LLM outputs an Unresolved Questions list — Critical / Major / Minor.
+   c. For each Critical question: update the spec to answer it.
+   d. Repeat until the round's Critical list is empty.
+   e. Record final round count in `docs/specs/test-report.md → Spec Challenge` section.
+6. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
+7. Confirm PDF renders correctly
 
 ---
 
