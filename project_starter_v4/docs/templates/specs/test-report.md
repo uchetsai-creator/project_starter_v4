@@ -214,3 +214,31 @@ Branches   : 76.1% (  381/ 501 )
 Functions  : 88.9% (  248/ 279 )
 Lines      : 84.0% ( 1196/1424 )
 ```
+
+---
+
+## Spec Review
+
+<!--
+  Record the LLM Judge result for each Required spec document reviewed at sprint end.
+  Run via templates/specs/spec-review.md (Phase 18).
+  Leave blank until first sprint-end Spec Review is run.
+-->
+
+| Document | Date | Completeness | Ambiguity | Error Coverage | Testability | Consistency | Overall | Verdict |
+|---|---|---|---|---|---|---|---|---|
+| [e.g., pipeline-contract.md] | [YYYY-MM-DD] | /5 | /5 | /5 | /5 | /5 | /5 | PASS / FAIL |
+
+---
+
+## Spec Challenge
+
+<!--
+  Record the QA simulation result for each Required spec document challenged at sprint end.
+  Run via templates/specs/spec-challenge.md (Phase 19).
+  Leave blank until first sprint-end Spec Challenge is run.
+-->
+
+| Document | Rounds run | Final Critical count | Final Major count | Sign-off |
+|---|---|---|---|---|
+| [e.g., pipeline-contract.md] | [N] | 0 | [N] | [YYYY-MM-DD] |
