@@ -389,6 +389,22 @@ Record result in `docs/specs/test-report.md → Spec Review` section.
 
 Do not include in PDF output — this is a process template, not a project document.
 
+### spec-challenge.md
+**Applies to: All project types**
+
+Purpose:
+Prompt template for QA simulation — the "Spec Challenge" layer. Where spec-review.md scores
+what is written, spec-challenge.md finds what is missing. An LLM acts as the most demanding
+QA engineer and solution architect, generating a list of Unresolved Questions the spec does
+not answer. Questions are classified Critical / Major / Minor. The process iterates until a
+round produces zero Critical questions.
+
+Load when: sprint end, after spec-review.md PASS for a document. Run against each Required
+spec document that passed Spec Review.
+Never load during normal task work.
+Record final round count in `docs/specs/test-report.md → Spec Challenge` section.
+Do not include in PDF output — this is a process template, not a project document.
+
 ### scan_codebase.py
 Purpose:
 Scans the source directory and reports which modules are documented, undocumented,
