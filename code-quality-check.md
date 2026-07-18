@@ -15,8 +15,8 @@ Read ONLY the following documentation before inspecting code:
 - current-state.md
 - docs/architecture/*
 - docs/business/*
-- docs/data-model.md
-- docs/permissions.md
+- docs/specs/data-model.md
+- docs/specs/permissions.md
 - docs/project-plan.md
 
 Then inspect ONLY:

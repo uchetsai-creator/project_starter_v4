@@ -1,6 +1,6 @@
 """pdf_allowlist.py — Single source of truth for the PDF file list.
 
-Imported by both build_pdf.py and translate_docs.py.
+Imported by build_pdf.py.
 Edit only this file when adding or removing documents from the PDF.
 
 Chapter structure:

@@ -20,13 +20,16 @@ Usage:
 """
 
 import argparse
+import os
 import re
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 
-DEFAULT_FRAMEWORK_REPO = "uchetsai-creator/project_starter_v4"
+DEFAULT_FRAMEWORK_REPO = os.environ.get(
+    "PROJECT_STARTER_FRAMEWORK_REPO", "uchetsai-creator/project_starter_v4"
+)
 # Path inside the framework repo where templates live
 TEMPLATES_SUBPATH = "templates"
 

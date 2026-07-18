@@ -31,7 +31,7 @@ VALID_TYPES = [
     'data-pipeline', 'ml-pipeline', 'microservices', 'llm-app', 'iac', 'mobile-app',
 ]
 
-MODULE_TYPES = ['Pipeline Stage', 'Feature', 'Background Job', 'Shared Utility']
+MODULE_TYPES = ['Pipeline Stage', 'Feature', 'Background Job', 'Shared Utility', 'Resource Group']
 
 # Primary module type expected per project type (informational — used in summary hint)
 PRIMARY_MODULE_TYPE = {
@@ -42,7 +42,7 @@ PRIMARY_MODULE_TYPE = {
     'ml-pipeline':   'Pipeline Stage',
     'microservices': 'Feature',
     'llm-app':       'Feature',
-    'iac':           'Feature',
+    'iac':           'Resource Group',
     'mobile-app':    'Feature',
 }
 
@@ -246,6 +246,8 @@ def check_quality(lines: list[str], module_type: str) -> tuple[str, list[str]]:
         issues = check_background_job(lines)
     elif module_type == 'Shared Utility':
         issues = check_shared_utility(lines)
+    elif module_type == 'Resource Group':
+        issues = check_feature(lines)
     else:
         return ('unknown', [f"Unrecognized module type '{module_type}'"])
     return ('pass' if not issues else 'fail', issues)
@@ -518,7 +520,8 @@ def main() -> None:
     args = parser.parse_args()
 
     project_types = parse_types(args.project_type)
-    primary_type = project_types[0]
+    full_type = args.project_type   # preserve the original string (handles hybrid e.g. data-pipeline+web-app)
+    primary_type = project_types[0]  # used only for display labels
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     docs_dir = args.docs
@@ -527,19 +530,19 @@ def main() -> None:
         print(f"error: docs directory not found: {docs_dir}", file=sys.stderr)
         sys.exit(2)
 
-    results = audit(primary_type, docs_dir, args.src, script_dir)
+    results = audit(full_type, docs_dir, args.src, script_dir)
 
     if not results:
         msg = "No modules found"
         msg += f" in {docs_dir}/modules/" if not args.src else f" via scan_codebase.py ({args.src})"
         if args.json_output:
-            print(json.dumps({'project_type': primary_type, 'modules': [], 'message': msg}))
+            print(json.dumps({'project_type': full_type, 'modules': [], 'message': msg}))
         else:
             print(f"⚠️  {msg}")
         sys.exit(0)
 
     if args.json_output:
-        print_results_json(results, primary_type, docs_dir, args.src)
+        print_results_json(results, full_type, docs_dir, args.src)
     else:
         print_results(results, primary_type, args.src)
 

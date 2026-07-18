@@ -9,6 +9,10 @@ if [ ! -f .project-starter.yml ] || [ ! -f docs/script/verify_docs.py ]; then
 fi
 TYPE=$(grep '^project_type:' .project-starter.yml | sed 's/project_type:[[:space:]]*//' | tr -d ""' ")
 [ -z "$TYPE" ] && exit 0
-python3 docs/script/verify_docs.py \
-    --project-type "$TYPE" --content --json \
-    > "logs/verify-$(date +%Y%m%d-%H%M%S).json" 2>&1 || true
+STAMP=$(date +%Y%m%d-%H%M%S)
+{
+    [ -f docs/script/verify_docs.py ]    && python3 docs/script/verify_docs.py    --project-type "$TYPE" --content --json 2>&1
+    [ -f docs/script/verify_logs.py ]    && python3 docs/script/verify_logs.py    --project-type "$TYPE" 2>&1
+    [ -f docs/script/verify_tests.py ]   && python3 docs/script/verify_tests.py   --project-type "$TYPE" 2>&1
+    [ -f docs/script/verify_content.py ] && python3 docs/script/verify_content.py --project-type "$TYPE" 2>&1
+} > "logs/verify-${STAMP}.json" 2>&1 || true

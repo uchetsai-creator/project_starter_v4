@@ -128,7 +128,7 @@ project_starter/                     ← this repo (template only)
         ├── verify_module_docs.py    ← module flow coverage + quality audit
         ├── verify_content.py        ← full document content quality gate (all Required docs × project type)
         ├── verify_framework.py      ← framework internal consistency audit (run in framework repo)
-        ├── _verify_common.py        ← shared placeholder patterns imported by all verify scripts
+        ├── _verify_common.py        ← shared placeholder patterns imported by verify_docs, verify_logs, verify_content, verify_module_docs
         ├── diagnose_spec.py         ← classifies spec fill gaps; triggers framework fix PRs
         └── propose_framework_fix.py ← opens a PR on project_starter_v4 to add a missing template section
 ```
@@ -136,10 +136,9 @@ project_starter/                     ← this repo (template only)
 When a new project starts, `templates/` is copied in and becomes `docs/` — see
 [Project Initialization](#project-initialization) below.
 
-> **Note on file naming:** template files in this repo do not carry version suffixes
-> (e.g. `module-data-flow.md`, not `module-data-flow-v2.md`). Version history is tracked
-> in `CHANGELOG.md` at the repo root. When copying templates into a new project's `docs/`,
-> use the base filename without any suffix.
+> **Note on file naming:** flow templates in `templates/flows/` carry a version suffix (e.g. `module-data-flow-v2.md`)
+> for internal framework versioning; other templates do not. When copying any template into a new project's `docs/`,
+> drop the version suffix — use the base filename (e.g. `[module]-module-data-flow.md`).
 
 ---
 

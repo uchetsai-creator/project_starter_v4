@@ -379,6 +379,55 @@ def check_type_completeness() -> list[dict]:
     return issues
 
 
+def check_script_type_sync() -> list[dict]:
+    """Check 8: scan_codebase.py and verify_docs.py declare the same set of project types."""
+    scan_path  = TEMPLATES_DIR / "script" / "scan_codebase.py"
+    verify_path = TEMPLATES_DIR / "script" / "verify_docs.py"
+
+    for p in (scan_path, verify_path):
+        if not p.exists():
+            return [_issue("script-type-sync", "error", f"{p.name} not found")]
+
+    # Extract keys from MODULE_VOCAB dict in scan_codebase.py
+    scan_types: set[str] = set()
+    in_vocab = False
+    for line in scan_path.read_text(encoding="utf-8").splitlines():
+        if "MODULE_VOCAB" in line and "dict" in line:
+            in_vocab = True
+        if in_vocab:
+            m = re.search(r'"([a-z][a-z-]+)":\s+\(', line)
+            if m:
+                scan_types.add(m.group(1))
+            if line.strip() == "}":
+                in_vocab = False
+
+    # Extract values from VALID_TYPES list in verify_docs.py
+    verify_types: set[str] = set()
+    in_valid = False
+    for line in verify_path.read_text(encoding="utf-8").splitlines():
+        if re.match(r"\s*VALID_TYPES\s*=\s*\[", line):
+            in_valid = True
+        if in_valid:
+            for m in re.finditer(r"'([a-z][a-z-]+)'", line):
+                verify_types.add(m.group(1))
+            if "]" in line and "VALID_TYPES" not in line:
+                in_valid = False
+
+    issues = []
+    for t in sorted(scan_types - verify_types):
+        issues.append(_issue("script-type-sync", "fail",
+                             f"`{t}` in scan_codebase.py MODULE_VOCAB but NOT in verify_docs.py VALID_TYPES"))
+    for t in sorted(verify_types - scan_types):
+        issues.append(_issue("script-type-sync", "fail",
+                             f"`{t}` in verify_docs.py VALID_TYPES but NOT in scan_codebase.py MODULE_VOCAB"))
+
+    if not issues:
+        return [_issue("script-type-sync", "pass",
+                       f"scan_codebase.py and verify_docs.py share the same {len(scan_types)} types: "
+                       f"{', '.join(sorted(scan_types))}")]
+    return issues
+
+
 def check_build_pdf_type_sync() -> list[dict]:
     """Check 9: build_pdf.py VALID_PROJECT_TYPES matches PURPOSES_FILES (all 9 types)."""
     build_pdf_path = TEMPLATES_DIR / "script" / "build_pdf.py"
@@ -486,54 +535,6 @@ def check_content_coverage() -> list[dict]:
                        f"and all {len(required_checkers)} document checkers")]
     return issues
 
-
-def check_script_type_sync() -> list[dict]:
-    """Check 8: scan_codebase.py and verify_docs.py declare the same set of project types."""
-    scan_path  = TEMPLATES_DIR / "script" / "scan_codebase.py"
-    verify_path = TEMPLATES_DIR / "script" / "verify_docs.py"
-
-    for p in (scan_path, verify_path):
-        if not p.exists():
-            return [_issue("script-type-sync", "error", f"{p.name} not found")]
-
-    # Extract keys from MODULE_VOCAB dict in scan_codebase.py
-    scan_types: set[str] = set()
-    in_vocab = False
-    for line in scan_path.read_text(encoding="utf-8").splitlines():
-        if "MODULE_VOCAB" in line and "dict" in line:
-            in_vocab = True
-        if in_vocab:
-            m = re.search(r'"([a-z][a-z-]+)":\s+\(', line)
-            if m:
-                scan_types.add(m.group(1))
-            if line.strip() == "}":
-                in_vocab = False
-
-    # Extract values from VALID_TYPES list in verify_docs.py
-    verify_types: set[str] = set()
-    in_valid = False
-    for line in verify_path.read_text(encoding="utf-8").splitlines():
-        if re.match(r"\s*VALID_TYPES\s*=\s*\[", line):
-            in_valid = True
-        if in_valid:
-            for m in re.finditer(r"'([a-z][a-z-]+)'", line):
-                verify_types.add(m.group(1))
-            if "]" in line and "VALID_TYPES" not in line:
-                in_valid = False
-
-    issues = []
-    for t in sorted(scan_types - verify_types):
-        issues.append(_issue("script-type-sync", "fail",
-                             f"`{t}` in scan_codebase.py MODULE_VOCAB but NOT in verify_docs.py VALID_TYPES"))
-    for t in sorted(verify_types - scan_types):
-        issues.append(_issue("script-type-sync", "fail",
-                             f"`{t}` in verify_docs.py VALID_TYPES but NOT in scan_codebase.py MODULE_VOCAB"))
-
-    if not issues:
-        return [_issue("script-type-sync", "pass",
-                       f"scan_codebase.py and verify_docs.py share the same {len(scan_types)} types: "
-                       f"{', '.join(sorted(scan_types))}")]
-    return issues
 
 
 # ---------------------------------------------------------------------------

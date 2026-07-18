@@ -94,7 +94,7 @@ TYPE_DOCS: dict[str, list[str]] = {
 }
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _verify_common import _is_placeholder
+from _verify_common import _is_placeholder, _section_body
 
 
 def _read_file(path: str) -> list[str] | None:
@@ -108,17 +108,6 @@ def _read_file(path: str) -> list[str] | None:
 def _non_blank(lines: list[str]) -> list[str]:
     return [ln for ln in lines if ln.strip()]
 
-
-def _section_body(text: str, header_re: str) -> str | None:
-    """Return text from matching section header until next same-or-higher heading."""
-    m = re.search(header_re, text, re.IGNORECASE | re.MULTILINE)
-    if not m:
-        return None
-    hashes = re.match(r'^(#+)', m.group(0))
-    level = len(hashes.group(1)) if hashes else 1
-    after = text[m.end():]
-    boundary = re.search(r'(?m)^#{1,' + str(level) + r'}\s', after)
-    return after[:boundary.start()] if boundary else after
 
 
 # ---------------------------------------------------------------------------

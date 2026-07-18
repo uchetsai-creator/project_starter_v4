@@ -633,7 +633,7 @@ def main():
         metavar="N",
         type=int,
         default=1,
-        help="Number of directory levels to scan (default: 1). Use 2+ for monorepos.",
+        help="Number of directory levels to scan for coverage/JSON output (default: 1). Use 2+ for monorepos. Does not affect the printed file tree depth.",
     )
     parser.add_argument(
         "--format",

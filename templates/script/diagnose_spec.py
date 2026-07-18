@@ -45,6 +45,7 @@ Usage:
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime
@@ -53,7 +54,9 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROPOSE_SCRIPT = SCRIPT_DIR / "propose_framework_fix.py"
 
-DEFAULT_FRAMEWORK_REPO = "uchetsai-creator/project_starter_v4"
+DEFAULT_FRAMEWORK_REPO = os.environ.get(
+    "PROJECT_STARTER_FRAMEWORK_REPO", "uchetsai-creator/project_starter_v4"
+)
 
 # Maximum self-improving rounds before remaining gaps are logged for manual triage.
 MAX_ROUNDS = 2

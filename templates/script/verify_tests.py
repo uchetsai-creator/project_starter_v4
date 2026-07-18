@@ -22,6 +22,8 @@ import json
 import os
 import re
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _verify_common import _section_body
 
 VALID_TYPES = [
     'web-app', 'cli-tool', 'library',
@@ -48,18 +50,6 @@ def _read_file(path):
             return fh.read().splitlines()
     except OSError:
         return None
-
-
-def _section_body(text: str, header_re: str) -> str | None:
-    """Return text from matching section header until next same-or-higher heading."""
-    m = re.search(header_re, text, re.IGNORECASE | re.MULTILINE)
-    if not m:
-        return None
-    hashes = re.match(r'^(#+)', m.group(0))
-    level = len(hashes.group(1)) if hashes else 1
-    after = text[m.end():]
-    boundary = re.search(r'(?m)^#{1,' + str(level) + r'}\s', after)
-    return after[:boundary.start()] if boundary else after
 
 
 def _real_table_rows(body):
