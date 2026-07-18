@@ -1,6 +1,6 @@
 # Module Completion Check
 
-Run this check after every task — most of the time the answer will be "no," but the check itself must not be skipped.
+Run this check only when a module is confirmed 100% complete — skip otherwise.
 
 Do NOT create or update `[module]-module-data-flow.md` or `[module]-flow.md` during a task
 unless the module is 100% complete (all tasks for this module are marked done in project-plan.md).

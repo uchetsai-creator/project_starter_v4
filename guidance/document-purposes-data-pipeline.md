@@ -109,9 +109,12 @@ After updating the Deployment Diagram block, regenerate the diagram:
 
 Purpose:
 Index file listing all business process documents.
-Only create if the pipeline has identifiable business processes worth documenting.
+Each business process has its own dedicated file: `docs/business/[process-name]-process.md`.
+Create only if the pipeline has identifiable business-stakeholder workflows worth documenting —
+e.g., a data ingestion approval flow, a report delivery sign-off process, or a data quality
+escalation workflow. Pure technical pipeline stages belong in pipeline-contract.md, not here.
 
-Update when (at task level, together with the new process file):
+Update when (at task level, together with the new process file — confirm index is updated whenever a new *-process.md is created):
 * A new business process file is created — add a row to the table
 
 ### [process-name]-process.md
@@ -119,6 +122,10 @@ Update when (at task level, together with the new process file):
 
 Purpose:
 Describe one business process — goal, steps, decision points, exceptions, and Activity Diagram.
+Cross-module technical call sequences belong in docs/modules/[module]/[module]-flow.md.
+Process Steps table includes a Prerequisites column — any access condition the Owner role
+needs beyond the role itself (approval rights, data access, precondition state) must be noted
+at the step level, not only in a separate Permission Note a reader could skip past.
 
 Location: `docs/business/[process-name]-process.md`
 

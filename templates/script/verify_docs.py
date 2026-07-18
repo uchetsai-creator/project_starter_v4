@@ -72,6 +72,9 @@ MATRIX = {
     # Universal — all project types
     'test-plan.md':            ('R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R'),
     'test-report.md':          ('R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R'),
+    # Always-optional utilities — created on demand, not gated by project type
+    'glossary.md':             ('O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'),
+    'dependencies.md':         ('O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O'),
 }
 
 FILE_LOCATIONS = {
@@ -117,6 +120,9 @@ FILE_LOCATIONS = {
     # Universal
     'test-plan.md':            'specs',
     'test-report.md':          'specs',
+    # Always-optional utilities
+    'glossary.md':             'specs',
+    'dependencies.md':         'specs',
 }
 
 SCANNED_DIRS = ('specs', 'architecture', 'business')

@@ -72,21 +72,9 @@
 
 <!--
   WHEN TO FILL: when this task is first set up — not at closeout.
-  HOW TO FILL: use the quick filter guide below to identify which docs need updating.
-  For task types not listed below, load `templates/sprint-sync.md → Document Update Checklist`.
-  Do not load AGENTS.md for this — the guide below covers all standard task types.
-  - DB schema task          → keep: data-model.md, database.md, business-objects.md
-  - BE endpoint task        → keep: api-contract.md, permissions.md, module-data-flow.md, module-flow.md, logging-spec.md
-  - FE task                 → keep: frontend.md, codebase-map.md (page structure)
-  - Config/infra task       → keep: deployment.md, quickstart.md
-  - Business logic task     → keep: business-rules.md, business-process.md, business-objects.md
-  - Script/utility task     → keep: nothing (doc updates usually not needed)
-  - Prompt / LLM task       → keep: llm-contract.md, prompt-library.md + prompts/[id]-prompt.md, eval-spec.md
-  - Eval run task           → keep: eval-log.md (append one row), eval-spec.md (if criteria changed)
-  - RAG task                → keep: rag-contract.md, llm-contract.md (Context Window Strategy)
-  - MCP server task         → keep: mcp-contract.md, llm-contract.md (Tool Calling section)
-  - Pipeline stage task     → keep: pipeline-contract.md, module-data-flow.md
-  - ML model task           → keep: model-contract.md, experiment-log.md
+  HOW TO FILL: use the Quick filter guide in `templates/sprint-sync.md → Document Update Checklist`
+  to identify which docs need updating. The canonical guide lives there — load it when setting up
+  a new task. Do not load AGENTS.md for this.
 
   WHEN TO RUN: at task completion (Task Completion step 1a).
   Apply each item listed here — do NOT re-open AGENTS.md at closeout.
@@ -102,6 +90,7 @@
 
 - **Doc Checklist + current-state.md** (1 edit): apply Doc Checklist items above; set Status → `Complete — Pending Sprint Doc Sync`; mark steps `[x]`; promote Next Task → Current Task; update Required Context + Doc Checklist for new task; set Status → `In Progress`
 - **Verify**: run the command in the Verify step and confirm expected output — "no errors" is not sufficient
+*(Replace `TYPE` in each command below with the value from `.project-starter.yml → project_type`.)*
 - **Doc verification**: run pre-commit hook (`git commit`) or manually: `python3 docs/script/verify_docs.py --project-type TYPE --content` — Required: __ / __ present
 - **Log verification**: `python3 docs/script/verify_logs.py --project-type TYPE --strict` — Verdict: ___
 - **Test report verification**: `python3 docs/script/verify_tests.py --project-type TYPE --strict` — Verdict: ___

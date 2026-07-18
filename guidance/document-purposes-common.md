@@ -62,6 +62,37 @@ Update when (defer to Sprint Documentation Sync):
 * Coverage changes significantly
 * Known Issues / Known Gaps section changes
 
+### specs/glossary.md
+**Applies to: All project types (Optional — create on demand)**
+
+Purpose:
+Shared definition of domain terms, business concepts, technical abbreviations, and naming conventions
+used across the project. Prevents terminology drift between the codebase, specs, and stakeholder documents.
+Useful when the project introduces concepts that are non-obvious to a new team member or external reviewer.
+
+Create when: the project's domain vocabulary is non-trivial — e.g., the team disagrees on what a term means,
+or a concept appears in multiple specs without a single authoritative definition.
+Do not create it just because a project exists — only create when there are actual terms to define.
+
+Update when (defer to Sprint Documentation Sync):
+* A new domain term is introduced or an existing definition changes
+
+### specs/dependencies.md
+**Applies to: All project types (Optional — create on demand)**
+
+Purpose:
+Track external dependency versions, upgrade policy, and known compatibility constraints.
+Covers runtime packages, dev tools, infrastructure clients, and external service SDKs.
+Complements the project's package manager lock files by documenting the *why* behind
+version constraints and the policy for when and how to upgrade.
+
+Create when: the project has non-trivial version constraints (e.g., locked to a specific major version
+due to a breaking change), or when multiple team members need to agree on an upgrade cadence.
+
+Update when (defer to Sprint Documentation Sync):
+* A dependency is upgraded or a constraint is added
+* A known incompatibility is discovered or resolved
+
 ### logging-spec.md
 **Applies to: Web App, CLI Tool, Data Pipeline, ML Pipeline, Microservices, AI / LLM Application**
 Not applicable to Library / SDK (libraries should not configure logging; callers own that).
@@ -257,10 +288,15 @@ This forces all post-task steps to be completed before reporting done.
 Prevents AI from reporting completion without actual execution or without updating docs.
 
 Format:
-`| date | task | files changed | command run | ✅/❌ result | current-state ✅ | sprint-log ✅ |`
+`| date | task | files changed | verification | ✅/❌ result | plan | changelog | current-state | sprint-log |`
 
-All checklist columns must be ✅. The "sprint-log" column confirms an entry was added to sprint-change-log.md.
-The "docs" column is removed — documentation sync now happens at sprint level, not task level.
+Column meanings:
+- **plan** ✅ — project-plan.md row marked complete
+- **changelog** ✅ — sprint-change-log.md entry added with Status: Pending documentation synchronization
+- **current-state** ✅ — current-state.md updated (Status set, steps marked, Next Task promoted)
+- **sprint-log** ✅ — sprint-change-log.md entry confirms the task is in the pending sync queue
+
+All checklist columns must be ✅ before the row can be written.
 Result must confirm the feature works — not just "no errors":
 - ✅ "endpoint returns expected data", "UI shows correct state", "output matches expected value"
 - ❌ "no errors in log" alone is not sufficient

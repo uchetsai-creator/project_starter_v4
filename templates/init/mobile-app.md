@@ -108,3 +108,7 @@ Create `.project-starter.yml` at the project root:
 project_type: mobile-app
 docs_path: docs/
 ```
+
+**Optional utility documents (create on demand, any time):**
+- `docs/specs/glossary.md` — if the app introduces domain-specific screen names, navigation patterns, or business terms that the team (including designers and QA) needs to align on. Create from `templates/specs/glossary.md`.
+- `docs/specs/dependencies.md` — to track SDK versions (React Native, Flutter, Expo, etc.), native module versions, and upgrade policy. Create from `templates/specs/dependencies.md`.

@@ -58,6 +58,10 @@ The following documents from other project types are **N/A** — do not create t
     docs_path: docs/
     ```
 
+**Optional utility documents (create on demand, any time):**
+- `docs/specs/glossary.md` — if the project uses infrastructure-specific terms, resource naming conventions, or tagging taxonomy that the team needs to agree on. Create from `templates/specs/glossary.md`.
+- `docs/specs/dependencies.md` — to track tool versions (Terraform, Pulumi, Ansible, Helm, provider plugins), required CLI versions, and upgrade policy. Create from `templates/specs/dependencies.md`.
+
 **Optional — sprint workflow documents:**
 IaC projects do not require sprint planning documents, but if your team uses sprint-based workflow,
 create these from the standard templates: `project-plan.md`, `task-log.md`, `sprint-change-log.md`, `changelog.md`.

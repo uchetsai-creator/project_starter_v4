@@ -20,6 +20,8 @@ Do NOT update changelog.md, project-plan.md, codebase-map.md, or any spec/archit
       - Update **Doc Checklist** → already filtered when this task was set up; replace with filtered list for the new task
       - Set **Status** to `In Progress`
 
+      > Note: `current-state.md → Closeout` omits Step 1c for brevity — the authoritative procedure is here.
+
 2. **Run verification** for what was changed:
 
 | Changed artifact | Required verification |

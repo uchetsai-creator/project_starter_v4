@@ -33,3 +33,7 @@
     project_type: ml-pipeline
     docs_path: docs/
     ```
+
+**Optional utility documents (create on demand, any time):**
+- `docs/specs/glossary.md` — if the project uses domain-specific ML terms, feature naming conventions, or dataset terminology that the team needs to align on. Create from `templates/specs/glossary.md`.
+- `docs/specs/dependencies.md` — to track ML framework versions (PyTorch, scikit-learn, MLflow, etc.), CUDA requirements, and upgrade policy. Create from `templates/specs/dependencies.md`.

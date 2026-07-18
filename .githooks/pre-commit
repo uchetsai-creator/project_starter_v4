@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# project_starter_v4 — verification pre-commit hook (Phase 20 + Phase 21 + Phase 23 + Phase 24)
+# project_starter_v4 — verification pre-commit hook (Phase 20 + Phase 21 + Phase 23 + Phase 24 + Phase 33)
 # Runs quality checks automatically on every git commit. Blocks on failure.
 #
 # Install (once per project clone):
@@ -39,6 +39,15 @@ fi
 if [ -z "$PROJECT_TYPE" ]; then
     echo "⚠️  pre-commit: .project-starter.yml not found or project_type missing — skipping verification."
     exit 0
+fi
+
+# ── Phase 33: Placeholder guard ───────────────────────────────────────────────
+# Catches: committing with the template placeholder value still in project_type
+if echo "$PROJECT_TYPE" | grep -qE '^\[.+\]$'; then
+    echo "❌  pre-commit: .project-starter.yml project_type is still a placeholder ('$PROJECT_TYPE')."
+    echo "    Replace it with your actual project type before committing."
+    echo "    Valid values: web-app | cli-tool | library | data-pipeline | ml-pipeline | microservices | llm-app | iac | mobile-app"
+    exit 1
 fi
 
 echo "pre-commit: project-type=$PROJECT_TYPE  docs=$DOCS_PATH"

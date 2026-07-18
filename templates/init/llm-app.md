@@ -38,6 +38,11 @@
     project_type: llm-app
     docs_path: docs/
     ```
+
+**Optional utility documents (create on demand, any time):**
+- `docs/specs/glossary.md` — if the application introduces domain-specific terms, prompt taxonomy, or retrieval concepts that the team needs to align on. Create from `templates/specs/glossary.md`.
+- `docs/specs/dependencies.md` — to track model provider SDK versions, vector store client versions, and upgrade policy. Create from `templates/specs/dependencies.md`.
+
 ---
 
 ## Prompt Index Verification Rule

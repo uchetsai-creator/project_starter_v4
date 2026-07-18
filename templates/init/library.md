@@ -27,3 +27,7 @@
     project_type: library
     docs_path: docs/
     ```
+
+**Optional utility documents (create on demand, any time):**
+- `docs/specs/glossary.md` — if the library introduces domain-specific types, concepts, or acronyms that callers need to understand. Create from `templates/specs/glossary.md`.
+- `docs/specs/dependencies.md` — to track peer dependency versions, tested compatibility ranges, and known incompatibilities. Create from `templates/specs/dependencies.md`.

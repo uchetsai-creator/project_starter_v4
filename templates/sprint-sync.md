@@ -28,6 +28,10 @@ Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulat
    ```
    Record in `docs/task-log.md`: `verify_docs`, `verify_logs`, `verify_tests`, `verify_content` verdict (PASS / WARN / FAIL).
    All four must reach PASS or WARN before proceeding — resolve any FAIL before continuing.
+
+   **Decision gate — after manual triage of any WARN results:**
+   - If any WARN issues remain unresolved after triage: proceed to Step 7 (`diagnose_spec.py`) after completing Steps 5–6.
+   - If all WARN issues are resolved: skip Step 7.
 5. **Spec quality review** — for each Required spec document updated this sprint:
    a. Run content audit: `python3 docs/script/verify_docs.py --project-type TYPE --content`
    b. For any document with ⚠️ or ❌ fill result: load `templates/specs/spec-review.md`, paste the document, run the LLM Judge rubric.
@@ -39,7 +43,7 @@ Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulat
    c. For each Critical question: update the spec to answer it.
    d. Repeat until the round's Critical list is empty.
    e. Record final round count in `docs/specs/test-report.md → Spec Challenge` section.
-7. **(Optional) Self-improving loop** — run only if step 5 found fill-quality issues (⚠️ or ❌):
+7. **(Optional) Self-improving loop** — run only if the Step 4 decision gate directed you here (unresolved WARN after triage). For full usage, PR format, and architecture diagram, see `README.md → Self-improving loop` (canonical reference).
    a. **Round 1** — diagnose and open framework fix PRs:
       ```bash
       # Preferred — uses verify_content.py output (documents[].issues):
@@ -88,13 +92,15 @@ Items tagged `[Types: All]` always apply regardless of project type.
 
 After applying the type filter, apply the sprint-content pre-filter below.
 
+> **Two-pass design:** Step 4 (quality gate) runs *before* this checklist as a pre-check. The final item in this checklist re-runs `verify_content.py` *after* all doc updates — confirming fixes landed. Do not skip the final `verify_content.py` checklist item.
+
 ---
 
 **Pre-filter before running any checklist item:**
 Only check items whose trigger condition could plausibly be true given what this sprint actually changed.
 Skip an item immediately if the sprint did not touch the relevant area — do not read the item's full detail.
 
-Quick filter guide:
+**Quick filter guide** *(canonical — also referenced by `docs/current-state.md → Doc Checklist` for task-level filtering)*:
 | If the sprint only touched… | Skip these checklist items entirely |
 |---|---|
 | Python/JS scripts only | architecture.md, backend.md, frontend.md, database.md, data-model.md, business-objects.md |

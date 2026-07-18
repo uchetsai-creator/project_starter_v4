@@ -31,3 +31,7 @@
     project_type: cli-tool
     docs_path: docs/
     ```
+
+**Optional utility documents (create on demand, any time):**
+- `docs/specs/glossary.md` — if the project introduces domain-specific terms, abbreviations, or flag conventions that need a shared definition. Create from `templates/specs/glossary.md`.
+- `docs/specs/dependencies.md` — to track external dependency versions, upgrade policy, and known compatibility constraints. Create from `templates/specs/dependencies.md`.

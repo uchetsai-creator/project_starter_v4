@@ -34,3 +34,7 @@ At the system (repo root) level, additionally create:
     project_type: microservices
     docs_path: docs/
     ```
+
+**Optional utility documents (create on demand, any time):**
+- `docs/specs/glossary.md` — if the system introduces domain terms, event names, or shared concepts that span services and need a system-wide definition. Create from `templates/specs/glossary.md`.
+- `docs/specs/dependencies.md` — to track external service versions, infrastructure dependencies, and upgrade policy across the system. Create from `templates/specs/dependencies.md`.

@@ -32,3 +32,7 @@
     project_type: data-pipeline
     docs_path: docs/
     ```
+
+**Optional utility documents (create on demand, any time):**
+- `docs/specs/glossary.md` — if the pipeline uses domain-specific field names, business terms, or data quality terminology that analysts and engineers need to agree on. Create from `templates/specs/glossary.md`.
+- `docs/specs/dependencies.md` — to track external tool versions (Airflow, dbt, Great Expectations, etc.), upgrade policy, and known compatibility constraints. Create from `templates/specs/dependencies.md`.

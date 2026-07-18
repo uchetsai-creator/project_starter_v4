@@ -51,8 +51,14 @@ INIT_SKIP = {"document-matrix", "retrofit"}
 # Templates that exist for supplementary use but are intentionally absent from
 # the R/O/N matrix (project teams use them if needed — they're not type-gated).
 TEMPLATE_MATRIX_EXEMPT = {
+    # glossary.md and dependencies.md are always-optional utilities created on demand —
+    # they are not gated by project type and are registered in the matrix as ⚠️ for all types.
+    # They remain exempt from the strict matrix ↔ template check because their Optional status
+    # across all 9 types is intentional, not a gap.
     "specs/glossary.md",
     "specs/dependencies.md",
+    # spec-review.md and spec-challenge.md are process templates (sprint-end LLM prompts),
+    # not project documents — they are intentionally absent from the document matrix.
     "specs/spec-review.md",
     "specs/spec-challenge.md",
 }

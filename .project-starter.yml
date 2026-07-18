@@ -6,6 +6,7 @@ project_type: [your-project-type]
 # Valid values: web-app | cli-tool | library | data-pipeline | ml-pipeline
 #               microservices | llm-app | iac | mobile-app
 # Hybrid: data-pipeline+web-app
+# ⚠️  Do not commit with [your-project-type] as-is — replace it with your actual project type.
 
 docs_path: docs/
 # Path to your docs/ directory relative to the project root.
