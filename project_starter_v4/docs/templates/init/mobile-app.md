@@ -93,3 +93,18 @@ python3 docs/script/verify_docs.py --project-type mobile-app
 ```
 
 Fix any ❌ Missing Required items before beginning sprint work.
+
+**Step 12 — Install the verification hook**
+
+Copy `.githooks/pre-commit` to `.git/hooks/` so `verify_docs.py --content` runs automatically on every `git commit`:
+
+```bash
+cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
+
+Create `.project-starter.yml` at the project root:
+
+```yaml
+project_type: mobile-app
+docs_path: docs/
+```
