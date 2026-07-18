@@ -41,6 +41,10 @@ Usage:
 
   # Dry-run (no PRs opened, no files written):
   ... | python3 templates/script/diagnose_spec.py --project-type web-app --dry-run
+
+Fork users: set the PROJECT_STARTER_FRAMEWORK_REPO environment variable to override
+the default repo target before running propose_framework_fix.py:
+  export PROJECT_STARTER_FRAMEWORK_REPO=your-org/your-fork
 """
 
 import argparse

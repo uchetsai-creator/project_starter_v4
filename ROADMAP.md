@@ -1174,7 +1174,7 @@ Eleven ambiguities found where process instructions contradict each other, omit 
 
 ---
 
-## Phase 35 — Script & Per-Type Document-Purposes Cleanup
+## Phase 35 — Script & Per-Type Document-Purposes Cleanup ✅ Complete
 
 Three targeted issues surfaced that are too isolated to group with other phases: a context-free checker in `verify_content.py` that misreads pipeline projects, an undocumented fork requirement in `diagnose_spec.py`, and a hook entry in `document-purposes-common.md` where two verification counts appear consecutively without explanation.
 

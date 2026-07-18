@@ -384,10 +384,20 @@ Update when: the post-task procedure changes.
 
 Purpose:
 Shell script that enforces process rules on every `git commit` — no AI tool dependency.
-Runs four quality verifiers (Phase 17 + Phase 23 + Phase 24): `verify_docs.py --content`,
-`verify_logs.py`, `verify_tests.py`, and `verify_content.py`. Also enforces five process checks (Phase 21):
-framework integrity, AGENTS.md token budget, changelog audit trail, closeout completeness,
-and Writing Audience violations in spec-facing documents.
+Runs the following checks on every commit:
+
+**Quality verifiers** (4 scripts — Phase 17 + Phase 23 + Phase 24):
+- `verify_docs.py --content` — document presence and fill quality
+- `verify_logs.py` — log documentation coverage
+- `verify_tests.py` — test coverage and report currency
+- `verify_content.py` — spec content quality
+
+**Process checks** (5 rules — Phase 21):
+- `verify_framework.py` — framework file integrity
+- AGENTS.md token budget — keeps startup context below limit
+- Changelog audit trail — sprint-change-log entry required before commit
+- Closeout completeness — current-state.md must be properly closed out
+- Writing Audience violations — no task/sprint refs in spec-facing documents
 Blocks the commit and shows output on failure. Works with Claude Code, Codex, Cursor, or manual commits.
 Optional Claude Code Stop hook (`.claude/settings.json`) calls the same scripts for
 mid-session fast feedback, writing results to `logs/verify-{timestamp}.json`.

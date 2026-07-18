@@ -682,7 +682,11 @@ def check_mobile_contract(lines: list[str]) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def check_deployment(lines: list[str]) -> list[str]:
-    """Services table ≥1 real row; Environment Variables ≥1 real entry."""
+    """Services table ≥1 real row; Environment Variables ≥1 real entry.
+
+    Web-app / microservices context: checks for HTTP service names and env vars.
+    For data-pipeline / ml-pipeline, use check_deployment_pipeline instead.
+    """
     issues: list[str] = []
     text = '\n'.join(lines)
 
@@ -713,8 +717,66 @@ def check_deployment(lines: list[str]) -> list[str]:
     return issues
 
 
+def check_deployment_pipeline(lines: list[str]) -> list[str]:
+    """DAG / orchestration-tool reference and env vars for data/ml pipeline deployment.
+
+    Distinct from web-app context: pipeline deployment.md describes a scheduler or
+    orchestration tool (Airflow, Prefect, Dagster, cron, etc.), not HTTP server config.
+    """
+    issues: list[str] = []
+    text = '\n'.join(lines)
+
+    if not re.search(
+        r'\b(airflow|prefect|dagster|luigi|kedro|argo|metaflow|cron|scheduler|'
+        r'orchestrat|DAG|pipeline trigger|batch job|workflow engine)\b',
+        text, re.IGNORECASE,
+    ):
+        issues.append(
+            "No DAG / orchestration-tool reference found "
+            "(expect Airflow, Prefect, Dagster, cron, or equivalent scheduler)"
+        )
+
+    env_body = _section_body(text, r'^## Environment Variables')
+    if env_body is None:
+        issues.append("Environment Variables section missing")
+    else:
+        env_vars = [v for v in re.findall(r'\b[A-Z][A-Z0-9_]{2,}\b', env_body)
+                    if not _is_placeholder(v)]
+        if not env_vars:
+            issues.append("Environment Variables: no real env var entries")
+
+    return issues
+
+
+def check_database_pipeline(lines: list[str]) -> list[str]:
+    """Warehouse / data-lake storage reference for data/ml pipeline database docs.
+
+    Distinct from web-app context: pipeline database.md describes a data warehouse or
+    data lake (Snowflake, BigQuery, S3, etc.), not an OLTP schema with Engine + Entities.
+    """
+    issues: list[str] = []
+    text = '\n'.join(lines)
+
+    if not re.search(
+        r'\b(snowflake|bigquery|redshift|databricks|synapse|delta lake|iceberg|hudi|'
+        r'data lake|data warehouse|datalake|warehouse|S3|GCS|ADLS|parquet|orc|avro|'
+        r'hive|presto|trino|athena|spark)\b',
+        text, re.IGNORECASE,
+    ):
+        issues.append(
+            "No warehouse / data-lake storage reference found "
+            "(expect Snowflake, BigQuery, S3, Delta Lake, or equivalent storage)"
+        )
+
+    return issues
+
+
 def check_database(lines: list[str]) -> list[str]:
-    """Database Engine non-placeholder; Main Entities ≥2 real lines of content."""
+    """Database Engine non-placeholder; Main Entities ≥2 real lines of content.
+
+    Web-app / microservices context: checks for OLTP engine name and entity list.
+    For data-pipeline / ml-pipeline, use check_database_pipeline instead.
+    """
     issues: list[str] = []
     text = '\n'.join(lines)
 
@@ -969,7 +1031,14 @@ def audit(
         lines = _read_file(abs_path) or []
         checker = CHECKERS.get(doc_name)
         if checker:
-            issues = checker(lines)  # type: ignore[call-arg]
+            # Pipeline types use orchestration/warehouse checks instead of web-app checks
+            _pipeline_types = ('data-pipeline', 'ml-pipeline')
+            if doc_name == 'deployment.md' and any(t in _pipeline_types for t in project_types):
+                issues = check_deployment_pipeline(lines)
+            elif doc_name == 'database.md' and any(t in _pipeline_types for t in project_types):
+                issues = check_database_pipeline(lines)
+            else:
+                issues = checker(lines)  # type: ignore[call-arg]
             # Mobile-app extra rule for architecture.md: require ≥1 screen component
             if doc_name == 'architecture.md' and 'mobile-app' in project_types and not issues:
                 text = '\n'.join(lines)
