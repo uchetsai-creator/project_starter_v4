@@ -26,8 +26,22 @@ Run at the end of each sprint (or when `docs/sprint-change-log.md` has accumulat
    c. For each Critical question: update the spec to answer it.
    d. Repeat until the round's Critical list is empty.
    e. Record final round count in `docs/specs/test-report.md → Spec Challenge` section.
-6. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
-7. Confirm PDF renders correctly
+6. **(Optional) Self-improving loop** — run only if step 4 found fill-quality issues (⚠️ or ❌):
+   a. **Round 1** — diagnose and open framework fix PRs:
+      ```bash
+      python3 docs/script/verify_docs.py --project-type TYPE --content --json \
+        | python3 docs/templates/script/diagnose_spec.py --project-type TYPE
+      ```
+      Review each PR opened on `project_starter_v4`; merge those that look correct; skip others.
+   b. **Round 2** — re-diagnose; log any remaining gaps for manual triage:
+      ```bash
+      python3 docs/script/verify_docs.py --project-type TYPE --content --json \
+        | python3 docs/templates/script/diagnose_spec.py --project-type TYPE --round 2
+      ```
+      Check `logs/framework-gaps.md` for remaining gaps that need manual attention.
+   ⏹ **Stop after round 2.** Do not run further rounds — remaining gaps are in the log.
+7. Rebuild PDF: `python3 docs/script/build_pdf.py docs --lang en -o docs/project-documentation-en.pdf`
+8. Confirm PDF renders correctly
 
 ---
 

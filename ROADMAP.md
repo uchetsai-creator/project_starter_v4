@@ -659,7 +659,7 @@ Optional Claude Code fast-feedback: `PostToolUse` hooks in `.claude/settings.jso
 
 ---
 
-## Phase 22 — Self-Improving Framework via Auto-Fix PR 🔲 Planned
+## Phase 22 — Self-Improving Framework via Auto-Fix PR ✅ Complete
 
 When a project's spec has quality problems, the cause is either (a) the project's content is insufficient, or (b) the framework template for that project type doesn't give enough guidance. Type (b) is a framework gap — it affects every future project of the same type, not just this one.
 
