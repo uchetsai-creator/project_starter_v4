@@ -47,3 +47,13 @@ The following documents from other project types are **N/A** — do not create t
 
 10. (Optional) Set up `docs/codebase-map.md` using the template.
     Run `scan_codebase.py <src_dir> --project-type iac` to classify Terraform modules / resource groups.
+
+11. Install the verification hook — copy `.githooks/pre-commit` to `.git/hooks/` so `verify_docs.py --content` runs automatically on every `git commit`:
+    ```bash
+    cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+    ```
+12. Create `.project-starter.yml` at the project root (used by the hook and all verify scripts):
+    ```yaml
+    project_type: [your-type]   # e.g., web-app
+    docs_path: docs/
+    ```
