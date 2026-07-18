@@ -519,6 +519,40 @@ Run at the start of a retrofit (Step 1b) to inventory all modules before documen
 Run again after Step 3 to confirm full coverage.
 Run with `--update docs/codebase-map.md` to write the tree and coverage table into codebase-map.md.
 
+### verify_module_docs.py
+**Applies to: All project types**
+
+Purpose:
+Module flow coverage & quality audit. Cross-references `docs/modules/` against the module list
+from `scan_codebase.py` (when `--src` is provided) and verifies each flow file has required
+sections filled, gated by module type × project type.
+
+**Coverage check** (requires `--src`): confirms every module found in the source directory has
+a matching `docs/modules/[module]/[module]-module-data-flow.md` file.
+
+**Quality check** (always runs): verifies that each existing flow file has its required content
+sections filled with real values — not placeholders — for the declared module type:
+- **Pipeline Stage** — Input block (Source, Format, Schema), Output block (Destination, Format),
+  Error Handling (transient + missing-input cases, ≥ 3 lines)
+- **Feature** — at least one real `Function:` + `File:` pair; operations filled or `Not Supported`
+- **Background Job** — `Trigger:` filled; success path present; Error Handling (transient + permanent)
+- **Shared Utility** — plantuml class block with real methods; `Used by` table ≥ 1 real row
+
+AGENTS.md process rules enforced by pre-commit hook, not by agent memory.
+Run at sprint end as part of the quality gate. See `templates/sprint-sync.md → Step 4`.
+
+```bash
+python3 docs/script/verify_module_docs.py --project-type TYPE
+python3 docs/script/verify_module_docs.py --project-type TYPE --src src --docs docs
+python3 docs/script/verify_module_docs.py --project-type TYPE --strict
+python3 docs/script/verify_module_docs.py --project-type TYPE --json
+```
+
+Output: per-module table with flow file status and quality verdict; Coverage and Quality summary lines.
+`--strict` exits 1 if any module is missing a flow file or has a quality FAIL.
+
+Update when: a new module type is added, or required sections for an existing module type change.
+
 ### verify_framework.py
 Purpose:
 Framework self-audit — checks internal consistency of the project_starter_v4 framework itself.

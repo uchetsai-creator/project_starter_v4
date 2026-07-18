@@ -767,7 +767,7 @@ Every task closeout currently only checks whether Required documents exist (`ver
 
 ---
 
-## Phase 24 — Module Flow Coverage & Quality Check 🔲 Planned
+## Phase 24 — Module Flow Coverage & Quality Check ✅ Complete
 
 `verify_docs.py` audits top-level spec files. `docs/modules/` has no equivalent: scan_codebase.py may surface 5 pipeline stages, but 2 may have no flow file, and the 3 that exist may have empty Input/Output contracts. No tool catches either gap today.
 

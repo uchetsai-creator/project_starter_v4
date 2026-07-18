@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# project_starter_v4 — verification pre-commit hook (Phase 20 + Phase 21 + Phase 23)
+# project_starter_v4 — verification pre-commit hook (Phase 20 + Phase 21 + Phase 23 + Phase 24)
 # Runs quality checks automatically on every git commit. Blocks on failure.
 #
 # Install (once per project clone):
@@ -64,6 +64,13 @@ fi
 if [ -f "docs/script/verify_tests.py" ]; then
     echo "  → verify_tests.py ..."
     python3 "docs/script/verify_tests.py" \
+        --project-type "$PROJECT_TYPE" --docs "$DOCS_PATH" --strict 2>&1 || PASS=false
+fi
+
+# 4. Module flow coverage & quality (Phase 24)
+if [ -f "docs/script/verify_module_docs.py" ]; then
+    echo "  → verify_module_docs.py ..."
+    python3 "docs/script/verify_module_docs.py" \
         --project-type "$PROJECT_TYPE" --docs "$DOCS_PATH" --strict 2>&1 || PASS=false
 fi
 

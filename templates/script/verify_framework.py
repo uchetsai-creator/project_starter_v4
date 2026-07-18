@@ -409,6 +409,54 @@ def check_build_pdf_type_sync() -> list[dict]:
     return issues
 
 
+def check_module_docs_coverage() -> list[dict]:
+    """Check 10: verify_module_docs.py PRIMARY_MODULE_TYPE covers all 9 project types
+    and all 4 module types have quality-check functions."""
+    script_path = TEMPLATES_DIR / "script" / "verify_module_docs.py"
+    if not script_path.exists():
+        return [_issue("module-docs-coverage", "error", "verify_module_docs.py not found")]
+
+    text = script_path.read_text(encoding="utf-8")
+    issues = []
+
+    # Check PRIMARY_MODULE_TYPE has all 9 project types
+    primary_type_types: set[str] = set()
+    in_primary = False
+    for line in text.splitlines():
+        if re.match(r"\s*PRIMARY_MODULE_TYPE\s*=\s*\{", line):
+            in_primary = True
+        if in_primary:
+            m = re.search(r"'([a-z][a-z-]+)'\s*:", line)
+            if m:
+                primary_type_types.add(m.group(1))
+            if "}" in line and "PRIMARY_MODULE_TYPE" not in line:
+                in_primary = False
+
+    expected_types = set(PURPOSES_FILES.keys())
+    for t in sorted(expected_types - primary_type_types):
+        issues.append(_issue("module-docs-coverage", "fail",
+                             f"`{t}` missing from verify_module_docs.py PRIMARY_MODULE_TYPE"))
+
+    # Check all 4 module type quality-check functions exist
+    required_funcs = {
+        "Pipeline Stage": "check_pipeline_stage",
+        "Feature":        "check_feature",
+        "Background Job": "check_background_job",
+        "Shared Utility": "check_shared_utility",
+    }
+    for mt, func in required_funcs.items():
+        if f"def {func}(" not in text:
+            issues.append(_issue("module-docs-coverage", "fail",
+                                 f"verify_module_docs.py missing quality-check function `{func}` "
+                                 f"for module type '{mt}'"))
+
+    if not issues:
+        return [_issue("module-docs-coverage", "pass",
+                       f"verify_module_docs.py covers all {len(expected_types)} project types "
+                       f"and all 4 module types")]
+    return issues
+
+
 def check_script_type_sync() -> list[dict]:
     """Check 8: scan_codebase.py and verify_docs.py declare the same set of project types."""
     scan_path  = TEMPLATES_DIR / "script" / "scan_codebase.py"
@@ -476,18 +524,20 @@ CHECK_ORDER = [
     "type-completeness",
     "script-type-sync",
     "build-pdf-type-sync",
+    "module-docs-coverage",
 ]
 
 CHECK_LABELS = {
-    "stale-pointer":      "Stale pointer check          (AGENTS.md .md file refs)",
-    "token-budget":       "Token budget check           (AGENTS.md ≤ 200 lines)",
-    "matrix-templates":   "Matrix ↔ template consistency",
-    "sprint-sync":        "Sprint-sync coverage",
-    "purposes-coverage":  "Per-type purposes coverage   (Required docs only)",
-    "cross-ref":          "Cross-reference integrity    (document-purposes → templates)",
-    "type-completeness":  "Type completeness            (init file + purposes file per type)",
-    "script-type-sync":   "Script type sync             (scan_codebase.py ↔ verify_docs.py)",
-    "build-pdf-type-sync": "Build PDF type sync          (build_pdf.py VALID_PROJECT_TYPES)",
+    "stale-pointer":        "Stale pointer check          (AGENTS.md .md file refs)",
+    "token-budget":         "Token budget check           (AGENTS.md ≤ 200 lines)",
+    "matrix-templates":     "Matrix ↔ template consistency",
+    "sprint-sync":          "Sprint-sync coverage",
+    "purposes-coverage":    "Per-type purposes coverage   (Required docs only)",
+    "cross-ref":            "Cross-reference integrity    (document-purposes → templates)",
+    "type-completeness":    "Type completeness            (init file + purposes file per type)",
+    "script-type-sync":     "Script type sync             (scan_codebase.py ↔ verify_docs.py)",
+    "build-pdf-type-sync":  "Build PDF type sync          (build_pdf.py VALID_PROJECT_TYPES)",
+    "module-docs-coverage": "Module docs coverage         (verify_module_docs.py completeness)",
 }
 
 LEVEL_ICON = {"pass": "✅", "warn": "⚠️ ", "fail": "❌", "error": "❌"}
@@ -570,6 +620,7 @@ def main():
     all_issues += check_type_completeness()
     all_issues += check_script_type_sync()
     all_issues += check_build_pdf_type_sync()
+    all_issues += check_module_docs_coverage()
 
     if args.json_output:
         print(json.dumps(
