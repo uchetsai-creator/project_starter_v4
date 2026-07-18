@@ -340,6 +340,38 @@ with the verification table or the exact sprint-change-log entry format.
 For standard closeouts, the Closeout section in current-state.md is sufficient.
 Update when: the post-task procedure changes.
 
+### .githooks/pre-commit
+**Applies to: All project types**
+
+Purpose:
+Shell script that runs `verify_docs.py --content` automatically on every `git commit`.
+Once Phase 23 ships, also runs `verify_logs.py` and `verify_tests.py`.
+Blocks the commit and shows output on failure. The stable verification layer — works with
+Claude Code, Codex, Cursor, or manual commits.
+Optional Claude Code Stop hook (`.claude/settings.json`) calls the same scripts for
+mid-session fast feedback, writing results to `logs/verify-{timestamp}.json`.
+
+Install: `cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit`
+Requires `.project-starter.yml` at the project root with `project_type` set.
+Update when: Phase 23 ships — add `verify_logs.py` and `verify_tests.py` calls.
+
+### .project-starter.yml
+**Applies to: All project types**
+
+Purpose:
+Single config file at the project root. Stores `project_type` and `docs_path`.
+Used by `.githooks/pre-commit` and all verify scripts so type/path flags do not
+need to be passed on every manual invocation.
+
+```yaml
+project_type: data-pipeline
+docs_path: docs/
+```
+
+Created at project initialization (last step in each `init/[type].md`).
+Do not rename — all scripts read this exact filename.
+
+
 ### verify_docs.py
 Purpose:
 Cross-references the declared project type against the document matrix and reports which
