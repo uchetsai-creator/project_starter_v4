@@ -616,7 +616,7 @@ Optional fast-feedback layer (Claude Code only):
 
 ---
 
-## Phase 21 — Complete Hook Coverage 🔲 Planned
+## Phase 21 — Complete Hook Coverage ✅ Complete
 
 Phase 20 covers the verification scripts (docs / logs / tests). Five additional AGENTS.md process rules are still instruction-only — any AI tool or developer can silently violate them with no catch. All five can be enforced at the git commit boundary, making them tool-agnostic.
 

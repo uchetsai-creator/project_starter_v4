@@ -344,12 +344,17 @@ Update when: the post-task procedure changes.
 **Applies to: All project types**
 
 Purpose:
-Shell script that runs `verify_docs.py --content` automatically on every `git commit`.
+Shell script that enforces process rules on every `git commit` — no AI tool dependency.
+Runs `verify_docs.py --content` (Phase 17) plus five process checks (Phase 21):
+framework integrity, AGENTS.md token budget, changelog audit trail, closeout completeness,
+and Writing Audience violations in spec-facing documents.
 Once Phase 23 ships, also runs `verify_logs.py` and `verify_tests.py`.
-Blocks the commit and shows output on failure. The stable verification layer — works with
-Claude Code, Codex, Cursor, or manual commits.
+Blocks the commit and shows output on failure. Works with Claude Code, Codex, Cursor, or manual commits.
 Optional Claude Code Stop hook (`.claude/settings.json`) calls the same scripts for
 mid-session fast feedback, writing results to `logs/verify-{timestamp}.json`.
+
+**Note:** Process rules declared in `AGENTS.md` are enforced by this pre-commit hook,
+not by agent memory. An AI tool or developer can silently violate them without the hook — install it.
 
 Install: `cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit`
 Requires `.project-starter.yml` at the project root with `project_type` set.

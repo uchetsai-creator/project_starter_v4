@@ -497,7 +497,7 @@ python3 docs/templates/script/verify_framework.py --json     # machine-readable 
 
 ## Verification
 
-Phases 17–23 add automated quality checks. The trigger layer makes them run automatically at the git commit boundary — no AI tool dependency.
+Phases 17–21 add automated quality checks. The trigger layer makes them run automatically at the git commit boundary — no AI tool dependency.
 
 ### Architecture
 
@@ -506,11 +506,19 @@ Any AI tool (Claude / Codex / Cursor / manual)
         ↓
    git commit
         ↓
- .githooks/pre-commit          ← PRIMARY: tool-agnostic, always fires
+ .githooks/pre-commit                  ← PRIMARY: tool-agnostic, always fires
         ↓
- verify_docs.py --content      ← Phase 17: doc completeness + fill quality
- verify_logs.py                ← Phase 23: log format + trace_id (when present)
- verify_tests.py               ← Phase 23: test-report.md fill quality (when present)
+ [project_starter_v4/ files staged]
+ verify_framework.py --strict          ← Phase 21: framework integrity (block)
+        ↓
+ verify_docs.py --content              ← Phase 17: doc completeness + fill quality (block)
+ verify_logs.py                        ← Phase 23: log format + trace_id (when present, block)
+ verify_tests.py                       ← Phase 23: test-report.md fill quality (when present, block)
+        ↓
+ [AGENTS.md staged]      line count ≤ 200            ← Phase 21: token budget (block)
+ [specs/*.md staged]     changelog.md also staged?   ← Phase 21: audit trail (warn)
+ [current-state.md + Status:Complete]  Closeout filled? ← Phase 21: closeout (block)
+ [spec-facing doc staged] no Sprint/Task refs         ← Phase 21: writing audience (block)
         ↓
  PASS → commit proceeds
  FAIL → commit blocked, output shown to developer
@@ -518,6 +526,21 @@ Any AI tool (Claude / Codex / Cursor / manual)
 Optional fast-feedback (Claude Code only):
  .claude/settings.json Stop hook → same scripts → logs/verify-{timestamp}.json
 ```
+
+### Check table
+
+| Check | Trigger | Severity | Phase |
+|---|---|---|---|
+| Doc completeness + content quality | Every commit (with `project_type` set) | ❌ Block | 17 |
+| Log format + trace_id | `docs/script/verify_logs.py` present | ❌ Block | 23 |
+| Test-report fill quality | `docs/script/verify_tests.py` present | ❌ Block | 23 |
+| Framework integrity (`verify_framework.py --strict`) | Any `project_starter_v4/` file staged | ❌ Block | 21 |
+| AGENTS.md token budget (> 200 lines) | `AGENTS.md` staged | ❌ Block | 21 |
+| Spec/arch changed without changelog entry | Any `specs/*.md` or `architecture/*.md` staged | ⚠️ Warn | 21 |
+| Closeout unfilled on task completion | `current-state.md` staged with `Status: Complete` | ❌ Block | 21 |
+| Writing Audience violations (sprint/task refs in stakeholder docs) | Any spec-facing doc staged | ❌ Block | 21 |
+
+Spec-facing documents (Writing Audience check): `business-rules.md`, `pipeline-contract.md`, `research.md`, `quickstart.md`, `architecture/*.md`, `modules/*/*-module-data-flow.md`
 
 ### Setup (once per project clone)
 
@@ -534,12 +557,12 @@ Optional fast-feedback (Claude Code only):
 
 ### Tool compatibility
 
-| AI tool | Pre-commit hook fires? | Claude Code Stop hook? |
-|---|---|---|
-| Claude Code | ✅ on `git commit` | ✅ optional |
-| Codex | ✅ on `git commit` | ❌ not applicable |
-| Cursor | ✅ on `git commit` | ❌ not applicable |
-| Manual (no AI) | ✅ on `git commit` | ❌ not applicable |
+| AI tool | Pre-commit hook fires? | All Phase 21 checks fire? | Claude Code Stop hook? |
+|---|---|---|---|
+| Claude Code | ✅ on `git commit` | ✅ | ✅ optional |
+| Codex | ✅ on `git commit` | ✅ | ❌ not applicable |
+| Cursor | ✅ on `git commit` | ✅ | ❌ not applicable |
+| Manual (no AI) | ✅ on `git commit` | ✅ | ❌ not applicable |
 
 
 ## Setting up PlantUML

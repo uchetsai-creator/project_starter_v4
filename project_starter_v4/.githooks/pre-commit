@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# project_starter_v4 — verification pre-commit hook (Phase 20)
-# Runs verify_docs.py --content on every git commit. Blocks on failure.
+# project_starter_v4 — verification pre-commit hook (Phase 20 + Phase 21)
+# Runs quality checks automatically on every git commit. Blocks on failure.
 #
 # Install (once per project clone):
 #   cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
@@ -11,13 +11,30 @@
 
 set -euo pipefail
 
+# Staged file list — collected once, used by multiple checks
+STAGED=$(git diff --cached --name-only 2>/dev/null || true)
+
+# ── Phase 21 Check 1: Framework integrity ─────────────────────────────────────
+# Trigger: any file under project_starter_v4/ staged
+# Catches: stale pointer, matrix gap, or token budget violation created mid-Phase
+FRAMEWORK_STAGED=$(printf '%s\n' "$STAGED" | grep -E '^project_starter_v4/' || true)
+if [ -n "$FRAMEWORK_STAGED" ] && command -v python3 &>/dev/null \
+        && [ -f "docs/templates/script/verify_framework.py" ]; then
+    echo "  → verify_framework.py --strict (framework files changed) ..."
+    python3 "docs/templates/script/verify_framework.py" --strict 2>&1 || {
+        echo "❌  pre-commit: framework integrity check failed — commit blocked."
+        exit 1
+    }
+fi
+
+# ── Read .project-starter.yml ─────────────────────────────────────────────────
 CONFIG=".project-starter.yml"
 PROJECT_TYPE=""
 DOCS_PATH="docs"
 
 if [ -f "$CONFIG" ]; then
-    PROJECT_TYPE=$(grep '^project_type:' "$CONFIG" | sed 's/project_type:[[:space:]]*//' | tr -d ""' ")
-    DOCS_CANDIDATE=$(grep '^docs_path:' "$CONFIG" | sed 's/docs_path:[[:space:]]*//' | tr -d ""' /")
+    PROJECT_TYPE=$(grep '^project_type:' "$CONFIG" | sed 's/project_type:[[:space:]]*//' | tr -d "\"' ")
+    DOCS_CANDIDATE=$(grep '^docs_path:' "$CONFIG" | sed 's/docs_path:[[:space:]]*//' | tr -d "\"' /")
     [ -n "$DOCS_CANDIDATE" ] && DOCS_PATH="$DOCS_CANDIDATE"
 fi
 
@@ -49,6 +66,74 @@ if [ -f "docs/script/verify_tests.py" ]; then
     echo "  → verify_tests.py ..."
     python3 "docs/script/verify_tests.py" \
         --project-type "$PROJECT_TYPE" --docs "$DOCS_PATH" --strict 2>&1 || PASS=false
+fi
+
+# ── Phase 21 Check 2: AGENTS.md token budget ──────────────────────────────────
+# Trigger: AGENTS.md in staged files
+# Catches: token budget drift — AGENTS.md growing past the 200-line limit
+AGENTS_FILE=$(printf '%s\n' "$STAGED" | grep -E '(^|/)AGENTS\.md$' | head -1 || true)
+if [ -n "$AGENTS_FILE" ]; then
+    AGENTS_LINES=$(git show ":$AGENTS_FILE" 2>/dev/null | wc -l || echo 0)
+    if [ "$AGENTS_LINES" -gt 200 ]; then
+        echo "  ❌ AGENTS.md is $AGENTS_LINES lines — token budget exceeded (limit: 200)"
+        PASS=false
+    else
+        echo "  ✅ AGENTS.md token budget OK ($AGENTS_LINES / 200 lines)"
+    fi
+fi
+
+# ── Phase 21 Check 3: Changelog audit trail ───────────────────────────────────
+# Trigger: any specs/*.md or architecture/*.md staged
+# Severity: warn (non-blocking) — reminder only
+# Catches: silent spec changes with no audit trail entry in changelog.md
+SPEC_ARCH_STAGED=$(printf '%s\n' "$STAGED" | grep -E '(specs/|architecture/).*\.md$' || true)
+if [ -n "$SPEC_ARCH_STAGED" ]; then
+    CHANGELOG_STAGED=$(printf '%s\n' "$STAGED" | grep -E '(^|/)changelog\.md$' | head -1 || true)
+    if [ -z "$CHANGELOG_STAGED" ]; then
+        echo "  ⚠️  spec or architecture files changed without changelog.md — add an audit trail entry"
+    fi
+fi
+
+# ── Phase 21 Check 4: Closeout completeness ───────────────────────────────────
+# Trigger: current-state.md staged with Status containing "Complete"
+# Catches: task marked done but Closeout section left with unfilled placeholders
+CS_FILE=$(printf '%s\n' "$STAGED" | grep -E '(^|/)current-state\.md$' | head -1 || true)
+if [ -n "$CS_FILE" ]; then
+    CS_CONTENT=$(git show ":$CS_FILE" 2>/dev/null || true)
+    CS_STATUS=$(printf '%s\n' "$CS_CONTENT" | grep -iE '^\*\*Status:\*\*' | head -1 || true)
+    if printf '%s\n' "$CS_STATUS" | grep -qi 'Complete'; then
+        CLOSEOUT_SECTION=$(printf '%s\n' "$CS_CONTENT" | awk '/^## Closeout/{p=1} p{print}')
+        if printf '%s\n' "$CLOSEOUT_SECTION" | grep -qE '__+|<!--'; then
+            echo "  ❌ current-state.md Status is Complete but Closeout section has unfilled placeholders (___) or comments (<!--)"
+            PASS=false
+        fi
+    fi
+fi
+
+# ── Phase 21 Check 5: Writing Audience violations ─────────────────────────────
+# Trigger: any spec-facing document staged
+# Spec-facing: business-rules.md, pipeline-contract.md, research.md, quickstart.md,
+#              architecture/*.md, modules/*/*-module-data-flow.md
+# Catches: sprint/task references written into stakeholder-facing documents
+SPEC_FACING_STAGED=$(printf '%s\n' "$STAGED" | grep -E \
+    '(business-rules|pipeline-contract|research|quickstart)\.md$|(^|/)architecture/.*\.md$|modules/.*-module-data-flow\.md$' \
+    || true)
+if [ -n "$SPEC_FACING_STAGED" ]; then
+    FOUND_VIOLATIONS=false
+    while IFS= read -r file; do
+        [ -z "$file" ] && continue
+        VIOLATIONS=$(git show ":$file" 2>/dev/null \
+            | grep -nE 'Sprint [0-9]+|Task [0-9]+|\(S[0-9]+\)' || true)
+        if [ -n "$VIOLATIONS" ]; then
+            if [ "$FOUND_VIOLATIONS" = false ]; then
+                echo "  ❌ Writing Audience violations in spec-facing documents:"
+                FOUND_VIOLATIONS=true
+            fi
+            echo "     $file:"
+            printf '%s\n' "$VIOLATIONS" | sed 's/^/       /'
+        fi
+    done <<< "$SPEC_FACING_STAGED"
+    [ "$FOUND_VIOLATIONS" = true ] && PASS=false
 fi
 
 if [ "$PASS" = false ]; then
